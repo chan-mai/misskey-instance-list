@@ -159,9 +159,14 @@
 
 <script setup lang="ts">
 useHead({
-    title: 'About - Misskey Instance List',
+    title: 'About - (Unofficial) Misskey Instance List',
     meta: [
-        { name: 'description', content: '非公式Misskeyインスタンスリストについて' }
+        { name: 'description', content: '非公式Misskeyインスタンスリストについて' },
+        { property: 'og:title', content: 'About - (Unofficial) Misskey Instance List' },
+        { property: 'og:description', content: '非公式Misskeyインスタンスリストについて' },
+        { property: 'og:url', content: 'https://misskey-instances.mq1.dev/about' },
+        { name: 'twitter:title', content: 'About - (Unofficial) Misskey Instance List' },
+        { name: 'twitter:description', content: '非公式Misskeyインスタンスリストについて' },
     ]
 });
 </script>

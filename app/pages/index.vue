@@ -117,9 +117,14 @@ const formatNumber = (num: number) => {
 };
 
 useHead({
-  title: 'Misskey Instance List',
+  title: '(Unofficial) Misskey Instance List',
   meta: [
-    { name: 'description', content: 'Discover Misskey instances and find your community.' }
+    { name: 'description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
+    { property: 'og:title', content: '(Unofficial) Misskey Instance List' },
+    { property: 'og:description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
+    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/' },
+    { name: 'twitter:title', content: '(Unofficial) Misskey Instance List' },
+    { name: 'twitter:description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
   ]
 });
 </script>

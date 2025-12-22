@@ -68,7 +68,10 @@
 useHead({
   title: 'GET /api/v1/ignore_instances - API Documentation',
   meta: [
-    { name: 'description', content: '無視リストインスタンス一覧取得APIのドキュメント' }
+    { name: 'description', content: '無視リストのインスタンス一覧を取得するAPIのドキュメント。' },
+    { property: 'og:title', content: 'GET /api/v1/ignore_instances - API Documentation' },
+    { property: 'og:description', content: '無視リストのインスタンス一覧を取得するAPIのドキュメント。' },
+    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/docs/api/v1/ignore_instances' },
   ]
 });
 </script>

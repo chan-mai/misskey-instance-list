@@ -9,8 +9,21 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
   app: {
     head: {
-      charset: 'utf-16',
-      viewport: 'width=device-width',
+      charset: 'utf-8',
+      viewport: 'width=device-width, initial-scale=1',
+      title: '(Unofficial) Misskey Instance List',
+      meta: [
+        { name: 'description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。非公式のインスタンスリストです。' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: '(Unofficial) Misskey Instance List' },
+        { property: 'og:title', content: '(Unofficial) Misskey Instance List' },
+        { property: 'og:description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。非公式のインスタンスリストです。' },
+        { property: 'og:url', content: 'https://misskey-instances.mq1.dev/' },
+        { property: 'og:locale', content: 'ja_JP' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: '(Unofficial) Misskey Instance List' },
+        { name: 'twitter:description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
+      ],
       link: [
         { rel: 'canonical', href: 'https://misskey-instances.mq1.dev/' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

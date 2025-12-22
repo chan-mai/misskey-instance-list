@@ -101,7 +101,10 @@
 useHead({
   title: 'GET /api/v1/instances - API Documentation',
   meta: [
-    { name: 'description', content: 'Misskeyインスタンス一覧取得APIのドキュメント' }
+    { name: 'description', content: 'Misskeyインスタンス一覧を取得するAPIのドキュメント。' },
+    { property: 'og:title', content: 'GET /api/v1/instances - API Documentation' },
+    { property: 'og:description', content: 'Misskeyインスタンス一覧を取得するAPIのドキュメント。' },
+    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/docs/api/v1/instances' },
   ]
 });
 </script>

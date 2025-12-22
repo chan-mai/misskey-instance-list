@@ -60,9 +60,14 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'API v1 Documentation - Misskey Instance List',
+  title: 'API v1 Documentation - (Unofficial) Misskey Instance List',
   meta: [
-    { name: 'description', content: 'Misskey Instance List API v1のドキュメント' }
+    { name: 'description', content: 'Misskey Instance List API v1のドキュメント。' },
+    { property: 'og:title', content: 'API v1 Documentation - (Unofficial) Misskey Instance List' },
+    { property: 'og:description', content: 'Misskey Instance List API v1のドキュメント。' },
+    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/docs/api/v1' },
+    { name: 'twitter:title', content: 'API v1 Documentation - (Unofficial) Misskey Instance List' },
+    { name: 'twitter:description', content: 'Misskey Instance List API v1のドキュメント。' },
   ]
 });
 </script>
