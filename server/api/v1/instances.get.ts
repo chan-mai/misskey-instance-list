@@ -16,7 +16,7 @@ import { prisma } from '~~/server/utils/prisma';
  * - limit: 1ページあたりの件数
  * - offset: 現在のオフセット
  */
-export default defineEventHandler(async(event) => {
+export default defineCachedEventHandler(async(event) => {
   const query = getQuery(event);
 
   // クエリパラメータを取得
@@ -33,15 +33,15 @@ export default defineEventHandler(async(event) => {
   type OrderByType = {
     notes_count?: 'asc' | 'desc';
     users_count?: 'asc' | 'desc';
-    created_at?: 'asc' | 'desc';
+    last_updated?: 'asc' | 'desc';
   };
   let orderBy: OrderByType;
   switch (sort) {
     case 'notes':
       orderBy = { notes_count: order };
       break;
-    case 'createdAt':
-      orderBy = { created_at: order };
+    case 'updatedAt':
+      orderBy = { last_updated: order };
       break;
     case 'users':
     default:
@@ -114,4 +114,10 @@ export default defineEventHandler(async(event) => {
     limit,
     offset,
   };
+}, {
+  maxAge: 60 * 60, // 1時間間キャッシュ
+  getKey: (event) => {
+    const query = getQuery(event);
+    return `instances:${query.sort || 'users'}:${query.order || 'desc'}:${query.limit || 30}:${query.offset || 0}:${query.search || ''}`;
+  }
 });
