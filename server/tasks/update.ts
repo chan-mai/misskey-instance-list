@@ -1,0 +1,76 @@
+import yaml from 'js-yaml';
+import { prisma } from '../utils/prisma';
+import { validateInstance, saveInstance } from '../utils/misskey';
+
+export default defineTask({
+  meta: {
+    name: 'update',
+    description: 'Update instance information'
+  },
+  async run() {
+    const count = await prisma.instance.count();
+    // 初回実行時 JoinMisskeyからSeed生成
+    if (count === 0) {
+      await seed();
+      // Run sync:stats task after seeding
+      await runTask('sync:stats');
+      return { result: 'Seeded and synced' };
+    }
+
+    const candidates = await prisma.$queryRaw<{ id: string }[]>`
+      SELECT i.id FROM instances i
+      LEFT JOIN denylist d ON i.id = d.domain
+      LEFT JOIN ignore_hosts ih ON i.id = ih.domain
+      WHERE ( i.suspension_state != 'gone' OR i.suspension_state IS NULL) 
+        AND (d.domain IS NULL AND ih.domain IS NULL)
+      ORDER BY i.last_check_at ASC NULLS FIRST 
+      LIMIT 100
+    `;
+
+    if (!candidates || candidates.length === 0) {
+      return { result: 'No candidates' };
+    }
+
+    const now = new Date();
+    let updated = 0;
+
+    await Promise.all(candidates.map(async(row: { id: string }) => {
+      try {
+        const res = await validateInstance(prisma, row.id);
+        await saveInstance(prisma, row.id, res, now);
+        updated++;
+      } catch (e) {
+        console.error(`Error updating ${row.id}:`, e);
+        await prisma.instance.update({
+          where: { id: row.id },
+          data: { last_check_at: new Date() }
+        });
+      }
+    }));
+
+    return { result: `Updated ${updated} instances` };
+  }
+});
+
+async function seed() {
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/joinmisskey/api/main/data/instances.yml');
+    if (!res.ok) {
+      console.error('Failed to fetch seed data');
+      return;
+    }
+    const text = await res.text();
+    const data = yaml.load(text) as { url: string }[];
+    
+    if (Array.isArray(data)) {
+      const uniqueUrls = [...new Set(data.map(d => d.url).filter(u => !!u))];
+      
+      await prisma.instance.createMany({
+        data: uniqueUrls.map(url => ({ id: url })),
+        skipDuplicates: true
+      });
+    }
+  } catch (e) {
+    console.error('Seed failed', e);
+  }
+}

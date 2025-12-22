@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "cockroachdb"
+}
+
+enum SuspensionState {
+  none
+  suspended
+  gone
+}
+
+model Instance {
+  id               String           @id
+  node_name        String?
+  users_count      Int?             @default(0)
+  notes_count      Int?             @default(0)
+  version          String?
+  is_alive         Boolean          @default(false)
+  created_at       DateTime         @default(now())
+  last_updated     DateTime?        @updatedAt
+  last_check_at    DateTime?
+  banner_url       String?
+  icon_url         String?
+  suspension_state SuspensionState  @default(none)
+
+  @@map("instances")
+}
+
+model Denylist {
+  domain     String   @id
+  reason     String?
+  created_at DateTime @default(now())
+
+  @@map("denylist")
+}
+
+model IgnoreHost {
+  domain     String   @id
+  reason     String?
+  created_at DateTime @default(now())
+
+  @@map("ignore_hosts")
+}
