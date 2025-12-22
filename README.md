@@ -1,75 +1,83 @@
-# Nuxt Minimal Starter
+# (Unofficial) Misskey Instance List
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-## Setup
+MisskeyHubのインスタンスリストがメンテナンス中のまま復旧しないため、非公式のインスタンスリストを作成しました。
 
-Make sure to install dependencies:
+🌐 **Website**: https://misskey-instances.mq1.dev
+
+## ✨ Features
+
+- **スプーフィング除外**: CherryPickなどの偽装インスタンスを自動的に検出・除外
+- **自動更新**: 定期的にインスタンス情報を自動取得・更新
+- **検索・ソート**: インスタンス名での検索、ユーザー数・ノート数でのソート
+- **API提供**: RESTful APIでインスタンス情報を取得可能
+
+## 🚀 Tech Stack
+
+- **Frontend**: Nuxt 4, Vue 3, Tailwind CSS
+- **Backend**: Nitro, Prisma ORM
+- **Database**: CockroachDB (PostgreSQL互換)
+- **Styling**: kiso.css, Tailwind CSS
+
+## 📖 API Documentation
+
+APIドキュメントは https://misskey-instances.mq1.dev/docs/api/v1 で確認できます。
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/instances` | インスタンス一覧を取得 |
+| GET | `/api/v1/deny_instances` | 拒否リストを取得 |
+| GET | `/api/v1/ignore_instances` | 無視リストを取得 |
+| GET | `/api/v1/health` | ヘルスチェック |
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js 20+
+- pnpm
+- CockroachDB (または PostgreSQL)
+
+### Setup
 
 ```bash
-# npm
-npm install
-
-# pnpm
+# 依存関係のインストール
 pnpm install
 
-# yarn
-yarn install
+# 環境変数の設定
+cp .env.example .env
+# .env ファイルを編集して DATABASE_URL を設定
 
-# bun
-bun install
+# Prisma クライアントの生成
+pnpm prisma generate
+
+# データベースのマイグレーション
+pnpm prisma migrate deploy
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+### Development Server
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+http://localhost:3000 で開発サーバーが起動します。
 
-Build the application for production:
+### Production Build
 
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+node .output/server/index.mjs
 ```
 
-Locally preview production build:
+## 📝 License
 
-```bash
-# npm
-npm run preview
+This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE) file for details.
 
-# pnpm
-pnpm preview
+## 🙏 Disclaimer
 
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+このリストは非公式のプロジェクトであり、Misskey開発チームとは関係ありません。
+掲載されているインスタンスの運営状況やセキュリティについて、当プロジェクトは一切の責任を負いません。
