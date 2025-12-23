@@ -199,7 +199,7 @@ export async function saveInstance(
   const info = res.info;
 
   if (info) {
-      await prisma.instance.update({
+      await prisma.instance.updateMany({
           where: { id },
           data: {
               node_name: info.name,
@@ -217,7 +217,7 @@ export async function saveInstance(
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
     const state: SuspensionState = res.error === 'GONE' ? 'gone' : 'suspended';
-    await prisma.instance.update({
+    await prisma.instance.updateMany({
         where: { id },
         data: {
             is_alive: false,
