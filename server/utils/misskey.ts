@@ -110,8 +110,9 @@ export async function getInstanceInfo(
         icon,
       },
     };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    console.warn(`Failed to fetch info for ${host}:`, e);
+    //console.warn(`Failed to fetch info for ${host}:`, e);
     // ネットワークエラー、タイムアウト等
     return { info: null, error: 'TIMEOUT' };
   } finally {
