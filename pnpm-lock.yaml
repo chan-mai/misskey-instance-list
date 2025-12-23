@@ -17,6 +17,9 @@ importers:
       '@prisma/client':
         specifier: ^7.2.0
         version: 7.2.0(prisma@7.2.0(@types/react@19.2.7)(magicast@0.5.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
+      js-yaml:
+        specifier: ^4.1.1
+        version: 4.1.1
       kiso.css:
         specifier: ^1.2.2
         version: 1.2.2
@@ -54,9 +57,6 @@ importers:
       globals:
         specifier: ^16.5.0
         version: 16.5.0
-      js-yaml:
-        specifier: ^4.1.1
-        version: 4.1.1
       typescript-eslint:
         specifier: ^8.50.0
         version: 8.50.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
