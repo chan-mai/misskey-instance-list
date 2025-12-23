@@ -65,7 +65,7 @@
           class="text-[10px] px-2 py-0.5 rounded-full border"
           :class="instance.is_alive ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'"
         >
-          Status: {{ instance.is_alive ? 'Alived' : 'Offline' }}
+          Status: {{ instance.is_alive ? 'Online' : 'Offline' }}
         </span>
       </div>
 
@@ -161,7 +161,7 @@
                 class="text-[10px] px-2 py-0.5 rounded-full border"
                 :class="instance.is_alive ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'"
               >
-                Status: {{ instance.is_alive ? 'Alived' : 'Offline' }}
+                Status: {{ instance.is_alive ? 'Online' : 'Offline' }}
               </span>
             </div>
           </div>
