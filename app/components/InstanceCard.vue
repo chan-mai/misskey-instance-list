@@ -23,7 +23,7 @@
       <div v-else class="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30"></div>
 
       <!-- アイコンバッジ -->
-      <div class="absolute bottom-3 left-3 flex items-center gap-2 rounded bg-white/90 px-2 py-1 backdrop-blur border border-primary/50">
+      <div class="absolute bottom-3 mx-3 flex items-center gap-2 rounded bg-white/90 px-2 py-1 backdrop-blur border border-primary/50">
         <img 
           v-if="fetchedIcon" 
           :src="fetchedIcon" 
@@ -36,7 +36,7 @@
         >
           {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
         </div>
-        <span class="font-mono text-xs text-gray-500">v{{ instance.version }}</span>
+        <span class="font-mono text-xs text-gray-500 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
       </div>
     </div>
 
@@ -120,7 +120,7 @@
             </div>
             <!-- バージョンバッジ -->
             <div class="absolute top-2 right-2 rounded bg-white/90 px-1.5 py-0.5 backdrop-blur border border-gray-200">
-              <span class="font-mono text-[10px] text-gray-600">v{{ instance.version }}</span>
+              <span class="font-mono text-[10px] text-gray-600 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
             </div>
           </div>
         </div>
@@ -156,9 +156,6 @@
               </span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/30">
                 Notes: {{ formatNumber(instance.notes_count) }}
-              </span>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
-                v{{ instance.version }}
               </span>
               <span 
                 class="text-[10px] px-2 py-0.5 rounded-full border"
