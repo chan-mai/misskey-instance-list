@@ -10,12 +10,23 @@ export default defineEventHandler(async(event) => {
   
   // 認証チェック
   const authHeader = getHeader(event, 'authorization');
+  
+  // デバッグログ
+  console.log('[DEBUG] Task API Request:', {
+    hasAuth: !!authHeader,
+    configSecretSet: !!config.taskSecret,
+    configSecretLength: config.taskSecret?.length
+  });
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw createError({ statusCode: 401, message: 'Unauthorized' });
   }
   
   const token = authHeader.slice(7);
   if (token !== config.taskSecret) {
+    console.error('[DEBUG] Token mismatch');
+    console.error(`[DEBUG] Received: ${token.substring(0,5)}... (${token.length} chars)`);
+    console.error(`[DEBUG] Expected: ${config.taskSecret?.substring(0,5)}... (${config.taskSecret?.length} chars)`);
     throw createError({ statusCode: 403, message: 'Forbidden' });
   }
   
