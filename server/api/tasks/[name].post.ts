@@ -23,12 +23,13 @@ export default defineEventHandler(async(event) => {
   }
   
   const token = authHeader.slice(7);
-  if (token !== config.taskSecret) {
+  if (token !== config.taskSecret?.trim()) {
     console.error('[DEBUG] Token mismatch');
     console.error(`[DEBUG] Received: ${token.substring(0,5)}... (${token.length} chars)`);
-    console.error(`[DEBUG] Expected: ${config.taskSecret?.substring(0,5)}... (${config.taskSecret?.length} chars)`);
+    console.error(`[DEBUG] Expected (trimmed): ${config.taskSecret?.trim().substring(0,5)}... (${config.taskSecret?.trim().length} chars)`);
     throw createError({ statusCode: 403, message: 'Forbidden' });
   }
+  
   
   // タスク名取得
   const taskName = getRouterParam(event, 'name');
