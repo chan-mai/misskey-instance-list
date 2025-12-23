@@ -77,6 +77,7 @@ export const InstanceScalarFieldEnum = {
   notes_count: 'notes_count',
   version: 'version',
   is_alive: 'is_alive',
+  created_at: 'created_at',
   last_updated: 'last_updated',
   last_check_at: 'last_check_at',
   banner_url: 'banner_url',

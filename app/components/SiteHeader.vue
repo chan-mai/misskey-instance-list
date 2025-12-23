@@ -4,9 +4,7 @@
       <div class="flex items-center justify-between h-16">
         <!-- ロゴ -->
         <NuxtLink to="/" class="flex items-center gap-2 group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/30 group-hover:shadow-xl group-hover:shadow-primary/40 transition-all duration-300">
-            M
-          </div>
+          <img src="/ogp.png" class="w-10 h-10 rounded-xl pointer-events-none">
           <span class="font-bold text-xl text-slate-900 dark:text-white hidden sm:block">
             (Unofficial) Misskey Server List
           </span>

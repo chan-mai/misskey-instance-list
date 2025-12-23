@@ -43,6 +43,7 @@ export type InstanceMinAggregateOutputType = {
   notes_count: number | null
   version: string | null
   is_alive: boolean | null
+  created_at: Date | null
   last_updated: Date | null
   last_check_at: Date | null
   banner_url: string | null
@@ -57,6 +58,7 @@ export type InstanceMaxAggregateOutputType = {
   notes_count: number | null
   version: string | null
   is_alive: boolean | null
+  created_at: Date | null
   last_updated: Date | null
   last_check_at: Date | null
   banner_url: string | null
@@ -71,6 +73,7 @@ export type InstanceCountAggregateOutputType = {
   notes_count: number
   version: number
   is_alive: number
+  created_at: number
   last_updated: number
   last_check_at: number
   banner_url: number
@@ -97,6 +100,7 @@ export type InstanceMinAggregateInputType = {
   notes_count?: true
   version?: true
   is_alive?: true
+  created_at?: true
   last_updated?: true
   last_check_at?: true
   banner_url?: true
@@ -111,6 +115,7 @@ export type InstanceMaxAggregateInputType = {
   notes_count?: true
   version?: true
   is_alive?: true
+  created_at?: true
   last_updated?: true
   last_check_at?: true
   banner_url?: true
@@ -125,6 +130,7 @@ export type InstanceCountAggregateInputType = {
   notes_count?: true
   version?: true
   is_alive?: true
+  created_at?: true
   last_updated?: true
   last_check_at?: true
   banner_url?: true
@@ -226,6 +232,7 @@ export type InstanceGroupByOutputType = {
   notes_count: number | null
   version: string | null
   is_alive: boolean
+  created_at: Date
   last_updated: Date | null
   last_check_at: Date | null
   banner_url: string | null
@@ -263,6 +270,7 @@ export type InstanceWhereInput = {
   notes_count?: Prisma.IntNullableFilter<"Instance"> | number | null
   version?: Prisma.StringNullableFilter<"Instance"> | string | null
   is_alive?: Prisma.BoolFilter<"Instance"> | boolean
+  created_at?: Prisma.DateTimeFilter<"Instance"> | Date | string
   last_updated?: Prisma.DateTimeNullableFilter<"Instance"> | Date | string | null
   last_check_at?: Prisma.DateTimeNullableFilter<"Instance"> | Date | string | null
   banner_url?: Prisma.StringNullableFilter<"Instance"> | string | null
@@ -277,6 +285,7 @@ export type InstanceOrderByWithRelationInput = {
   notes_count?: Prisma.SortOrderInput | Prisma.SortOrder
   version?: Prisma.SortOrderInput | Prisma.SortOrder
   is_alive?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   last_updated?: Prisma.SortOrderInput | Prisma.SortOrder
   last_check_at?: Prisma.SortOrderInput | Prisma.SortOrder
   banner_url?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -294,6 +303,7 @@ export type InstanceWhereUniqueInput = Prisma.AtLeast<{
   notes_count?: Prisma.IntNullableFilter<"Instance"> | number | null
   version?: Prisma.StringNullableFilter<"Instance"> | string | null
   is_alive?: Prisma.BoolFilter<"Instance"> | boolean
+  created_at?: Prisma.DateTimeFilter<"Instance"> | Date | string
   last_updated?: Prisma.DateTimeNullableFilter<"Instance"> | Date | string | null
   last_check_at?: Prisma.DateTimeNullableFilter<"Instance"> | Date | string | null
   banner_url?: Prisma.StringNullableFilter<"Instance"> | string | null
@@ -308,6 +318,7 @@ export type InstanceOrderByWithAggregationInput = {
   notes_count?: Prisma.SortOrderInput | Prisma.SortOrder
   version?: Prisma.SortOrderInput | Prisma.SortOrder
   is_alive?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   last_updated?: Prisma.SortOrderInput | Prisma.SortOrder
   last_check_at?: Prisma.SortOrderInput | Prisma.SortOrder
   banner_url?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,6 +341,7 @@ export type InstanceScalarWhereWithAggregatesInput = {
   notes_count?: Prisma.IntNullableWithAggregatesFilter<"Instance"> | number | null
   version?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
   is_alive?: Prisma.BoolWithAggregatesFilter<"Instance"> | boolean
+  created_at?: Prisma.DateTimeWithAggregatesFilter<"Instance"> | Date | string
   last_updated?: Prisma.DateTimeNullableWithAggregatesFilter<"Instance"> | Date | string | null
   last_check_at?: Prisma.DateTimeNullableWithAggregatesFilter<"Instance"> | Date | string | null
   banner_url?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
@@ -344,6 +356,7 @@ export type InstanceCreateInput = {
   notes_count?: number | null
   version?: string | null
   is_alive?: boolean
+  created_at?: Date | string
   last_updated?: Date | string | null
   last_check_at?: Date | string | null
   banner_url?: string | null
@@ -358,6 +371,7 @@ export type InstanceUncheckedCreateInput = {
   notes_count?: number | null
   version?: string | null
   is_alive?: boolean
+  created_at?: Date | string
   last_updated?: Date | string | null
   last_check_at?: Date | string | null
   banner_url?: string | null
@@ -372,6 +386,7 @@ export type InstanceUpdateInput = {
   notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -386,6 +401,7 @@ export type InstanceUncheckedUpdateInput = {
   notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -400,6 +416,7 @@ export type InstanceCreateManyInput = {
   notes_count?: number | null
   version?: string | null
   is_alive?: boolean
+  created_at?: Date | string
   last_updated?: Date | string | null
   last_check_at?: Date | string | null
   banner_url?: string | null
@@ -414,6 +431,7 @@ export type InstanceUpdateManyMutationInput = {
   notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -428,6 +446,7 @@ export type InstanceUncheckedUpdateManyInput = {
   notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,6 +461,7 @@ export type InstanceCountOrderByAggregateInput = {
   notes_count?: Prisma.SortOrder
   version?: Prisma.SortOrder
   is_alive?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   last_updated?: Prisma.SortOrder
   last_check_at?: Prisma.SortOrder
   banner_url?: Prisma.SortOrder
@@ -461,6 +481,7 @@ export type InstanceMaxOrderByAggregateInput = {
   notes_count?: Prisma.SortOrder
   version?: Prisma.SortOrder
   is_alive?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   last_updated?: Prisma.SortOrder
   last_check_at?: Prisma.SortOrder
   banner_url?: Prisma.SortOrder
@@ -475,6 +496,7 @@ export type InstanceMinOrderByAggregateInput = {
   notes_count?: Prisma.SortOrder
   version?: Prisma.SortOrder
   is_alive?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   last_updated?: Prisma.SortOrder
   last_check_at?: Prisma.SortOrder
   banner_url?: Prisma.SortOrder
@@ -507,6 +529,10 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
+}
+
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
@@ -524,6 +550,7 @@ export type InstanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   notes_count?: boolean
   version?: boolean
   is_alive?: boolean
+  created_at?: boolean
   last_updated?: boolean
   last_check_at?: boolean
   banner_url?: boolean
@@ -538,6 +565,7 @@ export type InstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   notes_count?: boolean
   version?: boolean
   is_alive?: boolean
+  created_at?: boolean
   last_updated?: boolean
   last_check_at?: boolean
   banner_url?: boolean
@@ -552,6 +580,7 @@ export type InstanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   notes_count?: boolean
   version?: boolean
   is_alive?: boolean
+  created_at?: boolean
   last_updated?: boolean
   last_check_at?: boolean
   banner_url?: boolean
@@ -566,6 +595,7 @@ export type InstanceSelectScalar = {
   notes_count?: boolean
   version?: boolean
   is_alive?: boolean
+  created_at?: boolean
   last_updated?: boolean
   last_check_at?: boolean
   banner_url?: boolean
@@ -573,7 +603,7 @@ export type InstanceSelectScalar = {
   suspension_state?: boolean
 }
 
-export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state", ExtArgs["result"]["instance"]>
+export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "created_at" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state", ExtArgs["result"]["instance"]>
 
 export type $InstancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Instance"
@@ -585,6 +615,7 @@ export type $InstancePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     notes_count: number | null
     version: string | null
     is_alive: boolean
+    created_at: Date
     last_updated: Date | null
     last_check_at: Date | null
     banner_url: string | null
@@ -1019,6 +1050,7 @@ export interface InstanceFieldRefs {
   readonly notes_count: Prisma.FieldRef<"Instance", 'Int'>
   readonly version: Prisma.FieldRef<"Instance", 'String'>
   readonly is_alive: Prisma.FieldRef<"Instance", 'Boolean'>
+  readonly created_at: Prisma.FieldRef<"Instance", 'DateTime'>
   readonly last_updated: Prisma.FieldRef<"Instance", 'DateTime'>
   readonly last_check_at: Prisma.FieldRef<"Instance", 'DateTime'>
   readonly banner_url: Prisma.FieldRef<"Instance", 'String'>

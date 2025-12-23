@@ -58,6 +58,11 @@ async function fetchInstances(reset = false) {
   isLoading.value = true;
   errorMessage.value = null;
   
+  if (reset) {
+    initialLoading.value = true;
+    instances.value = [];
+  }
+  
   try {
     const currentOffset = reset ? 0 : offset.value;
     const params = new URLSearchParams({
