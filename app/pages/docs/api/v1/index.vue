@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-screen bg-back">
     <div class="container mx-auto max-w-screen-lg px-6 py-16">
-      <div class="mb-12">
-        <NuxtLink to="/docs/api/v1" class="text-primary hover:underline text-sm">&larr; API Documentation</NuxtLink>
-      </div>
-      
       <h1 class="text-4xl font-bold text-slate-900 mb-4">API v1 Documentation</h1>
       <p class="text-slate-600 mb-12">
         (Unofficial) Misskey Server List API v1のドキュメントです。

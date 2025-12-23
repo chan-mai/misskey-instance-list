@@ -98,7 +98,7 @@
         </section>
 
         <!-- Contact / Footer -->
-        <section class="py-32 bg-slate-900 text-white">
+        <section class="py-32 bg-white">
             <div class="container mx-auto max-w-screen-lg px-6">
                 <div class="grid md:grid-cols-2 gap-20">
                     <div>
@@ -135,25 +135,13 @@
                         </ul>
                     </div>
                 </div>
-
-                <!-- Footer Bottom -->
-                <div
-                    class="mt-32 pt-8 border-t border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 text-[10px] text-slate-500 uppercase tracking-widest">
-                    <p>© {{ new Date().getFullYear() }} chan-mai</p>
-                    <p>(Unofficial) Misskey Server List</p>
-                </div>
             </div>
         </section>
 
-        <!-- 免責事項 -->
-        <section class="py-8 bg-slate-950 text-white">
-            <div class="container mx-auto max-w-screen-lg px-6">
-                <p class="text-xs leading-relaxed">
-                    このリストは非公式のプロジェクトであり、Misskey開発チームとは関係ありません。
-                    掲載されているサーバーの運営状況やセキュリティについて、当プロジェクトは一切の責任を負いません。
-                </p>
-            </div>
-        </section>
+
+
+
+
     </div>
 </template>
 

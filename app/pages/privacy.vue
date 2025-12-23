@@ -105,21 +105,7 @@
             </div>
         </section>
 
-        <!-- Footer -->
-        <section class="py-20 bg-slate-900 text-white">
-            <div class="container mx-auto max-w-screen-lg px-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                    <NuxtLink to="/" class="text-lg font-light hover:text-slate-300 transition-colors">
-                        ← Back to Home
-                    </NuxtLink>
-                    
-                    <div class="text-[10px] text-slate-500 uppercase tracking-widest text-center md:text-right">
-                        <p>© {{ new Date().getFullYear() }} chan-mai</p>
-                        <p>(Unofficial) Misskey Server List</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+
     </div>
 </template>
 
