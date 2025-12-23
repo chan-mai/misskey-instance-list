@@ -117,20 +117,20 @@
                     <div class="flex flex-col justify-end">
                         <ul class="space-y-6">
                             <li class="border-b border-slate-700 pb-4">
-                                <a href="https://mq1.dev/about" target="_blank" rel="noopener noreferrer"
+                                <NuxtLink to="https://mq1.dev/about" target="_blank" rel="noopener noreferrer"
                                     class="flex items-center justify-between text-lg md:text-xl font-light hover:pl-4 transition-all group">
                                     <span class="group-hover:text-slate-300 transition-colors">Developer</span>
                                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">OPEN
                                         ↗</span>
-                                </a>
+                                </NuxtLink>
                             </li>
                             <li class="border-b border-slate-700 pb-4">
-                                <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                                <NuxtLink to="https://github.com/chan-mai/misskey-instance-list" target="_blank" rel="noopener noreferrer"
                                     class="flex items-center justify-between text-lg md:text-xl font-light hover:pl-4 transition-all group">
                                     <span class="group-hover:text-slate-300 transition-colors">GitHub</span>
                                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">OPEN
                                         ↗</span>
-                                </a>
+                                </NuxtLink>
                             </li>
                         </ul>
                     </div>
