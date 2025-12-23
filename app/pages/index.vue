@@ -161,7 +161,7 @@ useHead({
           <div
             class="grid gap-4"
             :class="[
-              v_view === 'grid' && 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5',
+              v_view === 'grid' && 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4',
               v_view === 'list' && 'grid-cols-1',
             ]"
           >
