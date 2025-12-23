@@ -116,8 +116,4 @@ export default defineCachedEventHandler(async(event) => {
   };
 }, {
   maxAge: 60 * 60, // 1時間間キャッシュ
-  getKey: (event) => {
-    const query = getQuery(event);
-    return `instances:${query.sort || 'users'}:${query.order || 'desc'}:${query.limit || 30}:${query.offset || 0}:${query.search || ''}`;
-  }
 });

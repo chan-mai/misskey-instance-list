@@ -142,7 +142,11 @@ const emit = defineEmits<{
 }>();
 
 const isOpen = ref(false);
-const queryPartial = ref('');
+const queryPartial = ref(props.searchQuery);
+
+watch(() => props.searchQuery, (newVal) => {
+  queryPartial.value = newVal;
+});
 
 const orderByValue = computed({
   get: () => props.orderBy,
