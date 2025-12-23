@@ -24,8 +24,7 @@ steps:
           --platform managed \
           --region ${_REGION} \
           --allow-unauthenticated \
-          --set-env-vars "DATABASE_URL=$$DATABASE_URL"
-    secretEnv: ['DATABASE_URL']
+          --update-secrets "DATABASE_URL=DATABASE_URL:latest"
 availableSecrets:
   secretManager:
     - versionName: projects/1023578240084/secrets/DATABASE_URL/versions/latest
