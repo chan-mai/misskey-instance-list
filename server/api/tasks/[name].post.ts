@@ -33,12 +33,16 @@ export default defineEventHandler(async(event) => {
 
   try {
     // Nitro Taskを実行
-    const result = await runTask(taskName);
+    // Cloud Runのタイムアウト回避のため、awaitせずに非同期実行（Fire and Forget）
+    runTask(taskName).catch((e) => {
+      console.error(`[Task: ${taskName}] Async execution error:`, e);
+    });
     
+    setResponseStatus(event, 202);
     return {
       success: true,
       task: taskName,
-      result
+      result: 'Created task'
     };
   } catch (error) {
     console.error(`Task ${taskName} failed:`, error);
