@@ -1,9 +1,9 @@
 <template>
 
   <!-- グリッド表示 (variant='default') -->
-  <a
+  <NuxtLink
     v-if="view === 'grid'"
-    :href="`https://${instance.id}`"
+    :to="`https://${instance.id}`"
     target="_blank"
     rel="noopener noreferrer"
     class="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
@@ -13,9 +13,9 @@
       <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
       
       <img 
-        v-if="instance.banner_url" 
+        v-if="fetchedBanner" 
         loading="lazy" 
-        :src="instance.banner_url" 
+        :src="fetchedBanner" 
         :alt="instance.node_name"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         @error="onImageError"
@@ -25,8 +25,8 @@
       <!-- アイコンバッジ -->
       <div class="absolute bottom-3 left-3 flex items-center gap-2 rounded bg-white/90 px-2 py-1 backdrop-blur border border-primary/50">
         <img 
-          v-if="instance.icon_url" 
-          :src="instance.icon_url" 
+          v-if="fetchedIcon" 
+          :src="fetchedIcon" 
           class="h-5 w-5 rounded"
           @error="onImageError"
         />
@@ -79,12 +79,12 @@
         </div>
       </div>
     </div>
-  </a>
+  </NuxtLink>
 
   <!-- リスト表示 -->
   <div v-else-if="view === 'list'" class="relative">
-    <a 
-      :href="`https://${instance.id}`" 
+    <NuxtLink
+      :to="`https://${instance.id}`" 
       target="_blank"
       rel="noopener noreferrer"
       class="slide-hover block p-4 rounded-lg"
@@ -94,9 +94,9 @@
         <div class="md:w-1/3 w-full md:flex-shrink-0 md:min-w-[200px]">
           <div class="relative w-full overflow-hidden rounded-lg aspect-video">
             <img 
-              v-if="instance.banner_url" 
+              v-if="fetchedBanner" 
               loading="lazy" 
-              :src="instance.banner_url" 
+              :src="fetchedBanner" 
               :alt="instance.node_name"
               class="object-cover transition-transform duration-300 hover:scale-105 rounded-lg w-full h-full"
               @error="onImageError"
@@ -106,8 +106,8 @@
               class="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30 rounded-lg flex items-center justify-center"
             >
               <img 
-                v-if="instance.icon_url" 
-                :src="instance.icon_url" 
+                v-if="fetchedIcon" 
+                :src="fetchedIcon" 
                 class="h-12 w-12 rounded"
                 @error="onImageError"
               />
@@ -130,8 +130,8 @@
           <div>
             <div class="flex items-center gap-2 mb-2">
               <img 
-                v-if="instance.icon_url" 
-                :src="instance.icon_url" 
+                v-if="fetchedIcon" 
+                :src="fetchedIcon" 
                 class="h-6 w-6 rounded flex-shrink-0"
                 @error="onImageError"
               />
@@ -179,7 +179,7 @@
           </div>
         </div>
       </div>
-    </a>
+    </NuxtLink>
   </div>
 </template>
 
@@ -192,6 +192,16 @@ const props = withDefaults(defineProps<{
 });
 
 const { instance } = toRefs(props);
+
+const fetchedIcon = ref<string | null>(props.instance.icon_url);
+const fetchedBanner = ref<string | null>(props.instance.banner_url);
+
+// propsの変更を監視して初期値を更新（ただしMeta取得後はMeta優先が望ましい？いや、propsが変わる＝別インスタンスなのでリセット）
+watch(() => props.instance, (newVal) => {
+  fetchedIcon.value = newVal.icon_url;
+  fetchedBanner.value = newVal.banner_url;
+  // description等はwatch(instance, updateDescription)で更新される
+});
 
 // 説明文の状態
 const description = ref<string>('');
@@ -228,7 +238,7 @@ function stripTags(str: string): string {
 }
 
 /**
- * 説明文を更新
+ * 説明文と画像を更新
  */
 async function updateDescription() {
   if (!props.instance) {
@@ -240,7 +250,7 @@ async function updateDescription() {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
+
     const res = await fetch(`https://${props.instance.id}/api/meta`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -252,9 +262,10 @@ async function updateDescription() {
     
     if (res.ok) {
       const meta = await res.json();
-      if (meta.description) {
-        description.value = stripTags(meta.description);
-      }
+      if (meta.description) description.value = stripTags(meta.description);
+      // Metaからアイコン・バナーが取得できれば上書き
+      if (meta.iconUrl) fetchedIcon.value = meta.iconUrl;
+      if (meta.bannerUrl) fetchedBanner.value = meta.bannerUrl;
     }
   } catch {
     // エラーは無視
