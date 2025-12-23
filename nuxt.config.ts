@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css'],
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag'],
   app: {
     head: {
       charset: 'utf-8',
@@ -64,5 +64,8 @@ export default defineNuxtConfig({
         '/docs/api/v1/ignore_instances'
       ]
     }
+  },
+  gtag: {
+    id: 'G-3VEDN6VL0W'
   }
 });
