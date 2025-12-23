@@ -1,0 +1,40 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    env:
+      - 'DOCKER_BUILDKIT=1'
+    args:
+      - '-c'
+      - |
+        docker build -t ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} \
+          --build-arg DATABASE_URL="$$DATABASE_URL" \
+          .
+    secretEnv: ['DATABASE_URL']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args: 
+      - -c
+      - |
+        gcloud run deploy ${_SERVICE} \
+          --image ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} \
+          --platform managed \
+          --region ${_REGION} \
+          --allow-unauthenticated \
+          --set-env-vars "DATABASE_URL=$$DATABASE_URL"
+    secretEnv: ['DATABASE_URL']
+availableSecrets:
+  secretManager:
+    - versionName: projects/1023578240084/secrets/DATABASE_URL/versions/latest
+      env: DATABASE_URL
+substitutions:
+  _LOCATION: asia-northeast1
+  _REGION: asia-northeast1
+  _REPOSITORY: cloud-run-source-deploy
+  _IMAGE: misskey-instances
+  _SERVICE: misskey-instances
+options:
+  logging: CLOUD_LOGGING_ONLY
