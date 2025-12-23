@@ -33,15 +33,15 @@ export default defineCachedEventHandler(async(event) => {
   type OrderByType = {
     notes_count?: 'asc' | 'desc';
     users_count?: 'asc' | 'desc';
-    last_updated?: 'asc' | 'desc';
+    created_at?: 'asc' | 'desc';
   };
   let orderBy: OrderByType;
   switch (sort) {
     case 'notes':
       orderBy = { notes_count: order };
       break;
-    case 'updatedAt':
-      orderBy = { last_updated: order };
+    case 'createdAt':
+      orderBy = { created_at: order };
       break;
     case 'users':
     default:
