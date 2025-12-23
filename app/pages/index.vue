@@ -143,7 +143,7 @@ useHead({
     />
 
     <!-- メインコンテンツ -->
-    <div id="instances" class="pb-12 pt-6 bg-back text-slate-600 min-h-screen">
+    <div id="instances" class="pb-12 md:pt-12 bg-back text-slate-600 min-h-screen">
       <div class="container mx-auto max-w-screen-xl px-6 grid server-list gap-8">
         <!-- サイドバー -->
         <InstanceSidebar
