@@ -20,9 +20,11 @@ export default defineNuxtConfig({
         { property: 'og:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。非公式のサーバーリストです。' },
         { property: 'og:url', content: 'https://servers.misskey.ink/' },
         { property: 'og:locale', content: 'ja_JP' },
-        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:card', content: 'summary' },
         { name: 'twitter:title', content: '(Unofficial) Misskey Server List' },
         { name: 'twitter:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
+        { property: 'og:image', content: 'https://servers.misskey.ink/ogp.png' },
+        { name: 'twitter:image', content: 'https://servers.misskey.ink/ogp.png' },
       ],
       link: [
         { rel: 'canonical', href: 'https://servers.misskey.ink/' },
