@@ -69,17 +69,17 @@
         <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{
   "items": [
     {
-      "id": "string",
-      "host": "example.com",
-      "name": "Example Instance",
-      "description": "Instance description",
-      "icon_url": "https://example.com/icon.png",
-      "banner_url": "https://example.com/banner.png",
-      "software_version": "2024.x.x",
-      "users_count": 1000,
-      "notes_count": 50000,
-      "created_at": "2024-01-01T00:00:00.000Z",
-      "updated_at": "2024-12-23T00:00:00.000Z"
+      "id": "example.com",
+      "node_name": "Example Instance",
+      "users_count": 100,
+      "notes_count": 10000,
+      "created_at": 1704067200000,
+      "version": "2024.1.0",
+      "is_alive": true,
+      "last_updated": 1704153600000,
+      "last_check_at": 1704153600000,
+      "banner_url": "https://example.com/banner.jpg",
+      "icon_url": "https://example.com/icon.png"
     }
   ],
   "total": 500,

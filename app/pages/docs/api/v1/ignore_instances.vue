@@ -18,41 +18,18 @@
       <!-- Response -->
       <section class="mb-12">
         <h2 class="text-xl font-bold text-slate-900 mb-4">Response</h2>
-        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{
-  "count": 5,
-  "hosts": [
-    "ignored1.com",
-    "ignored2.com"
-  ]
-}</code></pre>
+        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>[
+  "ignored1.com",
+  "ignored2.com"
+]</code></pre>
       </section>
 
       <!-- Response Fields -->
       <section class="mb-12">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Response Fields</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-slate-200">
-                <th class="text-left py-3 px-4 font-semibold text-slate-700">Field</th>
-                <th class="text-left py-3 px-4 font-semibold text-slate-700">Type</th>
-                <th class="text-left py-3 px-4 font-semibold text-slate-700">Description</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              <tr>
-                <td class="py-3 px-4 font-mono text-slate-900">count</td>
-                <td class="py-3 px-4 text-slate-600">number</td>
-                <td class="py-3 px-4 text-slate-600">無視リストに登録されているサーバー数</td>
-              </tr>
-              <tr>
-                <td class="py-3 px-4 font-mono text-slate-900">hosts</td>
-                <td class="py-3 px-4 text-slate-600">string[]</td>
-                <td class="py-3 px-4 text-slate-600">無視リストに登録されているホスト名の配列</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Response Body</h2>
+        <p class="text-slate-600 mb-4">
+          無視リストに登録されているホスト名（ドメイン）の配列（string[]）を返します。
+        </p>
       </section>
 
       <!-- Example -->
