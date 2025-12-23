@@ -34,7 +34,7 @@ substitutions:
   _LOCATION: asia-northeast1
   _REGION: asia-northeast1
   _REPOSITORY: cloud-run-source-deploy
-  _IMAGE: misskey-instances
-  _SERVICE: misskey-instances
+  _IMAGE: misskey-instance-list
+  _SERVICE: misskey-instance-list
 options:
   logging: CLOUD_LOGGING_ONLY
