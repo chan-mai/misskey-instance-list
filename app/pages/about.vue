@@ -48,11 +48,11 @@
                     </p>
 
                     <p class="text-sm md:text-base text-slate-600 leading-[2.2] whitespace-pre-line">
-                        開発者は「混乱を避けるため」と説明していましたが、おそらく<NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200" to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432">CherryPickの実装変更</NuxtLink>が原因と思われます。
+                        開発者は「混乱を避けるため」と説明していましたが、おそらく<NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200" to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432" target="_blank">CherryPickの実装変更🔗</NuxtLink>が原因と思われます。
                     </p>
 
                     <p class="text-sm md:text-base text-slate-600 leading-[2.2] whitespace-pre-line">
-                        CherryPickは、Misskeyの派生プロジェクトの一つですが、現行のCherryPickは、<NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200" to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432#diff-c99e10daaf6c2db57012b73a31a76d7e3bbbf9e2599ed226e2f1651cdff40c20">特定のUAに対し、メタデータで自身をMisskeyのように偽って返す仕組み</NuxtLink>になっています。
+                        CherryPickは、Misskeyの派生プロジェクトの一つですが、現行のCherryPickは、<NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200" to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432#diff-c99e10daaf6c2db57012b73a31a76d7e3bbbf9e2599ed226e2f1651cdff40c20" target="_blank">特定のUAに対し、メタデータで自身をMisskeyのように偽って返す仕組み🔗</NuxtLink>になっています。
                     </p>
 
                     <p class="text-sm md:text-base text-slate-600 leading-[2.2] whitespace-pre-line">
