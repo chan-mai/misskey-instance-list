@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
-    "postinstall": "prisma generate && nuxt prepare"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
