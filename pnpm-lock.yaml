@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@nuxtjs/tailwindcss':
+        specifier: ^6.14.0
+        version: 6.14.0(magicast@0.5.1)(yaml@2.8.2)
       '@prisma/adapter-pg':
         specifier: ^7.2.0
         version: 7.2.0
@@ -36,9 +39,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.2
-      '@nuxtjs/tailwindcss':
-        specifier: ^6.14.0
-        version: 6.14.0(magicast@0.5.1)(yaml@2.8.2)
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
