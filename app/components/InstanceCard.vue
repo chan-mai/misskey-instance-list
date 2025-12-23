@@ -249,10 +249,9 @@ async function updateDescription() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(`https://${props.instance.id}/api/meta`, {
-      method: 'POST',
+    const res = await fetch(`/api/meta?host=${props.instance.id}`, {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ detail: false }),
       signal: controller.signal
     });
     
