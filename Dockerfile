@@ -13,8 +13,10 @@ FROM base AS build
 RUN pnpm install --frozen-lockfile
 
 ARG DATABASE_URL
+ARG TASK_SECRET
 
 ENV DATABASE_URL=$DATABASE_URL
+ENV TASK_SECRET=$TASK_SECRET
 
 RUN pnpm nuxt prepare && pnpm prisma generate && pnpm prisma db push && pnpm build
 

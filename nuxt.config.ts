@@ -49,19 +49,10 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     database_url: process.env.DATABASE_URL,
+    taskSecret: process.env.TASK_SECRET,
   },
   nitro: {
     experimental: { tasks: true },
-    scheduledTasks: {
-      // 毎時: Denylist同期
-      '0 * * * *': ['sync:denylist'],
-      // 6時間おき: 全インスタンス統計同期
-      '0 */6 * * *': ['sync:stats'],
-      // 30分おき: インスタンス探索
-      '*/30 * * * *': ['discovery'],
-      // 10分おき: インスタンス更新
-      '*/10 * * * *': ['update']
-    },
     prerender: {
       routes: [
         '/about',

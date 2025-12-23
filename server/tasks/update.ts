@@ -41,7 +41,8 @@ export default defineTask({
         updated++;
       } catch (e) {
         console.error(`Error updating ${row.id}:`, e);
-        await prisma.instance.update({
+        // Use updateMany to avoid error if record doesn't exist
+        await prisma.instance.updateMany({
           where: { id: row.id },
           data: { last_check_at: new Date() }
         });
