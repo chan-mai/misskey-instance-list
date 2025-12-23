@@ -27,7 +27,7 @@ export default defineTask({
     const now = new Date();
     console.log(`Syncing stats for ${all.length} instances...`);
 
-    const chunkSize = 50; 
+    const chunkSize = 200; 
     for (let i = 0; i < all.length; i += chunkSize) {
       const chunk = all.slice(i, i + chunkSize);
       
