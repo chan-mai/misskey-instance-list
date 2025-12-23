@@ -196,11 +196,9 @@ const { instance } = toRefs(props);
 const fetchedIcon = ref<string | null>(props.instance.icon_url);
 const fetchedBanner = ref<string | null>(props.instance.banner_url);
 
-// propsの変更を監視して初期値を更新（ただしMeta取得後はMeta優先が望ましい？いや、propsが変わる＝別インスタンスなのでリセット）
 watch(() => props.instance, (newVal) => {
   fetchedIcon.value = newVal.icon_url;
   fetchedBanner.value = newVal.banner_url;
-  // description等はwatch(instance, updateDescription)で更新される
 });
 
 // 説明文の状態
@@ -265,7 +263,7 @@ async function updateDescription() {
       if (meta.description) description.value = stripTags(meta.description);
       // Metaからアイコン・バナーが取得できれば上書き
       if (meta.iconUrl) fetchedIcon.value = meta.iconUrl;
-      if (meta.bannerUrl) fetchedBanner.value = meta.bannerUrl;
+      if (meta.bannerUrl) fetchedBanner.value = meta.bannerUrl || meta.backgroundImageUrl;
     }
   } catch {
     // エラーは無視
