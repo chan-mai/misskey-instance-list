@@ -33,7 +33,7 @@
             autocomplete="off" 
             id="query" 
             v-model="queryPartial"
-            placeholder="インスタンス名で検索"
+            placeholder="サーバー名で検索"
           />
           <button type="submit" class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/60 border border-l-0 border-slate-300 dark:border-slate-600">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

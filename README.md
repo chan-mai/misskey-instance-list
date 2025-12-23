@@ -2,9 +2,9 @@
 
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-MisskeyHubのインスタンスリストがメンテナンス中のまま復旧しないため、非公式のインスタンスリストを作成しました。
+MisskeyHubのサーバーリストがメンテナンス中のまま復旧しないため、非公式のサーバーリストを作成しました。
 
-🌐 **Website**: https://misskey-instances.mq1.dev
+🌐 **Website**: https://servers.misskey.ink
 
 ## ✨ Features
 
@@ -22,7 +22,7 @@ MisskeyHubのインスタンスリストがメンテナンス中のまま復旧�
 
 ## 📖 API Documentation
 
-APIドキュメントは https://misskey-instances.mq1.dev/docs/api/v1 で確認できます。
+APIドキュメントは https://servers.misskey.ink/docs/api/v1 で確認できます。
 
 ### Endpoints
 

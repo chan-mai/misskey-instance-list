@@ -11,8 +11,8 @@
         <h1 class="text-3xl font-bold text-slate-900 font-mono">/api/v1/deny_instances</h1>
       </div>
       <p class="text-slate-600 mb-8">
-        拒否リスト（Denylist）に登録されているインスタンスの一覧を取得します。
-        これらのインスタンスはリストから除外されています。
+        拒否リスト（Denylist）に登録されているサーバーの一覧を取得します。
+        これらのサーバーはリストから除外されています。
       </p>
 
       <!-- Response -->
@@ -43,7 +43,7 @@
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900">count</td>
                 <td class="py-3 px-4 text-slate-600">number</td>
-                <td class="py-3 px-4 text-slate-600">拒否リストに登録されているインスタンス数</td>
+                <td class="py-3 px-4 text-slate-600">拒否リストに登録されているサーバー数</td>
               </tr>
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900">hosts</td>
@@ -58,7 +58,7 @@
       <!-- Example -->
       <section class="mb-12">
         <h2 class="text-xl font-bold text-slate-900 mb-4">Example</h2>
-        <pre class="bg-slate-800 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>curl "https://misskey-instances.mq1.dev/api/v1/deny_instances"</code></pre>
+        <pre class="bg-slate-800 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>curl "https://servers.misskey.ink/api/v1/deny_instances"</code></pre>
       </section>
     </div>
   </div>
@@ -68,10 +68,10 @@
 useHead({
   title: 'GET /api/v1/deny_instances - API Documentation',
   meta: [
-    { name: 'description', content: '拒否リストのインスタンス一覧を取得するAPIのドキュメント。' },
+    { name: 'description', content: '拒否リストのサーバー一覧を取得するAPIのドキュメント。' },
     { property: 'og:title', content: 'GET /api/v1/deny_instances - API Documentation' },
-    { property: 'og:description', content: '拒否リストのインスタンス一覧を取得するAPIのドキュメント。' },
-    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/docs/api/v1/deny_instances' },
+    { property: 'og:description', content: '拒否リストのサーバー一覧を取得するAPIのドキュメント。' },
+    { property: 'og:url', content: 'https://servers.misskey.ink/docs/api/v1/deny_instances' },
   ]
 });
 </script>

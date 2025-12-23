@@ -24,12 +24,12 @@
           <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
             Find Your Perfect
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-              Misskey Instance
+              Misskey Server
             </span>
           </h1>
           
           <p class="text-lg lg:text-xl text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
-            Misskeyの世界を探索しよう。様々なインスタンスから、あなたに合ったコミュニティを見つけてみませんか。
+            Misskeyの世界を探索しよう。様々なサーバーから、あなたに合ったコミュニティを見つけてみませんか。
           </p>
           
           <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -37,7 +37,7 @@
               to="#instances" 
               class="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-primary text-white font-semibold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
             >
-              Find Instances
+              Find Servers
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -73,7 +73,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
                 </svg>
               </div>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">インスタンス数</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">サーバー数</p>
               <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
                 {{ serverCount }}
               </p>

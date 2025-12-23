@@ -117,14 +117,14 @@ const formatNumber = (num: number) => {
 };
 
 useHead({
-  title: '(Unofficial) Misskey Instance List',
+  title: '(Unofficial) Misskey Server List',
   meta: [
-    { name: 'description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
-    { property: 'og:title', content: '(Unofficial) Misskey Instance List' },
-    { property: 'og:description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
-    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/' },
-    { name: 'twitter:title', content: '(Unofficial) Misskey Instance List' },
-    { name: 'twitter:description', content: 'あなたにぴったりのMisskeyインスタンスを見つけよう。' },
+    { name: 'description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
+    { property: 'og:title', content: '(Unofficial) Misskey Server List' },
+    { property: 'og:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
+    { property: 'og:url', content: 'https://servers.misskey.ink/' },
+    { name: 'twitter:title', content: '(Unofficial) Misskey Server List' },
+    { name: 'twitter:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
   ]
 });
 </script>
@@ -151,7 +151,7 @@ useHead({
           @search="(q) => { f_query = q; fetchInstances(true); }"
         />
         
-        <!-- インスタンス一覧 -->
+        <!-- サーバー一覧 -->
         <div>
           <div
             class="grid gap-4"
@@ -160,7 +160,7 @@ useHead({
               v_view === 'list' && 'grid-cols-1',
             ]"
           >
-            <!-- インスタンスカード -->
+            <!-- サーバーカード -->
             <InstanceCard 
               v-if="instances.length > 0" 
               v-for="instance in instances" 
@@ -179,7 +179,7 @@ useHead({
             >
               <div class="mx-auto text-center">
                 <img src="https://xn--931a.moe/assets/info.jpg" class="rounded-lg mx-auto mb-4" />
-                <p class="max-w-xs">{{ f_query ? `「${f_query}」に一致するインスタンスが見つかりませんでした` : 'インスタンスが見つかりませんでした' }}</p>
+                <p class="max-w-xs">{{ f_query ? `「${f_query}」に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした' }}</p>
               </div>
             </div>
             
@@ -206,7 +206,7 @@ useHead({
           >
             <div v-if="isLoading" class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <p v-else-if="!hasMore" class="text-slate-500 dark:text-slate-400 text-sm">
-              すべてのインスタンスを表示しました
+              すべてのサーバーを表示しました
             </p>
           </div>
         </div>

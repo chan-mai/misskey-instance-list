@@ -8,7 +8,7 @@
             M
           </div>
           <span class="font-bold text-xl text-slate-900 dark:text-white hidden sm:block">
-            (Unofficial) Misskey Instance List
+            (Unofficial) Misskey Server List
           </span>
         </NuxtLink>
 
@@ -18,7 +18,7 @@
             to="/" 
             class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
           >
-            Instances
+            Servers
           </NuxtLink>
           <NuxtLink 
             to="/about" 

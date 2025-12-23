@@ -11,7 +11,7 @@
         <h1 class="text-3xl font-bold text-slate-900 font-mono">/api/v1/instances</h1>
       </div>
       <p class="text-slate-600 mb-8">
-        Misskeyインスタンスの一覧を取得します。検索、ソート、ページネーションに対応しています。
+        Misskeyサーバーの一覧を取得します。検索、ソート、ページネーションに対応しています。
       </p>
 
       <!-- Parameters -->
@@ -56,7 +56,7 @@
                 <td class="py-3 px-4 font-mono text-slate-900">search</td>
                 <td class="py-3 px-4 text-slate-600">string</td>
                 <td class="py-3 px-4 text-slate-500">-</td>
-                <td class="py-3 px-4 text-slate-600">インスタンス名で検索（部分一致）</td>
+                <td class="py-3 px-4 text-slate-600">サーバー名で検索（部分一致）</td>
               </tr>
             </tbody>
           </table>
@@ -91,7 +91,7 @@
       <!-- Example -->
       <section class="mb-12">
         <h2 class="text-xl font-bold text-slate-900 mb-4">Example</h2>
-        <pre class="bg-slate-800 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>curl "https://misskey-instances.mq1.dev/api/v1/instances?sort=users&order=desc&limit=10"</code></pre>
+        <pre class="bg-slate-800 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>curl "https://servers.misskey.ink/api/v1/instances?sort=users&order=desc&limit=10"</code></pre>
       </section>
     </div>
   </div>
@@ -101,10 +101,10 @@
 useHead({
   title: 'GET /api/v1/instances - API Documentation',
   meta: [
-    { name: 'description', content: 'Misskeyインスタンス一覧を取得するAPIのドキュメント。' },
+    { name: 'description', content: 'Misskeyサーバー一覧を取得するAPIのドキュメント。' },
     { property: 'og:title', content: 'GET /api/v1/instances - API Documentation' },
-    { property: 'og:description', content: 'Misskeyインスタンス一覧を取得するAPIのドキュメント。' },
-    { property: 'og:url', content: 'https://misskey-instances.mq1.dev/docs/api/v1/instances' },
+    { property: 'og:description', content: 'Misskeyサーバー一覧を取得するAPIのドキュメント。' },
+    { property: 'og:url', content: 'https://servers.misskey.ink/docs/api/v1/instances' },
   ]
 });
 </script>
