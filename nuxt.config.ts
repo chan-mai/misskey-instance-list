@@ -61,6 +61,15 @@ export default defineNuxtConfig({
       '*/30 * * * *': ['discovery'],
       // 10分おき: インスタンス更新
       '*/10 * * * *': ['update']
+    },
+    prerender: {
+      routes: [
+        '/about',
+        '/docs/api/v1',
+        '/docs/api/v1/instances',
+        '/docs/api/v1/deny_instances',
+        '/docs/api/v1/ignore_instances'
+      ]
     }
   }
 });
