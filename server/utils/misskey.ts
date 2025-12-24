@@ -215,7 +215,7 @@ export async function validateInstance(
   const botInfo = botRes.info;
   const browserInfo = browserRes.info; // nullでもOK
 
-  const FORK_PATTERNS = ['type4ny', 'firefish', 'calckey', 'foundkey', 'cherrypick', 'sharkey', 'rumisskey'];
+  const FORK_PATTERNS = ['type4ny', 'firefish', 'calckey', 'foundkey', 'cherrypick', 'sharkey', 'rumisskey', 'iceshrimp', 'catodon'];
 
   if (botInfo) {
     const botSoftware = botInfo.softwareName?.toLowerCase() || '';
