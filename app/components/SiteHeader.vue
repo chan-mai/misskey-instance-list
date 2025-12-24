@@ -30,6 +30,8 @@
           >
             API Docs
           </NuxtLink>
+
+          <DarkLightToggle />
           
           <!-- GitHub リンク -->
           <NuxtLink

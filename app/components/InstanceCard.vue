@@ -6,10 +6,10 @@
     :to="`https://${instance.id}`"
     target="_blank"
     rel="noopener noreferrer"
-    class="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    class="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
   >
     <!-- 画像エリア -->
-    <div class="relative aspect-video w-full bg-gray-100 overflow-hidden">
+    <div class="relative aspect-video w-full bg-gray-100 dark:bg-slate-700 overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
       
       <img 
@@ -22,7 +22,7 @@
       <div v-else class="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30"></div>
 
       <!-- アイコンバッジ -->
-      <div class="absolute bottom-3 mx-3 flex items-center gap-2 rounded bg-white/90 px-2 py-1 backdrop-blur border border-primary/50">
+      <div class="absolute bottom-3 mx-3 flex items-center gap-2 rounded bg-white/90 dark:bg-slate-800/90 px-2 py-1 backdrop-blur border border-primary/50">
         <img 
           v-if="fetchedIcon" 
           :src="fetchedIcon" 
@@ -34,7 +34,7 @@
         >
           {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
         </div>
-        <span class="font-mono text-xs text-gray-500 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
+        <span class="font-mono text-xs text-gray-500 dark:text-slate-400 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
       </div>
     </div>
 
@@ -46,8 +46,8 @@
       </h3>
 
       <!-- サマリー -->
-      <p class="mb-4 flex-1 text-sm leading-relaxed text-gray-500 line-clamp-3">
-        <span v-if="loadingDescription" class="text-gray-400">読み込み中...</span>
+      <p class="mb-4 flex-1 text-sm leading-relaxed text-gray-500 dark:text-slate-400 line-clamp-3">
+        <span v-if="loadingDescription" class="text-gray-400 dark:text-slate-500">読み込み中...</span>
         <span v-else>{{ description || instance.id }}</span>
       </p>
 
@@ -68,9 +68,9 @@
       </div>
 
       <!-- 続きを読む -->
-      <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
-        <span class="text-xs text-gray-400 transition-colors group-hover:text-primary">サーバーを見る</span>
-        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 text-gray-600 transition-colors group-hover:bg-primary group-hover:text-white">
+      <div class="mt-auto flex items-center justify-between border-t border-gray-100 dark:border-slate-700 pt-4">
+        <span class="text-xs text-gray-400 dark:text-slate-500 transition-colors group-hover:text-primary">サーバーを見る</span>
+        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-slate-300 transition-colors group-hover:bg-primary group-hover:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
@@ -115,8 +115,8 @@
               </div>
             </div>
             <!-- バージョンバッジ -->
-            <div class="absolute top-2 right-2 rounded bg-white/90 px-1.5 py-0.5 backdrop-blur border border-gray-200">
-              <span class="font-mono text-[10px] text-gray-600 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
+            <div class="absolute top-2 right-2 rounded bg-white/90 dark:bg-slate-800/90 px-1.5 py-0.5 backdrop-blur border border-gray-200 dark:border-slate-600">
+              <span class="font-mono text-[10px] text-gray-600 dark:text-slate-400 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
             </div>
           </div>
         </div>
@@ -136,12 +136,12 @@
               >
                 {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
               </div>
-              <h3 class="text-lg font-medium text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
+              <h3 class="text-lg font-medium text-gray-800 dark:text-slate-100 whitespace-nowrap overflow-hidden text-ellipsis">
                 {{ instance.node_name || instance.id }}
               </h3>
             </div>
-            <p class="text-gray-600 text-sm mb-2 overflow-hidden line-clamp-2">
-              <span v-if="loadingDescription" class="text-gray-400">読み込み中...</span>
+            <p class="text-gray-600 dark:text-slate-400 text-sm mb-2 overflow-hidden line-clamp-2">
+              <span v-if="loadingDescription" class="text-gray-400 dark:text-slate-500">読み込み中...</span>
               <span v-else>{{ description || instance.id }}</span>
             </p>
 
