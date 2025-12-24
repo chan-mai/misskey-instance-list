@@ -123,14 +123,15 @@ const formatNumber = (num: number) => {
 };
 
 useHead({
-  title: '(Unofficial) Misskey Server List',
+  title: '(Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
   meta: [
-    { name: 'description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
-    { property: 'og:title', content: '(Unofficial) Misskey Server List' },
-    { property: 'og:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
+    { name: 'keywords', content: 'Misskey,Server List,Instance List,Misskeyサーバー,インスタンス,Fediverse,ActivityPub,サーバー検索' },
+    { name: 'description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
+    { property: 'og:title', content: '(Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
+    { property: 'og:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
     { property: 'og:url', content: 'https://servers.misskey.ink/' },
-    { name: 'twitter:title', content: '(Unofficial) Misskey Server List' },
-    { name: 'twitter:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。' },
+    { name: 'twitter:title', content: '(Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
+    { name: 'twitter:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
   ]
 });
 </script>

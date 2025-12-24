@@ -147,14 +147,15 @@
 
 <script setup lang="ts">
 useHead({
-    title: 'About - (Unofficial) Misskey Server List',
+    title: 'About - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
     meta: [
-        { name: 'description', content: '非公式Misskeyサーバーリストについて' },
-        { property: 'og:title', content: 'About - (Unofficial) Misskey Server List' },
-        { property: 'og:description', content: '非公式Misskeyサーバーリストについて' },
+        { name: 'keywords', content: 'Misskey,Server List,Instance List,Misskeyサーバー,インスタンス,Fediverse,ActivityPub,サーバー検索,About' },
+        { name: 'description', content: '非公式Misskeyサーバーリスト(インスタンスリスト)について' },
+        { property: 'og:title', content: 'About - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
+        { property: 'og:description', content: '非公式Misskeyサーバーリスト(インスタンスリスト)について' },
         { property: 'og:url', content: 'https://servers.misskey.ink/about' },
-        { name: 'twitter:title', content: 'About - (Unofficial) Misskey Server List' },
-        { name: 'twitter:description', content: '非公式Misskeyサーバーリストについて' },
+        { name: 'twitter:title', content: 'About - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
+        { name: 'twitter:description', content: '非公式Misskeyサーバーリスト(インスタンスリスト)について' },
     ]
 });
 </script>
