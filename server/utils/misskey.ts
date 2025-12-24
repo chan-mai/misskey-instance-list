@@ -79,7 +79,23 @@ export async function getInstanceInfo(
     // POST /api/metaを試行
     if (!banner || !icon || !name || !description || !version) {
       try {
-        const metaRes = await fetch(`https://${host}/api/meta`, {
+        const fetchWithRetry = async(url: string, options: RequestInit, retries = 3) => {
+          for (let i = 0; i < retries; i++) {
+            try {
+              const res = await fetch(url, options);
+              if (res.ok) return res;
+              // 5xx errors might be worth retrying, but for now we just retry network errors
+              if (res.status >= 500 && i < retries - 1) continue;
+              return res;
+            } catch (e) {
+              if (i === retries - 1) throw e;
+              await new Promise(r => setTimeout(r, 1000 * (i + 1))); // exponential backoff-ish
+            }
+          }
+          throw new Error('Failed to fetch after retries');
+        };
+
+        const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...headers },
           body: JSON.stringify({ detail: true }),
@@ -95,7 +111,7 @@ export async function getInstanceInfo(
           if (meta.version) version = meta.version;
         }
       } catch (e) {
-        console.error(`Failed to fetch meta for ${host}:`, e);
+        console.warn(`Failed to fetch meta for ${host}:`, e);
       }
     }
 
