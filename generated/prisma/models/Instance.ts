@@ -52,6 +52,7 @@ export type InstanceMinAggregateOutputType = {
   icon_url: string | null
   suspension_state: $Enums.SuspensionState | null
   recommendation_score: number | null
+  repository_url: string | null
 }
 
 export type InstanceMaxAggregateOutputType = {
@@ -68,6 +69,7 @@ export type InstanceMaxAggregateOutputType = {
   icon_url: string | null
   suspension_state: $Enums.SuspensionState | null
   recommendation_score: number | null
+  repository_url: string | null
 }
 
 export type InstanceCountAggregateOutputType = {
@@ -84,6 +86,7 @@ export type InstanceCountAggregateOutputType = {
   icon_url: number
   suspension_state: number
   recommendation_score: number
+  repository_url: number
   _all: number
 }
 
@@ -114,6 +117,7 @@ export type InstanceMinAggregateInputType = {
   icon_url?: true
   suspension_state?: true
   recommendation_score?: true
+  repository_url?: true
 }
 
 export type InstanceMaxAggregateInputType = {
@@ -130,6 +134,7 @@ export type InstanceMaxAggregateInputType = {
   icon_url?: true
   suspension_state?: true
   recommendation_score?: true
+  repository_url?: true
 }
 
 export type InstanceCountAggregateInputType = {
@@ -146,6 +151,7 @@ export type InstanceCountAggregateInputType = {
   icon_url?: true
   suspension_state?: true
   recommendation_score?: true
+  repository_url?: true
   _all?: true
 }
 
@@ -249,6 +255,7 @@ export type InstanceGroupByOutputType = {
   icon_url: string | null
   suspension_state: $Enums.SuspensionState
   recommendation_score: number | null
+  repository_url: string | null
   _count: InstanceCountAggregateOutputType | null
   _avg: InstanceAvgAggregateOutputType | null
   _sum: InstanceSumAggregateOutputType | null
@@ -288,6 +295,7 @@ export type InstanceWhereInput = {
   icon_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
+  repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
 }
 
 export type InstanceOrderByWithRelationInput = {
@@ -304,6 +312,7 @@ export type InstanceOrderByWithRelationInput = {
   icon_url?: Prisma.SortOrderInput | Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrderInput | Prisma.SortOrder
+  repository_url?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type InstanceWhereUniqueInput = Prisma.AtLeast<{
@@ -323,6 +332,7 @@ export type InstanceWhereUniqueInput = Prisma.AtLeast<{
   icon_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
+  repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
 }, "id">
 
 export type InstanceOrderByWithAggregationInput = {
@@ -339,6 +349,7 @@ export type InstanceOrderByWithAggregationInput = {
   icon_url?: Prisma.SortOrderInput | Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrderInput | Prisma.SortOrder
+  repository_url?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.InstanceCountOrderByAggregateInput
   _avg?: Prisma.InstanceAvgOrderByAggregateInput
   _max?: Prisma.InstanceMaxOrderByAggregateInput
@@ -363,6 +374,7 @@ export type InstanceScalarWhereWithAggregatesInput = {
   icon_url?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateWithAggregatesFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableWithAggregatesFilter<"Instance"> | number | null
+  repository_url?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
 }
 
 export type InstanceCreateInput = {
@@ -379,6 +391,7 @@ export type InstanceCreateInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  repository_url?: string | null
 }
 
 export type InstanceUncheckedCreateInput = {
@@ -395,6 +408,7 @@ export type InstanceUncheckedCreateInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  repository_url?: string | null
 }
 
 export type InstanceUpdateInput = {
@@ -411,6 +425,7 @@ export type InstanceUpdateInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type InstanceUncheckedUpdateInput = {
@@ -427,6 +442,7 @@ export type InstanceUncheckedUpdateInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type InstanceCreateManyInput = {
@@ -443,6 +459,7 @@ export type InstanceCreateManyInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  repository_url?: string | null
 }
 
 export type InstanceUpdateManyMutationInput = {
@@ -459,6 +476,7 @@ export type InstanceUpdateManyMutationInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type InstanceUncheckedUpdateManyInput = {
@@ -475,6 +493,7 @@ export type InstanceUncheckedUpdateManyInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type InstanceCountOrderByAggregateInput = {
@@ -491,6 +510,7 @@ export type InstanceCountOrderByAggregateInput = {
   icon_url?: Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrder
+  repository_url?: Prisma.SortOrder
 }
 
 export type InstanceAvgOrderByAggregateInput = {
@@ -513,6 +533,7 @@ export type InstanceMaxOrderByAggregateInput = {
   icon_url?: Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrder
+  repository_url?: Prisma.SortOrder
 }
 
 export type InstanceMinOrderByAggregateInput = {
@@ -529,6 +550,7 @@ export type InstanceMinOrderByAggregateInput = {
   icon_url?: Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrder
+  repository_url?: Prisma.SortOrder
 }
 
 export type InstanceSumOrderByAggregateInput = {
@@ -593,6 +615,7 @@ export type InstanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  repository_url?: boolean
 }, ExtArgs["result"]["instance"]>
 
 export type InstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -609,6 +632,7 @@ export type InstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  repository_url?: boolean
 }, ExtArgs["result"]["instance"]>
 
 export type InstanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -625,6 +649,7 @@ export type InstanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  repository_url?: boolean
 }, ExtArgs["result"]["instance"]>
 
 export type InstanceSelectScalar = {
@@ -641,9 +666,10 @@ export type InstanceSelectScalar = {
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  repository_url?: boolean
 }
 
-export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "created_at" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state" | "recommendation_score", ExtArgs["result"]["instance"]>
+export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "created_at" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state" | "recommendation_score" | "repository_url", ExtArgs["result"]["instance"]>
 
 export type $InstancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Instance"
@@ -662,6 +688,7 @@ export type $InstancePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     icon_url: string | null
     suspension_state: $Enums.SuspensionState
     recommendation_score: number | null
+    repository_url: string | null
   }, ExtArgs["result"]["instance"]>
   composites: {}
 }
@@ -1098,6 +1125,7 @@ export interface InstanceFieldRefs {
   readonly icon_url: Prisma.FieldRef<"Instance", 'String'>
   readonly suspension_state: Prisma.FieldRef<"Instance", 'SuspensionState'>
   readonly recommendation_score: Prisma.FieldRef<"Instance", 'Float'>
+  readonly repository_url: Prisma.FieldRef<"Instance", 'String'>
 }
     
 

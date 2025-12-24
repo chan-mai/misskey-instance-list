@@ -27,6 +27,7 @@ model Instance {
   icon_url         String?
   suspension_state SuspensionState  @default(none)
   recommendation_score Float?
+  repository_url   String?
 
   @@map("instances")
 }
