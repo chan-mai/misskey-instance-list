@@ -107,7 +107,7 @@ export async function getInstanceInfo(
       let repositoryUrl: string | null = null;
 
       // POST /api/metaを試行
-      if (!banner || !icon || !name || !description || !version) {
+      if (!banner || !icon || !name || !description || !version || !repositoryUrl) {
         try {
           // api/meta用のリトライロジック(接続エラーのみ)
           const fetchWithRetry = async(url: string, options: RequestInit, retries = 3) => {
@@ -202,7 +202,7 @@ export async function validateInstance(
   const botInfo = botRes.info;
   const browserInfo = browserRes.info; // nullでもOK
 
-  const FORK_PATTERNS = ['type4ny', 'firefish', 'calckey', 'foundkey'];
+  const FORK_PATTERNS = ['type4ny', 'firefish', 'calckey', 'foundkey', 'cherrypick', 'sharkey', 'rumisskey'];
 
   if (botInfo) {
     const botSoftware = botInfo.softwareName?.toLowerCase() || '';
