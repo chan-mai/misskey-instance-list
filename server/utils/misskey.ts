@@ -8,6 +8,7 @@ export interface InstanceInfo {
   softwareName: string;
   banner: string | null;
   icon: string | null;
+  repositoryUrl: string | null;
 }
 
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
@@ -103,6 +104,7 @@ export async function getInstanceInfo(
       let version = ni.software?.version || '';
       let banner = metadata.bannerUrl || null;
       let icon = metadata.iconUrl || null;
+      let repositoryUrl: string | null = null;
 
       // POST /api/metaを試行
       if (!banner || !icon || !name || !description || !version) {
@@ -138,6 +140,7 @@ export async function getInstanceInfo(
             if (meta.name) name = meta.name;
             if (meta.description) description = meta.description;
             if (meta.version) version = meta.version;
+            if (meta.repositoryUrl) repositoryUrl = meta.repositoryUrl;
           }
         } catch (e: any) {
           if (e.name !== 'AbortError') {
@@ -146,6 +149,11 @@ export async function getInstanceInfo(
           }
         }
       }
+    
+    // NodeInfoからrepositoryUrl取得の試行 (metadata内にある場合が多い)
+    if (!repositoryUrl && metadata.repositoryUrl) {
+      repositoryUrl = metadata.repositoryUrl;
+    }
 
       return {
         info: {
@@ -156,6 +164,7 @@ export async function getInstanceInfo(
           softwareName: ni.software?.name || '',
           banner,
           icon,
+          repositoryUrl
         },
       };
 
@@ -193,8 +202,11 @@ export async function validateInstance(
   const botInfo = botRes.info;
   const browserInfo = browserRes.info; // nullでもOK
 
+  const FORK_PATTERNS = ['type4ny', 'firefish', 'calckey', 'foundkey'];
+
   if (botInfo) {
     const botSoftware = botInfo.softwareName?.toLowerCase() || '';
+    const repoUrl = botInfo.repositoryUrl?.toLowerCase() || '';
 
     // Misskey以外は除外
     if (botSoftware !== 'misskey' && botSoftware !== '') {
@@ -206,6 +218,21 @@ export async function validateInstance(
       });
       await prisma.instance.deleteMany({ where: { id: host } });
       return { info: null, error: 'UNKNOWN' };
+    }
+
+    // リポジトリURLによるフォーク判定
+    if (repoUrl) {
+      const isFork = FORK_PATTERNS.some(pattern => repoUrl.includes(pattern));
+      if (isFork) {
+        console.log(`Detected fork repository for ${host}: ${repoUrl}`);
+        await prisma.denylist.upsert({
+            where: { domain: host },
+            update: { reason: `Fork Repository: ${repoUrl}` },
+            create: { domain: host, reason: `Fork Repository: ${repoUrl}` }
+        });
+        await prisma.instance.deleteMany({ where: { id: host } });
+        return { info: null, error: 'UNKNOWN' };
+      }
     }
   }
 
@@ -257,6 +284,7 @@ export async function saveInstance(
               last_check_at: now,
               banner_url: info.banner,
               icon_url: info.icon,
+              repository_url: info.repositoryUrl,
               suspension_state: 'none' as SuspensionState
           }
       });
