@@ -18,7 +18,16 @@ export type InstanceResult = {
   error?: FetchError;
 };
 
-export async function getInstanceInfo(
+/**
+   * Fetches instance metadata by querying .well-known/nodeinfo and, if needed, the instance's /api/meta.
+   *
+   * @param host - The instance host (hostname, without protocol), e.g. "example.com"
+   * @param userAgent - User-Agent header to send with requests
+   * @returns An InstanceResult containing either:
+   *          - `info`: populated instance data (`name`, `users`, `notes`, `version`, `softwareName`, `banner`, `icon`, `repositoryUrl`) when retrieval succeeds; or
+   *          - `info: null` and `error`: one of `'TIMEOUT'` (network/connection failures or other fetch problems), `'GONE'` (HTTP 410 responses), or `'UNKNOWN'` (missing/unsupported nodeinfo format)
+   */
+  export async function getInstanceInfo(
   host: string,
   userAgent = 'MisskeyInstanceList/0.1.0'
 ): Promise<InstanceResult> {
@@ -177,9 +186,13 @@ export async function getInstanceInfo(
   }
 
 /**
- * インスタンスの検証を行う
- * スプーフィングを検知した場合、DenyListに追加してInstancesから削除する。
- * CherryPick対策 https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432
+ * Validate an instance's identity and integrity, and remove it if it is not a valid Misskey instance.
+ *
+ * Performs checks using both a bot-like and a browser-like user agent to detect non-Misskey software, repository forks, or spoofing. When a problematic condition is detected the function records the domain in the denylist with an explanatory reason and deletes the instance record.
+ *
+ * @param prisma - Prisma client used to update denylist and instances
+ * @param host - Instance host (domain) to validate
+ * @returns An InstanceResult containing the discovered InstanceInfo on success, or `info: null` with `error` set to `TIMEOUT`, `GONE`, or `UNKNOWN` when the instance is unreachable, gone, or rejected due to validation (non-Misskey, fork, or spoofing)
  */
 export async function validateInstance(
   prisma: PrismaClient,
@@ -264,6 +277,18 @@ export async function validateInstance(
   return botRes;
 }
 
+/**
+ * Persist instance health and metadata into the database for the specified instance id.
+ *
+ * When `res.info` is present, updates the instance record with metadata (name, counts, version,
+ * banner/icon URLs, repository URL), marks the instance alive, clears suspension state, and sets
+ * `last_check_at` to `now`. When `res.info` is null, marks the instance not alive, sets
+ * `last_check_at` to `now`, and sets `suspension_state` to `gone` if `res.error === 'GONE'` or
+ * `suspended` otherwise.
+ *
+ * @param res - The fetched instance result containing `info` (metadata) or an `error` code
+ * @param now - Timestamp to record as the last check time
+ */
 export async function saveInstance(
   prisma: PrismaClient,
   id: string,
