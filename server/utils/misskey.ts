@@ -22,7 +22,7 @@ export async function getInstanceInfo(
   userAgent = 'MisskeyInstanceList/0.1.0'
 ): Promise<InstanceResult> {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 10000);
+  const id = setTimeout(() => controller.abort(), 30000);
 
   try {
     const headers = { 'User-Agent': userAgent };
@@ -81,14 +81,15 @@ export async function getInstanceInfo(
       try {
         const fetchWithRetry = async(url: string, options: RequestInit, retries = 3) => {
           for (let i = 0; i < retries; i++) {
+            if (options.signal?.aborted) throw new Error('Aborted');
             try {
               const res = await fetch(url, options);
               if (res.ok) return res;
               // 5xx errors might be worth retrying, but for now we just retry network errors
               if (res.status >= 500 && i < retries - 1) continue;
               return res;
-            } catch (e) {
-              if (i === retries - 1) throw e;
+            } catch (e: any) {
+              if (i === retries - 1 || options.signal?.aborted || e.name === 'AbortError') throw e;
               await new Promise(r => setTimeout(r, 1000 * (i + 1))); // exponential backoff-ish
             }
           }
@@ -110,8 +111,10 @@ export async function getInstanceInfo(
           if (meta.description) description = meta.description;
           if (meta.version) version = meta.version;
         }
-      } catch (e) {
-        console.warn(`Failed to fetch meta for ${host}:`, e);
+      } catch (e: any) {
+        if (e.name !== 'AbortError') {
+          console.warn(`Failed to fetch meta for ${host}:`, e.message);
+        }
       }
     }
 
