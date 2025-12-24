@@ -21,8 +21,8 @@
         <div class="p-1">
           <button v-for="option in options" :key="option.value" type="button" class="flex w-full items-center gap-2.5 px-3 py-2 text-sm font-medium border-0 rounded-lg transition-all duration-150
               focus:outline-none"
-            :class="current === option.value 
-              ? 'bg-primary text-white cursor-default' 
+            :class="current === option.value
+              ? 'bg-primary text-white cursor-default'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white cursor-pointer'"
             @click="select(option.value)">
             <component :is="option.icon" class="h-4 w-4 shrink-0" />
@@ -127,14 +127,13 @@ onMounted(() => {
 
   document.addEventListener('click', handleClickOutside);
 
-  watch(() => colorMode.preference, (pref) => { current.value = (pref as ThemeMode) || 'system'; });
-
-  watchEffect(() => {
-    const theme = resolvedTheme.value;
-    const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
-    root.classList.toggle('dark', theme === 'dark');
-  });
+});
+watch(() => colorMode.preference, (pref) => { current.value = (pref as ThemeMode) || 'system'; });
+watchEffect(() => {
+  const theme = resolvedTheme.value;
+  const root = document.documentElement;
+  root.setAttribute('data-theme', theme);
+  root.classList.toggle('dark', theme === 'dark');
 });
 
 onBeforeUnmount(() => {
