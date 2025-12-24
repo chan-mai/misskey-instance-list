@@ -7,7 +7,7 @@ interface InstancesResponse {
 }
 
 type Mq1MisskeyInstanceListStorage = {
-  f_orderBy: 'notesCount' | 'usersCount' | 'createdAt';
+  f_orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
   f_order: 'asc' | 'desc';
   v_view: 'grid' | 'list';
 };
@@ -18,7 +18,7 @@ if (import.meta.client) {
 }
 
 const f_query = ref<string>('');
-const f_orderBy = ref<Mq1MisskeyInstanceListStorage['f_orderBy']>(savedSettings?.f_orderBy ?? 'usersCount');
+const f_orderBy = ref<Mq1MisskeyInstanceListStorage['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
 const f_order = ref<Mq1MisskeyInstanceListStorage['f_order']>(savedSettings?.f_order ?? 'desc');
 const v_view = ref<Mq1MisskeyInstanceListStorage['v_view']>(savedSettings?.v_view ?? 'grid');
 
@@ -45,6 +45,7 @@ watch([f_orderBy, f_order, v_view], (to) => {
 
 const sortApiValue = computed(() => {
   switch (f_orderBy.value) {
+    case 'recommendedScore': return 'recommended';
     case 'notesCount': return 'notes';
     case 'usersCount': return 'users';
     case 'createdAt': return 'createdAt';

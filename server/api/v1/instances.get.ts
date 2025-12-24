@@ -34,6 +34,7 @@ export default defineCachedEventHandler(async(event) => {
     notes_count?: 'asc' | 'desc';
     users_count?: 'asc' | 'desc';
     created_at?: 'asc' | 'desc';
+    recommendation_score?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
   };
   let orderBy: OrderByType;
   switch (sort) {
@@ -42,6 +43,9 @@ export default defineCachedEventHandler(async(event) => {
       break;
     case 'createdAt':
       orderBy = { created_at: order };
+      break;
+    case 'recommended':
+      orderBy = { recommendation_score: { sort: order, nulls: 'last' } };
       break;
     case 'users':
     default:
@@ -106,6 +110,7 @@ export default defineCachedEventHandler(async(event) => {
     last_check_at: i.last_check_at ? Number(i.last_check_at) : null,
     banner_url: i.banner_url,
     icon_url: i.icon_url,
+    recommendation_score: i.recommendation_score ?? null,
   }));
 
   return {

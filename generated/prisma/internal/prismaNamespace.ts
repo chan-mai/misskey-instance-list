@@ -677,7 +677,8 @@ export const InstanceScalarFieldEnum = {
   last_check_at: 'last_check_at',
   banner_url: 'banner_url',
   icon_url: 'icon_url',
-  suspension_state: 'suspension_state'
+  suspension_state: 'suspension_state',
+  recommendation_score: 'recommendation_score'
 } as const
 
 export type InstanceScalarFieldEnum = (typeof InstanceScalarFieldEnum)[keyof typeof InstanceScalarFieldEnum]
