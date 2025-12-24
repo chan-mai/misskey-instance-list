@@ -29,8 +29,8 @@ export default defineTask({
     const now = new Date();
     // 実行開始時間
     const startTime = Date.now();
-    // 期限 (サーバーレス関数のタイムアウト対策, 150秒で打ち切り)
-    const DEADLINE_MS = 150 * 1000;
+    // 期限 (サーバーレス関数のタイムアウト対策, 20分で打ち切り)
+    const DEADLINE_MS = 20 * 60 * 1000;
 
     console.log(`Syncing stats for ${all.length} instances...`);
 

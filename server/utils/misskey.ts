@@ -21,24 +21,48 @@ export async function getInstanceInfo(
   host: string,
   userAgent = 'MisskeyInstanceList/0.1.0'
 ): Promise<InstanceResult> {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 10000);
+  const headers = { 'User-Agent': userAgent };
+  const RETRY_LIMIT = 3;
+  const TIMEOUT_MS = 10000;
 
-  try {
-    const headers = { 'User-Agent': userAgent };
-
-    // .well-known/nodeinfo
-    const wkRes = await fetch(`https://${host}/.well-known/nodeinfo`, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers,
-    });
-
-    if (!wkRes.ok) {
-        if (wkRes.status === 410) return { info: null, error: 'GONE' };
-      // 404等はよくあるので単なる失敗扱い
-      return { info: null, error: 'TIMEOUT' }; // TIMEOUTというか接続不可全般
+  // .well-known/nodeinfo retry logic
+  let wkRes: Response | null = null;
+  for (let i = 0; i < RETRY_LIMIT; i++) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+      wkRes = await fetch(`https://${host}/.well-known/nodeinfo`, {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers,
+      });
+      clearTimeout(id);
+      
+      // 成功 or 4xx/5xx (ネットワークエラー以外) なのでループ終了
+      break;
+    } catch (e: any) {
+      clearTimeout(id);
+      // 最後の試行でなければ次へ
+      if (i < RETRY_LIMIT - 1) {
+        const isAbort = e.name === 'AbortError' || e.message?.includes('aborted');
+        // タイムアウトまたはネットワークエラーなら再試行
+        if (isAbort || e.name === 'FetchError' || e.code === 'ECONNRESET') {
+           // 少し待つ
+           await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+           continue;
+        }
+      }
+      // 再試行しないエラー、または再試行上限
+      console.warn(`Failed to fetch nodeinfo for ${host} (Attempt ${i + 1}/${RETRY_LIMIT}):`, e.message);
+      return { info: null, error: 'TIMEOUT' };
     }
+  }
+
+  if (!wkRes || !wkRes.ok) {
+    if (wkRes && wkRes.status === 410) return { info: null, error: 'GONE' };
+    // 404等はよくあるので単なる失敗扱い
+    return { info: null, error: 'TIMEOUT' }; // TIMEOUTというか接続不可全般
+  }
 
     const wkJson = (await wkRes.json()) as any;
     const links = wkJson.links || [];
@@ -53,91 +77,95 @@ export async function getInstanceInfo(
 
     if (!link || !link.href) return { info: null, error: 'UNKNOWN' }; // 正しくないフォーマット
 
-    // NodeInfo取得
-    const niRes = await fetch(link.href, {
-      signal: controller.signal,
-      headers,
-    });
+    // NodeInfo取得とメタデータ取得のための新しいAbortController
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    if (!niRes.ok) {
-        if (niRes.status === 410) return { info: null, error: 'GONE' };
-        return { info: null, error: 'TIMEOUT' };
-    }
+    try {
+      const niRes = await fetch(link.href, {
+        signal: controller.signal,
+        headers,
+      });
 
-    const ni = (await niRes.json()) as any;
+      if (!niRes.ok) {
+          if (niRes.status === 410) return { info: null, error: 'GONE' };
+          return { info: null, error: 'TIMEOUT' };
+      }
 
-    const metadata = ni.metadata || {};
-    const usage = ni.usage || {};
-    const users = usage.users || {};
+      const ni = (await niRes.json()) as any;
 
-    let name = metadata.nodeName || metadata.name || host;
-    let description = metadata.nodeDescription || metadata.description || '';
-    let version = ni.software?.version || '';
-    let banner = metadata.bannerUrl || null;
-    let icon = metadata.iconUrl || null;
+      const metadata = ni.metadata || {};
+      const usage = ni.usage || {};
+      const users = usage.users || {};
 
-    // POST /api/metaを試行
-    if (!banner || !icon || !name || !description || !version) {
-      try {
-        const fetchWithRetry = async(url: string, options: RequestInit, retries = 3) => {
-          for (let i = 0; i < retries; i++) {
-            if (options.signal?.aborted) throw new Error('Aborted');
-            try {
-              const res = await fetch(url, options);
-              if (res.ok) return res;
-              // 5xx errors might be worth retrying, but for now we just retry network errors
-              if (res.status >= 500 && i < retries - 1) continue;
-              return res;
-            } catch (e: any) {
-              if (i === retries - 1 || options.signal?.aborted || e.name === 'AbortError') throw e;
-              await new Promise(r => setTimeout(r, 1000 * (i + 1))); // exponential backoff-ish
+      let name = metadata.nodeName || metadata.name || host;
+      let description = metadata.nodeDescription || metadata.description || '';
+      let version = ni.software?.version || '';
+      let banner = metadata.bannerUrl || null;
+      let icon = metadata.iconUrl || null;
+
+      // POST /api/metaを試行
+      if (!banner || !icon || !name || !description || !version) {
+        try {
+          // api/meta用のリトライロジック(接続エラーのみ)
+          const fetchWithRetry = async(url: string, options: RequestInit, retries = 3) => {
+            for (let i = 0; i < retries; i++) {
+              if (options.signal?.aborted) throw new Error('Aborted');
+              try {
+                const res = await fetch(url, options);
+                if (res.ok) return res;
+                if (res.status >= 500 && i < retries - 1) continue;
+                return res;
+              } catch (e: any) {
+                if (i === retries - 1 || options.signal?.aborted || e.name === 'AbortError') throw e;
+                await new Promise(r => setTimeout(r, 1000 * (i + 1))); 
+              }
             }
+            throw new Error('Failed to fetch after retries');
+          };
+
+          const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...headers },
+            body: JSON.stringify({ detail: true }),
+            signal: controller.signal,
+          });
+
+          if (metaRes.ok) {
+            const meta = (await metaRes.json()) as any;
+            if (meta.bannerUrl) banner = meta.bannerUrl;
+            if (meta.iconUrl) icon = meta.iconUrl;
+            if (meta.name) name = meta.name;
+            if (meta.description) description = meta.description;
+            if (meta.version) version = meta.version;
           }
-          throw new Error('Failed to fetch after retries');
-        };
-
-        const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...headers },
-          body: JSON.stringify({ detail: true }),
-          signal: controller.signal,
-        });
-
-        if (metaRes.ok) {
-          const meta = (await metaRes.json()) as any;
-          if (meta.bannerUrl) banner = meta.bannerUrl;
-          if (meta.iconUrl) icon = meta.iconUrl;
-          if (meta.name) name = meta.name;
-          if (meta.description) description = meta.description;
-          if (meta.version) version = meta.version;
-        }
-      } catch (e: any) {
-        if (e.name !== 'AbortError') {
-          console.warn(`Failed to fetch meta for ${host}:`, e.message);
+        } catch (e: any) {
+          if (e.name !== 'AbortError') {
+             // ログは状況によるが、すでにfetchWithRetryなどでwarnしているのでここは静かにするか、warnするか
+            console.warn(`Failed to fetch meta for ${host}:`, e.message);
+          }
         }
       }
-    }
 
-    return {
-      info: {
-        name,
-        users: typeof users.total === 'number' ? users.total : 0,
-        notes: typeof usage.localPosts === 'number' ? usage.localPosts : 0,
-        version,
-        softwareName: ni.software?.name || '',
-        banner,
-        icon,
-      },
-    };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    //console.warn(`Failed to fetch info for ${host}:`, e);
-    // ネットワークエラー、タイムアウト等
-    return { info: null, error: 'TIMEOUT' };
-  } finally {
-    clearTimeout(id);
+      return {
+        info: {
+          name,
+          users: typeof users.total === 'number' ? users.total : 0,
+          notes: typeof usage.localPosts === 'number' ? usage.localPosts : 0,
+          version,
+          softwareName: ni.software?.name || '',
+          banner,
+          icon,
+        },
+      };
+
+    } catch (e) {
+      // ネットワークエラー、タイムアウト等
+      return { info: null, error: 'TIMEOUT' };
+    } finally {
+      clearTimeout(id);
+    }
   }
-}
 
 /**
  * インスタンスの検証を行う
