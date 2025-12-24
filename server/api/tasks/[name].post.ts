@@ -29,7 +29,7 @@ export default defineEventHandler(async(event) => {
   }
   
   // 有効なタスク名かチェック
-  const validTasks = ['sync:denylist', 'sync:stats', 'display:stats', 'sync:recommendation-scores', 'discovery', 'update'];
+  const validTasks = ['sync:denylist', 'sync:stats', 'sync:recommendation-scores', 'discovery', 'update'];
   if (!validTasks.includes(taskName)) {
     throw createError({ statusCode: 404, message: `Task not found: ${taskName}` });
   }
