@@ -68,6 +68,7 @@
           <label class="form-label block text-sm font-medium mb-1" for="orderBy">並び順</label>
           <div class="flex">
             <select id="orderBy" v-model="orderByValue" class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-l-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60">
+              <option value="recommendedScore">おすすめ順</option>
               <option value="usersCount">ユーザー数</option>
               <option value="notesCount">ノート数</option>
               <option value="createdAt">初観測日</option>
@@ -129,14 +130,14 @@ const props = defineProps<{
   loading: boolean;
   totalCount: string;
   searchQuery: string;
-  orderBy: 'notesCount' | 'usersCount' | 'createdAt';
+  orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
   order: 'asc' | 'desc';
   view: 'grid' | 'list';
 }>();
 
 const emit = defineEmits<{
   search: [query: string];
-  'update:orderBy': [value: 'notesCount' | 'usersCount' | 'createdAt'];
+  'update:orderBy': [value: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt'];
   'update:order': [value: 'asc' | 'desc'];
   'update:view': [value: 'grid' | 'list'];
 }>();

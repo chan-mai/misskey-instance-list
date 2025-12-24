@@ -26,6 +26,7 @@ model Instance {
   banner_url       String?
   icon_url         String?
   suspension_state SuspensionState  @default(none)
+  recommendation_score Float?
 
   @@map("instances")
 }
