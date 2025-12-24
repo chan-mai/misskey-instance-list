@@ -130,10 +130,12 @@ onMounted(() => {
 });
 watch(() => colorMode.preference, (pref) => { current.value = (pref as ThemeMode) || 'system'; });
 watchEffect(() => {
-  const theme = resolvedTheme.value;
-  const root = document.documentElement;
-  root.setAttribute('data-theme', theme);
-  root.classList.toggle('dark', theme === 'dark');
+  if (import.meta.client) {
+    const theme = resolvedTheme.value;
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.classList.toggle('dark', theme === 'dark');
+  }
 });
 
 onBeforeUnmount(() => {

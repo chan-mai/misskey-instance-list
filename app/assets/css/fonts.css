@@ -1,4 +1,6 @@
 /* フォント設定 */
-body {
-  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'Meiryo', 'Yu Gothic UI', sans-serif;
+* {
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "ヒラギノ角ゴ ProN W3", "Yu Gothic Medium", 游ゴシック体, 游ゴシック, "Yu Gothic", メイリオ, Meiryo, "ＭＳ Ｐゴシック", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
