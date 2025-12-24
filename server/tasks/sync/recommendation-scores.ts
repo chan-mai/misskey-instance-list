@@ -42,7 +42,7 @@ export default defineTask({
       console.error('[Task] Failed to fetch latest version:', e);
     }
 
-    const BATCH_SIZE = 200;
+    const BATCH_SIZE = 50;
     let processed = 0;
     let updated = 0;
     let cursor: string | undefined;
