@@ -23,19 +23,14 @@ const SCORING_CONFIG = {
  * CalVer (YYYY.MM.Patch) を想定
  * 戻り値: (Year * 12) + Month
  */
-/**
- * バージョン文字列から年月を抽出して月単位の数値に変換する
- * CalVer (YYYY.MM.Patch) を想定
- * 戻り値: (Year * 12) + Month
- */
 export function parseVersionToMonths(version: string): number | null {
   // v2025.12.0 や 2025.12.0-fork などの形式に対応
   // 先頭の 'v' はあってもなくても良い
   const match = version.match(/^v?(\d{4})\.(\d{1,2})\.\d+/);
   if (!match) return null;
 
-  const year = parseInt(match[1], 10);
-  const month = parseInt(match[2], 10);
+  const year = parseInt(match[1]!, 10);
+  const month = parseInt(match[2]!, 10);
   return (year * 12) + month;
 }
 
