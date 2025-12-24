@@ -6,7 +6,12 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode'],
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light',
+  },
   app: {
     head: {
       charset: 'utf-8',
