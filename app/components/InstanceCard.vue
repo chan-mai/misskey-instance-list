@@ -18,7 +18,6 @@
         :src="fetchedBanner" 
         :alt="instance.node_name"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        @error="onImageError"
       />
       <div v-else class="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30"></div>
 
@@ -28,7 +27,6 @@
           v-if="fetchedIcon" 
           :src="fetchedIcon" 
           class="h-5 w-5 rounded"
-          @error="onImageError"
         />
         <div 
           v-else 
@@ -99,7 +97,6 @@
               :src="fetchedBanner" 
               :alt="instance.node_name"
               class="object-cover transition-transform duration-300 hover:scale-105 rounded-lg w-full h-full"
-              @error="onImageError"
             />
             <div 
               v-else 
@@ -109,7 +106,6 @@
                 v-if="fetchedIcon" 
                 :src="fetchedIcon" 
                 class="h-12 w-12 rounded"
-                @error="onImageError"
               />
               <div 
                 v-else 
@@ -133,7 +129,6 @@
                 v-if="fetchedIcon" 
                 :src="fetchedIcon" 
                 class="h-6 w-6 rounded flex-shrink-0"
-                @error="onImageError"
               />
               <div 
                 v-else 
@@ -190,13 +185,26 @@ const props = withDefaults(defineProps<{
 
 const { instance } = toRefs(props);
 
-const fetchedIcon = ref<string | null>(props.instance.icon_url);
-const fetchedBanner = ref<string | null>(props.instance.banner_url);
+const fetchedIcon = ref<string | null>(null);
+const fetchedBanner = ref<string | null>(null);
 
-watch(() => props.instance, (newVal) => {
-  fetchedIcon.value = newVal.icon_url;
-  fetchedBanner.value = newVal.banner_url;
-});
+function getProxiedUrl(url: string): string {
+  return `/api/image?url=${encodeURIComponent(url)}`;
+}
+
+function resolveUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  // はなみは強制的にプロキシ
+  if (url.includes('misskey.flowers') || props.instance.id === 'misskey.flowers') {
+    return getProxiedUrl(url);
+  }
+  return url;
+}
+
+function updateImages() {
+  fetchedIcon.value = resolveUrl(props.instance.icon_url);
+  fetchedBanner.value = resolveUrl(props.instance.banner_url);
+}
 
 // 説明文の状態
 const description = ref<string>('');
@@ -211,14 +219,6 @@ function formatNumber(num: number | undefined | null): string {
     return new Intl.NumberFormat('ja-JP', { notation: 'compact', maximumFractionDigits: 1 }).format(num);
   }
   return new Intl.NumberFormat('ja-JP').format(num);
-}
-
-/**
- * 画像読み込みエラー時のハンドラ
- */
-function onImageError(e: Event) {
-  const img = e.target as HTMLImageElement;
-  img.style.display = 'none';
 }
 
 /**
@@ -257,9 +257,13 @@ async function updateDescription() {
     if (res.ok) {
       const meta = await res.json();
       if (meta.description) description.value = stripTags(meta.description);
-      // Metaからアイコン・バナーが取得できれば上書き
-      if (meta.iconUrl) fetchedIcon.value = meta.iconUrl;
-      if (meta.bannerUrl) fetchedBanner.value = meta.bannerUrl || meta.backgroundImageUrl;
+      
+      if (meta.iconUrl) {
+          fetchedIcon.value = resolveUrl(meta.iconUrl);
+      }
+      if (meta.bannerUrl) {
+          fetchedBanner.value = resolveUrl(meta.bannerUrl || meta.backgroundImageUrl);
+      }
     }
   } catch {
     // エラーは無視
@@ -268,7 +272,11 @@ async function updateDescription() {
   }
 }
 
-watch(instance, updateDescription, { immediate: true });
+// インスタンス変更時に実行
+watch(instance, () => {
+  updateImages();
+  updateDescription();
+}, { immediate: true });
 </script>
 
 <style scoped>
