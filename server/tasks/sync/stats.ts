@@ -10,12 +10,14 @@ export default defineTask({
     console.log('Starting Full Stats Sync...');
     
     // 全インスタンス取得 (410以外)
+    // 更新日時が古い順に取得することで、タイムアウトで中断しても次回は残りを処理できる
     const candidates = await prisma.$queryRaw<{ id: string }[]>`
       SELECT i.id FROM instances i
       LEFT JOIN denylist d ON i.id = d.domain
       LEFT JOIN ignore_hosts ih ON i.id = ih.domain
       WHERE ( i.suspension_state != 'gone' OR i.suspension_state IS NULL) 
         AND (d.domain IS NULL AND ih.domain IS NULL)
+      ORDER BY i.last_check_at ASC NULLS FIRST
     `;
 
     if (!candidates || candidates.length === 0) {
@@ -25,10 +27,23 @@ export default defineTask({
 
     const all = candidates;
     const now = new Date();
+    // 実行開始時間
+    const startTime = Date.now();
+    // 期限 (サーバーレス関数のタイムアウト対策, 150秒で打ち切り)
+    const DEADLINE_MS = 150 * 1000;
+
     console.log(`Syncing stats for ${all.length} instances...`);
 
-    const chunkSize = 200; 
+    const chunkSize = 50; 
+    let processed = 0;
+
     for (let i = 0; i < all.length; i += chunkSize) {
+      // 期限チェック
+      if (Date.now() - startTime > DEADLINE_MS) {
+        console.log(`Stats Sync timed out after ${processed} instances. Stopping gracefully.`);
+        break;
+      }
+
       const chunk = all.slice(i, i + chunkSize);
       
       await Promise.all(chunk.map(async(row: { id: string }) => {
@@ -39,8 +54,10 @@ export default defineTask({
           console.error(`Error syncing ${row.id}:`, e);
         }
       }));
+
+      processed += chunk.length;
     }
-    console.log('Full Stats Sync Completed.');
-    return { result: `Synced ${all.length} instances` };
+    console.log(`Stats Sync Completed (Processed: ${processed}/${all.length}).`);
+    return { result: `Synced ${processed}/${all.length} instances` };
   }
 });

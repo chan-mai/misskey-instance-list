@@ -22,7 +22,7 @@ export async function getInstanceInfo(
   userAgent = 'MisskeyInstanceList/0.1.0'
 ): Promise<InstanceResult> {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 30000);
+  const id = setTimeout(() => controller.abort(), 10000);
 
   try {
     const headers = { 'User-Agent': userAgent };
