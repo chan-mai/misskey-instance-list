@@ -32,8 +32,6 @@ availableSecrets:
       env: DATABASE_URL
     - versionName: projects/1023578240084/secrets/TASK_SECRET/versions/latest
       env: TASK_SECRET
-    - versionName: projects/1023578240084/secrets/GITHUB_TOKEN/versions/latest
-      env: GITHUB_TOKEN
 substitutions:
   _LOCATION: asia-northeast1
   _REGION: asia-northeast1
