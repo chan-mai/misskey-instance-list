@@ -35,6 +35,7 @@ export default defineCachedEventHandler(async(event) => {
     users_count?: 'asc' | 'desc';
     created_at?: 'asc' | 'desc';
     recommendation_score?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
+    repository_url?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
   };
   let orderBy: OrderByType;
   switch (sort) {
@@ -46,6 +47,9 @@ export default defineCachedEventHandler(async(event) => {
       break;
     case 'recommended':
       orderBy = { recommendation_score: { sort: order, nulls: 'last' } };
+      break;
+    case 'repository':
+      orderBy = { repository_url: { sort: order, nulls: 'last' } };
       break;
     case 'users':
     default:
@@ -70,6 +74,7 @@ export default defineCachedEventHandler(async(event) => {
       id?: { contains: string; mode: 'insensitive' };
       node_name?: { contains: string; mode: 'insensitive' };
     }>;
+    repository_url?: string | { contains: string; mode: 'insensitive' };
   }
 
   const where: WhereCondition = {
@@ -83,6 +88,16 @@ export default defineCachedEventHandler(async(event) => {
       { id: { contains: search, mode: 'insensitive' } },
       { node_name: { contains: search, mode: 'insensitive' } },
     ];
+  }
+
+  // リポジトリフィルタ
+  const repository = query.repository as string | undefined;
+  if (repository) {
+    if (repository === 'official') {
+      where.repository_url = 'https://github.com/misskey-dev/misskey';
+    } else {
+      where.repository_url = { contains: repository, mode: 'insensitive' };
+    }
   }
 
   // 総件数を取得
@@ -111,6 +126,7 @@ export default defineCachedEventHandler(async(event) => {
     banner_url: i.banner_url,
     icon_url: i.icon_url,
     recommendation_score: i.recommendation_score ?? null,
+    repository_url: i.repository_url,
   }));
 
   return {

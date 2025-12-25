@@ -28,8 +28,20 @@ model Instance {
   suspension_state SuspensionState  @default(none)
   recommendation_score Float?
   repository_url   String?
+  repository       Repository?      @relation(fields: [repository_url], references: [url])
 
   @@map("instances")
+}
+
+model Repository {
+  url         String   @id
+  name        String?
+  description String?
+  updated_at  DateTime @updatedAt
+  created_at  DateTime @default(now())
+  instances   Instance[]
+
+  @@map("repositories")
 }
 
 model Denylist {

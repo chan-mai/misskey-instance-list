@@ -49,6 +49,7 @@ export default defineTask({
       await Promise.all(chunk.map(async(row: { id: string }) => {
         try {
           const res = await validateInstance(prisma, row.id);
+          // repository_url is updated in saveInstance if present in res.info
           await saveInstance(prisma, row.id, res, now);
         } catch(e) {
           console.error(`Error syncing ${row.id}:`, e);

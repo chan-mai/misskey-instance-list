@@ -177,7 +177,7 @@ export type InstanceResult = {
         },
       };
 
-    } catch (e) {
+    } catch {
       // ネットワークエラー、タイムアウト等
       return { info: null, error: 'TIMEOUT' };
     } finally {
@@ -277,6 +277,12 @@ export async function validateInstance(
   return botRes;
 }
 
+// Simple in-memory cache to avoid hitting GitHub API excessively during sync
+type GitHubRepository = {
+    description: string | null;
+}
+const repositoryCache = new Map<string, GitHubRepository | null>();
+
 /**
  * Persist instance health and metadata into the database for the specified instance id.
  *
@@ -309,10 +315,85 @@ export async function saveInstance(
               last_check_at: now,
               banner_url: info.banner,
               icon_url: info.icon,
-              repository_url: info.repositoryUrl,
               suspension_state: 'none' as SuspensionState
           }
       });
+
+      // リポジトリのリレーションを更新（connectOrCreate/upsertロジックを使用）
+      if (info.repositoryUrl) {
+        // リレーションに対してupdateManyは使えず、現在のフローでは単一のアトミックなupsertも難しいため
+        // 個別に更新を行う戦略をとる
+        
+        let repositoryName: string | null = null;
+        let repository: GitHubRepository | null = null;
+        
+        try {
+          const urlObj = new URL(info.repositoryUrl);
+          // GitHubのみ対応
+          if (urlObj.hostname === 'github.com') {
+             const pathParts = urlObj.pathname.split('/').filter(p => p);
+             if (pathParts.length >= 2) {
+               repositoryName = `${pathParts[0]}/${pathParts[1]}`;
+               repositoryName = repositoryName.replace(/\.git$/, '');
+
+               if (repositoryName) {
+                    if (repositoryCache.has(repositoryName)) {
+                        repository = repositoryCache.get(repositoryName) || null;
+                    } else {
+                        try {
+                            const ghRes = await fetch(`https://api.github.com/repos/${repositoryName}`);
+                            if (ghRes.ok) {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                const ghData = await ghRes.json() as any;
+                                repository = {
+                                    description: ghData.description || null
+                                };
+                            }
+                        } catch {
+                            // API error ignored
+                        }
+                        repositoryCache.set(repositoryName, repository);
+                    }
+               }
+             }
+          } else if (urlObj.pathname.split('/').filter(p => p).length >= 2) {
+              // GitHub以外でも user/repo 形式だけ抽出しておく
+              const pathParts = urlObj.pathname.split('/').filter(p => p);
+              repositoryName = `${pathParts[0]}/${pathParts[1]}`;
+              repositoryName = repositoryName.replace(/\.git$/, '');
+          }
+        } catch {
+          console.warn(`Failed to parse repository URL for ${id}: ${info.repositoryUrl}`);
+        }
+
+        await prisma.repository.upsert({
+          where: { url: info.repositoryUrl },
+          update: {
+            ...(repositoryName ? { name: repositoryName } : {}),
+            ...(repository?.description ? { description: repository.description } : {})
+          },
+          create: { 
+            url: info.repositoryUrl,
+            name: repositoryName,
+            description: repository?.description || null
+          }
+        });
+
+        await prisma.instance.update({
+          where: { id },
+          data: {
+            repository_url: info.repositoryUrl
+          }
+        });
+      } else {
+        // repositoryUrlがnullの場合、リレーションを解除する（nullを設定）
+         await prisma.instance.update({
+          where: { id },
+          data: {
+            repository_url: null
+          }
+        });
+      }
   } else {
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
