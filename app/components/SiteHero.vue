@@ -18,7 +18,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            {{ serverCount }} servers available
+            {{ stats?.counts?.active ? new Intl.NumberFormat('ja-JP').format(stats.counts.active) : '-' }} servers available
           </div>
           
           <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
