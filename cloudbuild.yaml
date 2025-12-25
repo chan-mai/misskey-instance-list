@@ -6,7 +6,10 @@ steps:
     args:
       - '-c'
       - |
+        docker pull ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest || true
         docker build -t ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} \
+          --cache-from ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           --build-arg DATABASE_URL="$$DATABASE_URL" \
           --build-arg TASK_SECRET="$$TASK_SECRET" \
           .
