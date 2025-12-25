@@ -3,6 +3,11 @@ import { prisma } from './server/utils/prisma';
 
 // Mock defineTask to allow importing task files directly in this script
 globalThis.defineTask = (config) => config;
+globalThis.useRuntimeConfig = () => ({
+  githubToken: process.env.GITHUB_TOKEN,
+  database_url: process.env.DATABASE_URL,
+  taskSecret: process.env.TASK_SECRET
+});
 
 async function runMaintenance() {
   console.log('--- STARTING EMERGENCY MAINTENANCE ---');
@@ -54,6 +59,6 @@ async function runMaintenance() {
 
 runMaintenance()
   .catch(console.error)
-  .finally(async () => {
+  .finally(async() => {
     await prisma.$disconnect();
   });

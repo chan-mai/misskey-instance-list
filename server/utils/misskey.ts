@@ -341,18 +341,46 @@ export async function saveInstance(
                         repository = repositoryCache.get(repositoryName) || null;
                     } else {
                         try {
-                            const ghRes = await fetch(`https://api.github.com/repos/${repositoryName}`);
-                            if (ghRes.ok) {
+                            const headers: Record<string, string> = {
+                                'User-Agent': 'MisskeyInstanceList/1.0',
+                            };
+                            const config = useRuntimeConfig();
+                            if (config.githubToken) {
+                                headers['Authorization'] = `token ${config.githubToken}`;
+                            }
+
+                            const ghRes = await fetch(`https://api.github.com/repos/${repositoryName}`, { headers });
+                            
+                            // レート制限の確認
+                            const remaining = ghRes.headers.get('x-ratelimit-remaining');
+                            const limit = ghRes.headers.get('x-ratelimit-limit');
+                            const reset = ghRes.headers.get('x-ratelimit-reset');
+
+                            if (ghRes.status === 403 || ghRes.status === 429) {
+                                console.warn(`GitHub API Rate Limit Exceeded for ${repositoryName}: Status=${ghRes.status}, Remaining=${remaining}/${limit}, Reset=${reset}`);
+                                // 失敗(null)としてキャッシュせず、次回再試行できるように早期リターンする
+                                // ここでnullをキャッシュすると、キャッシュ有効期限切れや再起動まで説明文が失われるため
+                                // repository変数の設定をスキップし、nullのままにするがキャッシュには保存しない
+                            } else if (ghRes.ok) {
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 const ghData = await ghRes.json() as any;
                                 repository = {
                                     description: ghData.description || null
                                 };
+                                // 成功した場合のみキャッシュする
+                                repositoryCache.set(repositoryName, repository);
+                            } else {
+                                // その他のエラー（404, 500等）
+                                console.warn(`GitHub API Error for ${repositoryName}: ${ghRes.status}`);
+                                // 404の場合は、繰り返しの404を防ぐためにnullをキャッシュする
+                                // それ以外はスキップする
+                                if (ghRes.status === 404) {
+                                     repositoryCache.set(repositoryName, null);
+                                }
                             }
-                        } catch {
-                            // API error ignored
+                        } catch (e: any) {
+                            console.warn(`GitHub API Fetch Error for ${repositoryName}:`, e.message);
                         }
-                        repositoryCache.set(repositoryName, repository);
                     }
                }
              }

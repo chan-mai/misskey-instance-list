@@ -18,6 +18,9 @@ ARG TASK_SECRET
 ENV DATABASE_URL=$DATABASE_URL
 ENV TASK_SECRET=$TASK_SECRET
 
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
+
 RUN pnpm nuxt prepare && pnpm prisma generate && pnpm prisma db push && pnpm build
 
 FROM base
