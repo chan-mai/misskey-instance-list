@@ -8,6 +8,7 @@
           </NuxtLink>
           <div class="flex gap-6 text-sm text-slate-400">
             <NuxtLink to="/" class="hover:text-white transition-colors">Servers</NuxtLink>
+            <NuxtLink to="/stats" class="hover:text-white transition-colors">Stats</NuxtLink>
             <NuxtLink to="/about" class="hover:text-white transition-colors">About</NuxtLink>
             <NuxtLink to="/docs/api/v1" class="hover:text-white transition-colors">API Docs</NuxtLink>
             <NuxtLink to="/privacy" class="hover:text-white transition-colors">Privacy Policy</NuxtLink>
