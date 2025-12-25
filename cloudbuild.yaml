@@ -6,9 +6,9 @@ steps:
     args:
       - '-c'
       - |
-        docker pull ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest || true
-        docker build -t ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} \
-          --cache-from ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}:latest \
+        docker pull ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest || true
+        docker build -t ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME} \
+          --cache-from ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}:latest \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --build-arg DATABASE_URL="$$DATABASE_URL" \
           --build-arg TASK_SECRET="$$TASK_SECRET" \
@@ -16,15 +16,15 @@ steps:
     secretEnv: ['DATABASE_URL', 'TASK_SECRET']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}']
+    args: ['push', '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME}']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args: 
       - -c
       - |
-        gcloud run deploy ${_SERVICE} \
-          --image ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} \
+        gcloud run deploy ${_SERVICE_NAME} \
+          --image ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE_NAME} \
           --platform managed \
           --region ${_REGION} \
           --allow-unauthenticated \
@@ -39,8 +39,7 @@ substitutions:
   _LOCATION: asia-northeast1
   _REGION: asia-northeast1
   _REPOSITORY: cloud-run-source-deploy
-  _IMAGE: misskey-instance-list
-  _SERVICE: misskey-instance-list
+  _SERVICE_NAME: misskey-instance-list
   _SECRET_PREFIX: "" # Default empty, overridden by trigger
 options:
   logging: CLOUD_LOGGING_ONLY
