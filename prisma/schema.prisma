@@ -31,6 +31,7 @@ model Instance {
   repository       Repository?      @relation(fields: [repository_url], references: [url])
 
   @@map("instances")
+  @@index([repository_url])
 }
 
 model Repository {
