@@ -18,7 +18,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            {{ stats?.counts?.active ? new Intl.NumberFormat('ja-JP').format(stats.counts.active) : '-' }} servers available
+            {{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }} servers available
           </div>
           
           <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
@@ -77,7 +77,7 @@
                  </div>
                  <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">Active Servers </p>
                  <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                    {{ stats?.counts?.active ? new Intl.NumberFormat('ja-JP').format(stats.counts.active) : '-' }}
+                    {{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }}
                  </p>
               </div>
 
@@ -85,7 +85,7 @@
               <div class="text-center pt-6 border-t border-slate-200 dark:border-slate-700">
                   <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Total Known</p>
                   <p class="text-xl font-bold text-slate-700 dark:text-slate-200">
-                    {{ stats?.counts?.known ? new Intl.NumberFormat('ja-JP').format(stats.counts.known) : '-' }}
+                    {{ stats?.counts?.known ? formatNumber(stats.counts.known) : '-' }}
                   </p>
               </div>
             </div>
@@ -98,13 +98,20 @@
 
 <script setup lang="ts">
 defineProps<{
-  serverCount: string;
-  loading?: boolean;
   stats?: {
     counts: {
       active: number;
       known: number;
     };
+    repositories: Array<{
+      url: string;
+      name: string | null;
+      count: number;
+    }>;
   };
 }>();
+
+const formatNumber = (value: number | undefined) => {
+  return value ? new Intl.NumberFormat('ja-JP').format(value) : '-';
+};
 </script>

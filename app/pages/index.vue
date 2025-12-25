@@ -142,8 +142,6 @@ useHead({
   <div>
     <!-- Hero -->
     <SiteHero 
-      :server-count="initialLoading ? '...' : formatNumber(total)" 
-      :loading="initialLoading"
       :stats="stats"
     />
 
