@@ -8,7 +8,7 @@ COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile && pnpm prisma generate
 
 FROM base AS build
 RUN pnpm install --frozen-lockfile
@@ -27,6 +27,10 @@ COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/.output /app/.output
 # prisma directory is needed for migrations
 COPY --from=build /app/prisma /app/prisma 
+
+ENV NODE_ENV=production
+ENV NITRO_HOST=0.0.0.0
+ENV NITRO_PORT=3000
 
 EXPOSE 3000
 CMD [ "sh", "-c", "pnpm prisma migrate deploy && pnpm start" ]
