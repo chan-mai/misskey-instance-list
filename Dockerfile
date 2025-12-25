@@ -8,7 +8,7 @@ COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN pnpm install --prod --frozen-lockfile && pnpm prisma generate
+RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS build
 RUN pnpm install --frozen-lockfile
@@ -18,7 +18,6 @@ ARG TASK_SECRET
 
 ENV DATABASE_URL=$DATABASE_URL
 ENV TASK_SECRET=$TASK_SECRET
-
 
 RUN pnpm nuxt prepare && pnpm prisma generate && pnpm build
 
