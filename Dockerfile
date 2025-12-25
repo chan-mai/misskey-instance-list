@@ -19,17 +19,15 @@ ARG TASK_SECRET
 ENV DATABASE_URL=$DATABASE_URL
 ENV TASK_SECRET=$TASK_SECRET
 
-RUN pnpm nuxt prepare && pnpm prisma generate && pnpm build
+RUN pnpm nuxt prepare && pnpm prisma generate && pnpm build && pnpm prisma migrate deploy
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/.output /app/.output
-# prisma directory is needed for migrations
-COPY --from=build /app/prisma /app/prisma 
 
 ENV NODE_ENV=production
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3000
 
 EXPOSE 3000
-CMD [ "sh", "-c", "pnpm prisma migrate deploy && pnpm start" ]
+CMD [ "sh", "-c", "pnpm start" ]
