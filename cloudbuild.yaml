@@ -28,12 +28,12 @@ steps:
           --platform managed \
           --region ${_REGION} \
           --allow-unauthenticated \
-          --update-secrets "DATABASE_URL=DATABASE_URL:latest,TASK_SECRET=TASK_SECRET:latest,GITHUB_TOKEN=GITHUB_TOKEN:latest"
+          --update-secrets "DATABASE_URL=${_SECRET_PREFIX}DATABASE_URL:latest,TASK_SECRET=${_SECRET_PREFIX}TASK_SECRET:latest,GITHUB_TOKEN=${_SECRET_PREFIX}GITHUB_TOKEN:latest"
 availableSecrets:
   secretManager:
-    - versionName: projects/1023578240084/secrets/DATABASE_URL/versions/latest
+    - versionName: projects/1023578240084/secrets/${_SECRET_PREFIX}DATABASE_URL/versions/latest
       env: DATABASE_URL
-    - versionName: projects/1023578240084/secrets/TASK_SECRET/versions/latest
+    - versionName: projects/1023578240084/secrets/${_SECRET_PREFIX}TASK_SECRET/versions/latest
       env: TASK_SECRET
 substitutions:
   _LOCATION: asia-northeast1
@@ -41,5 +41,6 @@ substitutions:
   _REPOSITORY: cloud-run-source-deploy
   _IMAGE: misskey-instance-list
   _SERVICE: misskey-instance-list
+  _SECRET_PREFIX: "" # Default empty, overridden by trigger
 options:
   logging: CLOUD_LOGGING_ONLY

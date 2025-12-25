@@ -173,6 +173,7 @@ resource "google_cloudbuild_trigger" "main" {
     "_DEPLOY_REGION" = var.region
     "_PLATFORM"      = "managed"
     "_SERVICE_NAME"  = var.service_name
+    "_SECRET_PREFIX" = local.secret_prefix
   }
 
   service_account    = "projects/${var.project_id}/serviceAccounts/1023578240084-compute@developer.gserviceaccount.com"
