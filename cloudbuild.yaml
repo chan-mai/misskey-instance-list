@@ -9,9 +9,8 @@ steps:
         docker build -t ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE} \
           --build-arg DATABASE_URL="$$DATABASE_URL" \
           --build-arg TASK_SECRET="$$TASK_SECRET" \
-          --build-arg GITHUB_TOKEN="$$GITHUB_TOKEN" \
           .
-    secretEnv: ['DATABASE_URL', 'TASK_SECRET', 'GITHUB_TOKEN']
+    secretEnv: ['DATABASE_URL', 'TASK_SECRET']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE}']
