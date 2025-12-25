@@ -2,7 +2,7 @@
 # Cloud Scheduler
 # ------------------------------------------------------------------------------
 resource "google_cloud_scheduler_job" "sync_recommendation_scores" {
-  name             = "${local.secret_prefix}sync-recommendation-scores"
+  name             = "${lower(var.environment)}_sync-recommendation-scores"
   region           = var.region
   description      = "Update instance recommendation scores (Version usage, Activity, etc.)"
   schedule         = "0 */6 * * *"
@@ -27,8 +27,9 @@ resource "google_cloud_scheduler_job" "sync_recommendation_scores" {
 }
 
 resource "google_cloud_scheduler_job" "sync_stats" {
-  name             = "${local.secret_prefix}sync-stats"
+  name             = "${lower(var.environment)}_sync-stats"
   region           = var.region
+  description      = "Sync instance statistics (users, notes, etc.)"
   schedule         = "0 */6 * * *"
   time_zone        = "Etc/UTC"
   attempt_deadline = "180s"
@@ -52,8 +53,9 @@ resource "google_cloud_scheduler_job" "sync_stats" {
 }
 
 resource "google_cloud_scheduler_job" "discovery" {
-  name             = "${local.secret_prefix}discovery"
+  name             = "${lower(var.environment)}_discovery"
   region           = var.region
+  description      = "Discover new Misskey instances from known instances"
   schedule         = "*/30 * * * *"
   time_zone        = "Etc/UTC"
   attempt_deadline = "180s"
@@ -77,8 +79,9 @@ resource "google_cloud_scheduler_job" "discovery" {
 }
 
 resource "google_cloud_scheduler_job" "update" {
-  name             = "${local.secret_prefix}update"
+  name             = "${lower(var.environment)}_update"
   region           = var.region
+  description      = "Update instance information (version, name, etc.)"
   schedule         = "*/10 * * * *"
   time_zone        = "Etc/UTC"
   attempt_deadline = "180s"
@@ -102,8 +105,9 @@ resource "google_cloud_scheduler_job" "update" {
 }
 
 resource "google_cloud_scheduler_job" "sync_denylist" {
-  name             = "${local.secret_prefix}sync-denylist"
+  name             = "${lower(var.environment)}_sync-denylist"
   region           = var.region
+  description      = "Sync denylist from external source"
   schedule         = "0 * * * *"
   time_zone        = "Etc/UTC"
   attempt_deadline = "180s"
