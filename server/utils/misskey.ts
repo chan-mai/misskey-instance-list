@@ -9,6 +9,8 @@ export interface InstanceInfo {
   banner: string | null;
   icon: string | null;
   repositoryUrl: string | null;
+  nodeinfoRepositoryUrl?: string | null;
+  metaRepositoryUrl?: string | null;
 }
 
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
@@ -114,6 +116,8 @@ export type InstanceResult = {
       let banner = metadata.bannerUrl || null;
       let icon = metadata.iconUrl || null;
       let repositoryUrl: string | null = null;
+      const nodeinfoRepositoryUrl: string | null = metadata.repositoryUrl || null;
+      let metaRepositoryUrl: string | null = null;
 
       // POST /api/metaを試行
       if (!banner || !icon || !name || !description || !version || !repositoryUrl) {
@@ -135,21 +139,35 @@ export type InstanceResult = {
             throw new Error('Failed to fetch after retries');
           };
 
-          const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...headers },
-            body: JSON.stringify({ detail: true }),
-            signal: controller.signal,
-          });
+          // api/meta用の独立したAbortController (前の残り時間でタイムアウトしないように)
+          const metaController = new AbortController();
+          const metaTimeoutId = setTimeout(() => metaController.abort(), 10000);
+          
+          try {
+            const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...headers },
+              body: JSON.stringify({ detail: true }),
+              signal: metaController.signal,
+            });
 
-          if (metaRes.ok) {
-            const meta = (await metaRes.json()) as any;
-            if (meta.bannerUrl) banner = meta.bannerUrl;
-            if (meta.iconUrl) icon = meta.iconUrl;
-            if (meta.name) name = meta.name;
-            if (meta.description) description = meta.description;
-            if (meta.version) version = meta.version;
-            if (meta.repositoryUrl) repositoryUrl = meta.repositoryUrl;
+            if (metaRes.ok) {
+              const meta = (await metaRes.json()) as any;
+              clearTimeout(metaTimeoutId); // 成功したらタイマー解除
+              
+              if (meta.bannerUrl) banner = meta.bannerUrl;
+              if (meta.iconUrl) icon = meta.iconUrl;
+              if (meta.name) name = meta.name;
+              if (meta.description) description = meta.description;
+              if (meta.version) version = meta.version;
+              // api/metaの情報を優先して採用する
+              if (meta.repositoryUrl) {
+                repositoryUrl = meta.repositoryUrl;
+                metaRepositoryUrl = meta.repositoryUrl;
+              }
+            }
+          } finally {
+            clearTimeout(metaTimeoutId);
           }
         } catch (e: any) {
           if (e.name !== 'AbortError') {
@@ -173,7 +191,9 @@ export type InstanceResult = {
           softwareName: ni.software?.name || '',
           banner,
           icon,
-          repositoryUrl
+          repositoryUrl,
+          nodeinfoRepositoryUrl,
+          metaRepositoryUrl
         },
       };
 
@@ -234,14 +254,23 @@ export async function validateInstance(
     }
 
     // リポジトリURLによるフォーク判定
-    if (repoUrl) {
-      const isFork = FORK_PATTERNS.some(pattern => repoUrl.includes(pattern));
-      if (isFork) {
-        console.log(`Detected fork repository for ${host}: ${repoUrl}`);
+    // MetaとNodeInfo両方のURLをチェックする
+    const urlsToCheck = [
+      repoUrl,
+      botInfo.nodeinfoRepositoryUrl?.toLowerCase(),
+      botInfo.metaRepositoryUrl?.toLowerCase(),
+      browserInfo?.nodeinfoRepositoryUrl?.toLowerCase(),
+      browserInfo?.metaRepositoryUrl?.toLowerCase()
+    ].filter(Boolean) as string[];
+
+    if (urlsToCheck.length > 0) {
+      const detectedForkUrl = urlsToCheck.find(url => FORK_PATTERNS.some(pattern => url.includes(pattern)));
+      if (detectedForkUrl) {
+        console.log(`Detected fork repository for ${host}: ${detectedForkUrl}`);
         await prisma.denylist.upsert({
             where: { domain: host },
-            update: { reason: `Fork Repository: ${repoUrl}` },
-            create: { domain: host, reason: `Fork Repository: ${repoUrl}` }
+            update: { reason: `Fork Repository: ${detectedForkUrl}` },
+            create: { domain: host, reason: `Fork Repository: ${detectedForkUrl}` }
         });
         await prisma.instance.deleteMany({ where: { id: host } });
         return { info: null, error: 'UNKNOWN' };
