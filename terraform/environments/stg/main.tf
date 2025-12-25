@@ -55,6 +55,9 @@ module "app" {
   service_url             = var.service_url
   artifact_registry_id    = "cloud-run-source-deploy-stg"
   cloudbuild_trigger_name = "misskey-instance-list-stg-trigger"
+
+  # カスタムドメイン
+  custom_domain = "stg.servers.misskey.ink"
 }
 
 output "service_url" {
