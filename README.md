@@ -38,7 +38,7 @@ APIドキュメントは https://servers.misskey.ink/docs/api/v1 で確認でき
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - pnpm
 - CockroachDB (または PostgreSQL)
 
@@ -73,6 +73,10 @@ http://localhost:3000 で開発サーバーが起動します。
 pnpm build
 node .output/server/index.mjs
 ```
+
+## 🤝 Contributing
+
+リポジトリへの貢献を歓迎します！詳細は [CONTRIBUTING.md](CONTRIBUTING.md) をご確認ください。
 
 ## 📝 License
 
