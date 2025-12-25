@@ -1,6 +1,6 @@
 import { prisma } from '~~/server/utils/prisma';
 
-export default defineEventHandler(async() => {
+export default defineCachedEventHandler(async() => {
   // 関知済みインスタンス数をカウント（停止中・消滅したものも含む）
   const known = await prisma.instance.count();
 
@@ -62,4 +62,6 @@ export default defineEventHandler(async() => {
     },
     repositories
   };
+}, {
+  maxAge: 60 * 60
 });
