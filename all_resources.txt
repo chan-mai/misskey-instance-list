@@ -1,0 +1,12 @@
+┌────────────────────────────┬──────────────┬─────────┬──────┐
+│          KRM KIND          │ BULK EXPORT? │ EXPORT? │ IAM? │
+├────────────────────────────┼──────────────┼─────────┼──────┤
+│ ArtifactRegistryRepository │ x            │ x       │ x    │
+│ IAMServiceAccount          │ x            │         │ x    │
+│ IAMServiceAccountKey       │              │         │      │
+│ Project                    │ x            │ x       │ x    │
+│ PubSubTopic                │ x            │ x       │ x    │
+│ SecretManagerSecret        │ x            │ x       │ x    │
+│ SecretManagerSecretVersion │ x            │         │      │
+│ Service                    │ x            │ x       │      │
+└────────────────────────────┴──────────────┴─────────┴──────┘
