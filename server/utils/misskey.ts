@@ -323,61 +323,21 @@ function getCachedRepository(name: string): GitHubRepository | null | undefined 
     return cached;
 }
 
-/**
- * Persist instance health and metadata into the database for the specified instance id.
- *
- * When `res.info` is present, updates the instance record with metadata (name, counts, version,
- * banner/icon URLs, repository URL), marks the instance alive, clears suspension state, and sets
- * `last_check_at` to `now`. When `res.info` is null, marks the instance not alive, sets
- * `last_check_at` to `now`, and sets `suspension_state` to `gone` if `res.error === 'GONE'` or
- * `suspended` otherwise.
- *
- * @param res - The fetched instance result containing `info` (metadata) or an `error` code
- * @param now - Timestamp to record as the last check time
- */
-export async function saveInstance(
-  prisma: PrismaClient,
-  id: string,
-  res: InstanceResult,
-  now: Date
-) {
-  const info = res.info;
 
-  if (info) {
-      await prisma.instance.updateMany({
-          where: { id },
-          data: {
-              node_name: info.name,
-              users_count: info.users,
-              notes_count: info.notes,
-              version: info.version,
-              is_alive: true,
-              last_check_at: now,
-              banner_url: info.banner,
-              icon_url: info.icon,
-              suspension_state: 'none' as SuspensionState
-          }
-      });
+async function resolveRepositoryInfo(repositoryUrl: string) {
+    let repositoryName: string | null = null;
+    let repository: GitHubRepository | null = null;
 
-      // リポジトリのリレーションを更新（connectOrCreate/upsertロジックを使用）
-      if (info.repositoryUrl) {
-        // リレーションに対してupdateManyは使えず、現在のフローでは単一のアトミックなupsertも難しいため
-        // 個別に更新を行う戦略をとる
-        
-        let repositoryName: string | null = null;
-        let repository: GitHubRepository | null = null;
-        
-        try {
-          const urlObj = new URL(info.repositoryUrl);
-          // GitHubのみ対応
-          if (urlObj.hostname === 'github.com') {
-             const pathParts = urlObj.pathname.split('/').filter(p => p);
-             if (pathParts.length >= 2) {
-               repositoryName = `${pathParts[0]}/${pathParts[1]}`;
-               repositoryName = repositoryName.replace(/\.git$/, '');
+    try {
+        const urlObj = new URL(repositoryUrl);
+        // GitHubのみ対応
+        if (urlObj.hostname === 'github.com') {
+            const pathParts = urlObj.pathname.split('/').filter(p => p);
+            if (pathParts.length >= 2) {
+                repositoryName = `${pathParts[0]}/${pathParts[1]}`;
+                repositoryName = repositoryName.replace(/\.git$/, '');
 
-
-               if (repositoryName) {
+                if (repositoryName) {
                     const cached = getCachedRepository(repositoryName);
                     if (cached !== undefined) {
                         repository = cached;
@@ -392,7 +352,7 @@ export async function saveInstance(
                             }
 
                             const ghRes = await fetch(`https://api.github.com/repos/${repositoryName}`, { headers });
-                            
+
                             // レート制限の確認
                             const remaining = ghRes.headers.get('x-ratelimit-remaining');
                             const limit = ghRes.headers.get('x-ratelimit-limit');
@@ -418,53 +378,100 @@ export async function saveInstance(
                                 // 404の場合は、繰り返しの404を防ぐためにnullをキャッシュする
                                 // それ以外はスキップする
                                 if (ghRes.status === 404) {
-                                     repositoryCache.set(repositoryName, null);
+                                    repositoryCache.set(repositoryName, null);
                                 }
                             }
                         } catch (e: any) {
                             console.warn(`GitHub API Fetch Error for ${repositoryName}:`, e.message);
                         }
                     }
-               }
-             }
-          } else if (urlObj.pathname.split('/').filter(p => p).length >= 2) {
-              // GitHub以外でも user/repo 形式だけ抽出しておく
-              const pathParts = urlObj.pathname.split('/').filter(p => p);
-              repositoryName = `${pathParts[0]}/${pathParts[1]}`;
-              repositoryName = repositoryName.replace(/\.git$/, '');
-          }
-        } catch {
-          console.warn(`Failed to parse repository URL for ${id}: ${info.repositoryUrl}`);
+                }
+            }
+        } else if (urlObj.pathname.split('/').filter(p => p).length >= 2) {
+            // GitHub以外でも user/repo 形式だけ抽出しておく
+            const pathParts = urlObj.pathname.split('/').filter(p => p);
+            repositoryName = `${pathParts[0]}/${pathParts[1]}`;
+            repositoryName = repositoryName.replace(/\.git$/, '');
         }
+    } catch {
+        // console.warn(`Failed to parse repository URL: ${repositoryUrl}`);
+    }
 
-        await prisma.repository.upsert({
-          where: { url: info.repositoryUrl },
-          update: {
-            ...(repositoryName ? { name: repositoryName } : {}),
-            ...(repository?.description ? { description: repository.description } : {})
-          },
-          create: { 
-            url: info.repositoryUrl,
-            name: repositoryName,
-            description: repository?.description || null
-          }
-        });
+    return { repositoryName, repository };
+}
 
-        await prisma.instance.update({
-          where: { id },
-          data: {
-            repository_url: info.repositoryUrl
+/**
+ * Persist instance health and metadata into the database for the specified instance id.
+ *
+ * When `res.info` is present, updates the instance record with metadata (name, counts, version,
+ * banner/icon URLs, repository URL), marks the instance alive, clears suspension state, and sets
+ * `last_check_at` to `now`. When `res.info` is null, marks the instance not alive, sets
+ * `last_check_at` to `now`, and sets `suspension_state` to `gone` if `res.error === 'GONE'` or
+ * `suspended` otherwise.
+ *
+ * @param res - The fetched instance result containing `info` (metadata) or an `error` code
+ * @param now - Timestamp to record as the last check time
+ */
+export async function saveInstance(
+  prisma: PrismaClient,
+  id: string,
+  res: InstanceResult,
+  now: Date
+) {
+  const info = res.info;
+
+  if (info) {
+      const repoInfo = info.repositoryUrl ? await resolveRepositoryInfo(info.repositoryUrl) : null;
+
+      await prisma.$transaction(async(tx) => {
+          await tx.instance.updateMany({
+              where: { id },
+              data: {
+                  node_name: info.name,
+                  users_count: info.users,
+                  notes_count: info.notes,
+                  version: info.version,
+                  is_alive: true,
+                  last_check_at: now,
+                  banner_url: info.banner,
+                  icon_url: info.icon,
+                  suspension_state: 'none' as SuspensionState
+              }
+          });
+
+          // リポジトリのリレーションを更新（connectOrCreate/upsertロジックを使用）
+          if (info.repositoryUrl && repoInfo) {
+              const { repositoryName, repository } = repoInfo;
+
+              await tx.repository.upsert({
+                  where: { url: info.repositoryUrl },
+                  update: {
+                      ...(repositoryName ? { name: repositoryName } : {}),
+                      ...(repository?.description ? { description: repository.description } : {})
+                  },
+                  create: { 
+                      url: info.repositoryUrl,
+                      name: repositoryName,
+                      description: repository?.description || null
+                  }
+              });
+
+              await tx.instance.update({
+                  where: { id },
+                  data: {
+                      repository_url: info.repositoryUrl
+                  }
+              });
+          } else {
+              // repositoryUrlがnullの場合、リレーションを解除する（nullを設定）
+              await tx.instance.update({
+                  where: { id },
+                  data: {
+                      repository_url: null
+                  }
+              });
           }
-        });
-      } else {
-        // repositoryUrlがnullの場合、リレーションを解除する（nullを設定）
-         await prisma.instance.update({
-          where: { id },
-          data: {
-            repository_url: null
-          }
-        });
-      }
+      });
   } else {
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
