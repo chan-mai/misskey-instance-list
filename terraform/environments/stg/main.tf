@@ -32,6 +32,11 @@ variable "github_token" {
   sensitive = true
 }
 
+variable "service_url" {
+  type      = string
+  sensitive = true
+}
+
 module "app" {
   source = "../../modules/app"
 
@@ -45,6 +50,11 @@ module "app" {
   # Pass secrets
   database_url = var.database_url
   github_token = var.github_token
+  
+  # New variables for consistency
+  service_url             = var.service_url
+  artifact_registry_id    = "cloud-run-source-deploy-stg"
+  cloudbuild_trigger_name = "misskey-instance-list-stg-trigger"
 }
 
 output "service_url" {
