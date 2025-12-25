@@ -1,0 +1,62 @@
+name: Promote to Production
+
+on:
+  push:
+    branches:
+      - stg
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Check for existing PR
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing_pr=$(gh pr list --base prod --head stg --json number --jq '.[0].number' || echo "")
+          echo "existing_pr=$existing_pr" >> $GITHUB_OUTPUT
+      
+      - name: Create PR to prod
+        if: steps.check-pr.outputs.existing_pr == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base prod \
+            --head stg \
+            --title "Deploy to Production" \
+            --body "Automated PR to promote changes from stg to prod.
+
+          ## Changes
+
+          This PR contains the following commits since the last production deploy:
+
+          \`\`\`
+          $(git log prod..stg --oneline)
+          \`\`\`
+
+          ## Checklist
+
+          - [ ] Verified on staging environment
+          - [ ] Ready for production deployment"
+      
+      - name: Update existing PR
+        if: steps.check-pr.outputs.existing_pr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ steps.check-pr.outputs.existing_pr }} \
+            --body "🔄 New commits added to this PR:
+
+          \`\`\`
+          $(git log prod..stg --oneline)
+          \`\`\`"
