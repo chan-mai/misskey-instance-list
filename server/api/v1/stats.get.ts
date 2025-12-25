@@ -1,6 +1,6 @@
 import { prisma } from '~~/server/utils/prisma';
 
-export default defineCachedEventHandler(async() => {
+export default defineEventHandler(async() => {
   // 関知済みインスタンス数をカウント（停止中・消滅したものも含む）
   const known = await prisma.instance.count();
 
@@ -9,11 +9,11 @@ export default defineCachedEventHandler(async() => {
     where: { is_alive: true }
   });
 
+  // 拒否・無視リストのカウント
+  const denyCount = await prisma.denylist.count();
+  const ignoreCount = await prisma.ignoreHost.count();
+
   // アクティブなインスタンスのリポジトリ使用状況を取得
-  // InstanceテーブルでgroupByを行うことで、現在アクティブなノードの正確な統計を取得できる
-  // 論理的にはrepository_urlフィールドを介してRepositoryテーブルと結合しているが
-  // 正しいカウントを取得するためには、is_aliveがtrueであるInstanceテーブル上で
-  // repository_urlごとにグループ化するのが効率的
   const repoStats = await prisma.instance.groupBy({
     by: ['repository_url'],
     where: {
@@ -30,19 +30,36 @@ export default defineCachedEventHandler(async() => {
     }
   });
 
+  // リポジトリの詳細情報を取得
+  const repoUrls = repoStats.map(s => s.repository_url as string);
+  const repoDetails = await prisma.repository.findMany({
+    where: {
+      url: { in: repoUrls }
+    }
+  });
+
+  // URLをキーにしたMapを作成し、検索を高速化
+  const repoMap = new Map(repoDetails.map(r => [r.url, r]));
+
   // リポジトリリストを整形
-  const repositories = repoStats.map(stat => ({
-    url: stat.repository_url as string,
-    count: stat._count.repository_url
-  }));
+  const repositories = repoStats.map(stat => {
+    const detail = repoMap.get(stat.repository_url as string);
+    return {
+      url: stat.repository_url as string,
+      name: detail?.name || null,
+      description: detail?.description || null,
+      count: stat._count.repository_url
+    };
+  });
+
 
   return {
     counts: {
       known,
-      active
+      active,
+      denies: denyCount,
+      ignores: ignoreCount
     },
     repositories
   };
-}, {
-  maxAge: 60 * 60, // 1時間キャッシュ
 });

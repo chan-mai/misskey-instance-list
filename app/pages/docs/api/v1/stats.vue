@@ -27,16 +27,16 @@
         <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{
   "counts": {
     "known": 1500,
-    "active": 800
+    "active": 800,
+    "denies": 100,
+    "ignores": 50
   },
   "repositories": [
     {
       "url": "https://github.com/misskey-dev/misskey",
+      "name": "misskey-dev/misskey",
+      "description": "🌎 A completely free and open interplanetary-microblogging platform 🚀",
       "count": 600
-    },
-    {
-      "url": "https://github.com/firefish-dev/firefish",
-      "count": 50
     }
   ]
 }</code></pre>
@@ -45,7 +45,11 @@
           <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1">
             <li><code class="font-mono text-sm">counts.known</code>: データベースに登録されている全インスタンス数</li>
             <li><code class="font-mono text-sm">counts.active</code>: 生存確認ができているインスタンス数</li>
+            <li><code class="font-mono text-sm">counts.denies</code>: 拒否リストに含まれるドメイン数</li>
+            <li><code class="font-mono text-sm">counts.ignores</code>: 無視リストに含まれるドメイン数</li>
             <li><code class="font-mono text-sm">repositories</code>: リポジトリごとの使用インスタンス数（多い順）</li>
+            <li><code class="font-mono text-sm">repositories[].name</code>: リポジトリ名 (e.g. user/repo)</li>
+            <li><code class="font-mono text-sm">repositories[].description</code>: リポジトリの説明（GitHubの場合）</li>
           </ul>
         </div>
       </section>
