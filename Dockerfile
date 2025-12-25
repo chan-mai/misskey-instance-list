@@ -18,7 +18,6 @@ ARG TASK_SECRET
 ENV DATABASE_URL=$DATABASE_URL
 ENV TASK_SECRET=$TASK_SECRET
 
-ENV TASK_SECRET=$TASK_SECRET
 
 RUN pnpm nuxt prepare && pnpm prisma generate && pnpm build
 
