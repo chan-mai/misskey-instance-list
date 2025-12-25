@@ -280,8 +280,19 @@ export async function validateInstance(
 // Simple in-memory cache to avoid hitting GitHub API excessively during sync
 type GitHubRepository = {
     description: string | null;
+    cachedAt: number;
 }
 const repositoryCache = new Map<string, GitHubRepository | null>();
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+function getCachedRepository(name: string): GitHubRepository | null | undefined {
+    const cached = repositoryCache.get(name);
+    if (cached && Date.now() - cached.cachedAt > CACHE_TTL_MS) {
+        repositoryCache.delete(name);
+        return undefined;
+    }
+    return cached;
+}
 
 /**
  * Persist instance health and metadata into the database for the specified instance id.
@@ -336,9 +347,11 @@ export async function saveInstance(
                repositoryName = `${pathParts[0]}/${pathParts[1]}`;
                repositoryName = repositoryName.replace(/\.git$/, '');
 
+
                if (repositoryName) {
-                    if (repositoryCache.has(repositoryName)) {
-                        repository = repositoryCache.get(repositoryName) || null;
+                    const cached = getCachedRepository(repositoryName);
+                    if (cached !== undefined) {
+                        repository = cached;
                     } else {
                         try {
                             const headers: Record<string, string> = {
@@ -365,7 +378,8 @@ export async function saveInstance(
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 const ghData = await ghRes.json() as any;
                                 repository = {
-                                    description: ghData.description || null
+                                    description: ghData.description || null,
+                                    cachedAt: Date.now()
                                 };
                                 // 成功した場合のみキャッシュする
                                 repositoryCache.set(repositoryName, repository);
