@@ -58,6 +58,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     database_url: process.env.DATABASE_URL,
     taskSecret: process.env.TASK_SECRET,
+    githubToken: process.env.GITHUB_TOKEN,
   },
   nitro: {
     experimental: { tasks: true },

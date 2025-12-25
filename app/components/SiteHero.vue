@@ -18,7 +18,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            {{ serverCount }} servers available
+            {{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }} servers available
           </div>
           
           <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
@@ -67,16 +67,27 @@
           
           <!-- カード本体 -->
           <div class="relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-2xl rounded-2xl p-8 min-w-[280px] border border-white/50 dark:border-slate-700/50">
-            <div class="text-center">
-              <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent text-white mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-                </svg>
+            <div class="flex flex-col gap-6">
+              <!-- Active Instances -->
+              <div class="text-center">
+                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent text-white mb-3 shadow-lg shadow-primary/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                 </div>
+                 <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">Active Servers </p>
+                 <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+                    {{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }}
+                 </p>
               </div>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">サーバー数</p>
-              <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                {{ serverCount }}
-              </p>
+
+              <!-- Known Instances -->
+              <div class="text-center pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Total Known</p>
+                  <p class="text-xl font-bold text-slate-700 dark:text-slate-200">
+                    {{ stats?.counts?.known ? formatNumber(stats.counts.known) : '-' }}
+                  </p>
+              </div>
             </div>
           </div>
         </div>
@@ -87,7 +98,20 @@
 
 <script setup lang="ts">
 defineProps<{
-  serverCount: string;
-  loading?: boolean;
+  stats?: {
+    counts: {
+      active: number;
+      known: number;
+    };
+    repositories: Array<{
+      url: string;
+      name: string | null;
+      count: number;
+    }>;
+  };
 }>();
+
+const formatNumber = (value: number | undefined) => {
+  return value ? new Intl.NumberFormat('ja-JP').format(value) : '-';
+};
 </script>

@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Instance.js'
+export type * from './models/Repository.js'
 export type * from './models/Denylist.js'
 export type * from './models/IgnoreHost.js'
 export type * from './commonInputTypes.js'

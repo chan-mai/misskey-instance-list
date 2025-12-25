@@ -23,6 +23,11 @@ export * from './enums.js';
  */
 export type Instance = Prisma.InstanceModel
 /**
+ * Model Repository
+ * 
+ */
+export type Repository = Prisma.RepositoryModel
+/**
  * Model Denylist
  * 
  */

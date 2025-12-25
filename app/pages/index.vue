@@ -98,6 +98,8 @@ watch([f_orderBy, f_order], () => {
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
+const { data: stats } = await useFetch('/api/v1/stats');
+
 onMounted(() => {
   fetchInstances(true);
 });
@@ -140,8 +142,7 @@ useHead({
   <div>
     <!-- Hero -->
     <SiteHero 
-      :server-count="initialLoading ? '...' : formatNumber(total)" 
-      :loading="initialLoading"
+      :stats="stats"
     />
 
     <!-- メインコンテンツ -->

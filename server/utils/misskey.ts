@@ -9,6 +9,8 @@ export interface InstanceInfo {
   banner: string | null;
   icon: string | null;
   repositoryUrl: string | null;
+  nodeinfoRepositoryUrl?: string | null;
+  metaRepositoryUrl?: string | null;
 }
 
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
@@ -114,6 +116,8 @@ export type InstanceResult = {
       let banner = metadata.bannerUrl || null;
       let icon = metadata.iconUrl || null;
       let repositoryUrl: string | null = null;
+      const nodeinfoRepositoryUrl: string | null = metadata.repositoryUrl || null;
+      let metaRepositoryUrl: string | null = null;
 
       // POST /api/metaを試行
       if (!banner || !icon || !name || !description || !version || !repositoryUrl) {
@@ -135,21 +139,35 @@ export type InstanceResult = {
             throw new Error('Failed to fetch after retries');
           };
 
-          const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...headers },
-            body: JSON.stringify({ detail: true }),
-            signal: controller.signal,
-          });
+          // api/meta用の独立したAbortController (前の残り時間でタイムアウトしないように)
+          const metaController = new AbortController();
+          const metaTimeoutId = setTimeout(() => metaController.abort(), 10000);
+          
+          try {
+            const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', ...headers },
+              body: JSON.stringify({ detail: true }),
+              signal: metaController.signal,
+            });
 
-          if (metaRes.ok) {
-            const meta = (await metaRes.json()) as any;
-            if (meta.bannerUrl) banner = meta.bannerUrl;
-            if (meta.iconUrl) icon = meta.iconUrl;
-            if (meta.name) name = meta.name;
-            if (meta.description) description = meta.description;
-            if (meta.version) version = meta.version;
-            if (meta.repositoryUrl) repositoryUrl = meta.repositoryUrl;
+            if (metaRes.ok) {
+              const meta = (await metaRes.json()) as any;
+              clearTimeout(metaTimeoutId); // 成功したらタイマー解除
+              
+              if (meta.bannerUrl) banner = meta.bannerUrl;
+              if (meta.iconUrl) icon = meta.iconUrl;
+              if (meta.name) name = meta.name;
+              if (meta.description) description = meta.description;
+              if (meta.version) version = meta.version;
+              // api/metaの情報を優先して採用する
+              if (meta.repositoryUrl) {
+                repositoryUrl = meta.repositoryUrl;
+                metaRepositoryUrl = meta.repositoryUrl;
+              }
+            }
+          } finally {
+            clearTimeout(metaTimeoutId);
           }
         } catch (e: any) {
           if (e.name !== 'AbortError') {
@@ -173,11 +191,13 @@ export type InstanceResult = {
           softwareName: ni.software?.name || '',
           banner,
           icon,
-          repositoryUrl
+          repositoryUrl,
+          nodeinfoRepositoryUrl,
+          metaRepositoryUrl
         },
       };
 
-    } catch (e) {
+    } catch {
       // ネットワークエラー、タイムアウト等
       return { info: null, error: 'TIMEOUT' };
     } finally {
@@ -234,14 +254,23 @@ export async function validateInstance(
     }
 
     // リポジトリURLによるフォーク判定
-    if (repoUrl) {
-      const isFork = FORK_PATTERNS.some(pattern => repoUrl.includes(pattern));
-      if (isFork) {
-        console.log(`Detected fork repository for ${host}: ${repoUrl}`);
+    // MetaとNodeInfo両方のURLをチェックする
+    const urlsToCheck = [
+      repoUrl,
+      botInfo.nodeinfoRepositoryUrl?.toLowerCase(),
+      botInfo.metaRepositoryUrl?.toLowerCase(),
+      browserInfo?.nodeinfoRepositoryUrl?.toLowerCase(),
+      browserInfo?.metaRepositoryUrl?.toLowerCase()
+    ].filter(Boolean) as string[];
+
+    if (urlsToCheck.length > 0) {
+      const detectedForkUrl = urlsToCheck.find(url => FORK_PATTERNS.some(pattern => url.includes(pattern)));
+      if (detectedForkUrl) {
+        console.log(`Detected fork repository for ${host}: ${detectedForkUrl}`);
         await prisma.denylist.upsert({
             where: { domain: host },
-            update: { reason: `Fork Repository: ${repoUrl}` },
-            create: { domain: host, reason: `Fork Repository: ${repoUrl}` }
+            update: { reason: `Fork Repository: ${detectedForkUrl}` },
+            create: { domain: host, reason: `Fork Repository: ${detectedForkUrl}` }
         });
         await prisma.instance.deleteMany({ where: { id: host } });
         return { info: null, error: 'UNKNOWN' };
@@ -277,6 +306,100 @@ export async function validateInstance(
   return botRes;
 }
 
+// Simple in-memory cache to avoid hitting GitHub API excessively during sync
+type GitHubRepository = {
+    description: string | null;
+    cachedAt: number;
+}
+const repositoryCache = new Map<string, GitHubRepository | null>();
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+function getCachedRepository(name: string): GitHubRepository | null | undefined {
+    const cached = repositoryCache.get(name);
+    if (cached && Date.now() - cached.cachedAt > CACHE_TTL_MS) {
+        repositoryCache.delete(name);
+        return undefined;
+    }
+    return cached;
+}
+
+
+async function resolveRepositoryInfo(repositoryUrl: string) {
+    let repositoryName: string | null = null;
+    let repository: GitHubRepository | null = null;
+
+    try {
+        const urlObj = new URL(repositoryUrl);
+        // GitHubのみ対応
+        if (urlObj.hostname === 'github.com') {
+            const pathParts = urlObj.pathname.split('/').filter(p => p);
+            if (pathParts.length >= 2) {
+                repositoryName = `${pathParts[0]}/${pathParts[1]}`;
+                repositoryName = repositoryName.replace(/\.git$/, '');
+
+                if (repositoryName) {
+                    const cached = getCachedRepository(repositoryName);
+                    if (cached !== undefined) {
+                        repository = cached;
+                    } else {
+                        try {
+                            const headers: Record<string, string> = {
+                                'User-Agent': 'MisskeyInstanceList/1.0',
+                            };
+                            const config = useRuntimeConfig();
+                            if (config.githubToken) {
+                                headers['Authorization'] = `token ${config.githubToken}`;
+                            }
+
+                            const ghRes = await fetch(`https://api.github.com/repos/${repositoryName}`, { headers });
+
+                            // レート制限の確認
+                            const remaining = ghRes.headers.get('x-ratelimit-remaining');
+                            const limit = ghRes.headers.get('x-ratelimit-limit');
+                            const reset = ghRes.headers.get('x-ratelimit-reset');
+
+                            if (ghRes.status === 403 || ghRes.status === 429) {
+                                console.warn(`GitHub API Rate Limit Exceeded for ${repositoryName}: Status=${ghRes.status}, Remaining=${remaining}/${limit}, Reset=${reset}`);
+                                // 失敗(null)としてキャッシュせず、次回再試行できるように早期リターンする
+                                // ここでnullをキャッシュすると、キャッシュ有効期限切れや再起動まで説明文が失われるため
+                                // repository変数の設定をスキップし、nullのままにするがキャッシュには保存しない
+                            } else if (ghRes.ok) {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                const ghData = await ghRes.json() as any;
+                                repository = {
+                                    description: ghData.description || null,
+                                    cachedAt: Date.now()
+                                };
+                                // 成功した場合のみキャッシュする
+                                repositoryCache.set(repositoryName, repository);
+                            } else {
+                                // その他のエラー（404, 500等）
+                                console.warn(`GitHub API Error for ${repositoryName}: ${ghRes.status}`);
+                                // 404の場合は、繰り返しの404を防ぐためにnullをキャッシュする
+                                // それ以外はスキップする
+                                if (ghRes.status === 404) {
+                                    repositoryCache.set(repositoryName, null);
+                                }
+                            }
+                        } catch (e: any) {
+                            console.warn(`GitHub API Fetch Error for ${repositoryName}:`, e.message);
+                        }
+                    }
+                }
+            }
+        } else if (urlObj.pathname.split('/').filter(p => p).length >= 2) {
+            // GitHub以外でも user/repo 形式だけ抽出しておく
+            const pathParts = urlObj.pathname.split('/').filter(p => p);
+            repositoryName = `${pathParts[0]}/${pathParts[1]}`;
+            repositoryName = repositoryName.replace(/\.git$/, '');
+        }
+    } catch {
+        // console.warn(`Failed to parse repository URL: ${repositoryUrl}`);
+    }
+
+    return { repositoryName, repository };
+}
+
 /**
  * Persist instance health and metadata into the database for the specified instance id.
  *
@@ -298,19 +421,55 @@ export async function saveInstance(
   const info = res.info;
 
   if (info) {
-      await prisma.instance.updateMany({
-          where: { id },
-          data: {
-              node_name: info.name,
-              users_count: info.users,
-              notes_count: info.notes,
-              version: info.version,
-              is_alive: true,
-              last_check_at: now,
-              banner_url: info.banner,
-              icon_url: info.icon,
-              repository_url: info.repositoryUrl,
-              suspension_state: 'none' as SuspensionState
+      const repoInfo = info.repositoryUrl ? await resolveRepositoryInfo(info.repositoryUrl) : null;
+
+      await prisma.$transaction(async(tx) => {
+          await tx.instance.updateMany({
+              where: { id },
+              data: {
+                  node_name: info.name,
+                  users_count: info.users,
+                  notes_count: info.notes,
+                  version: info.version,
+                  is_alive: true,
+                  last_check_at: now,
+                  banner_url: info.banner,
+                  icon_url: info.icon,
+                  suspension_state: 'none' as SuspensionState
+              }
+          });
+
+          // リポジトリのリレーションを更新（connectOrCreate/upsertロジックを使用）
+          if (info.repositoryUrl && repoInfo) {
+              const { repositoryName, repository } = repoInfo;
+
+              await tx.repository.upsert({
+                  where: { url: info.repositoryUrl },
+                  update: {
+                      ...(repositoryName ? { name: repositoryName } : {}),
+                      ...(repository?.description ? { description: repository.description } : {})
+                  },
+                  create: { 
+                      url: info.repositoryUrl,
+                      name: repositoryName,
+                      description: repository?.description || null
+                  }
+              });
+
+              await tx.instance.update({
+                  where: { id },
+                  data: {
+                      repository_url: info.repositoryUrl
+                  }
+              });
+          } else {
+              // repositoryUrlがnullの場合、リレーションを解除する（nullを設定）
+              await tx.instance.update({
+                  where: { id },
+                  data: {
+                      repository_url: null
+                  }
+              });
           }
       });
   } else {

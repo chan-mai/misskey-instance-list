@@ -296,6 +296,7 @@ export type InstanceWhereInput = {
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
   repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
+  repository?: Prisma.XOR<Prisma.RepositoryNullableScalarRelationFilter, Prisma.RepositoryWhereInput> | null
 }
 
 export type InstanceOrderByWithRelationInput = {
@@ -313,6 +314,7 @@ export type InstanceOrderByWithRelationInput = {
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrderInput | Prisma.SortOrder
   repository_url?: Prisma.SortOrderInput | Prisma.SortOrder
+  repository?: Prisma.RepositoryOrderByWithRelationInput
 }
 
 export type InstanceWhereUniqueInput = Prisma.AtLeast<{
@@ -333,6 +335,7 @@ export type InstanceWhereUniqueInput = Prisma.AtLeast<{
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
   repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
+  repository?: Prisma.XOR<Prisma.RepositoryNullableScalarRelationFilter, Prisma.RepositoryWhereInput> | null
 }, "id">
 
 export type InstanceOrderByWithAggregationInput = {
@@ -391,7 +394,7 @@ export type InstanceCreateInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
-  repository_url?: string | null
+  repository?: Prisma.RepositoryCreateNestedOneWithoutInstancesInput
 }
 
 export type InstanceUncheckedCreateInput = {
@@ -425,7 +428,7 @@ export type InstanceUpdateInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  repository?: Prisma.RepositoryUpdateOneWithoutInstancesNestedInput
 }
 
 export type InstanceUncheckedUpdateInput = {
@@ -476,7 +479,6 @@ export type InstanceUpdateManyMutationInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type InstanceUncheckedUpdateManyInput = {
@@ -559,6 +561,16 @@ export type InstanceSumOrderByAggregateInput = {
   recommendation_score?: Prisma.SortOrder
 }
 
+export type InstanceListRelationFilter = {
+  every?: Prisma.InstanceWhereInput
+  some?: Prisma.InstanceWhereInput
+  none?: Prisma.InstanceWhereInput
+}
+
+export type InstanceOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -599,6 +611,190 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type InstanceCreateNestedManyWithoutRepositoryInput = {
+  create?: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput> | Prisma.InstanceCreateWithoutRepositoryInput[] | Prisma.InstanceUncheckedCreateWithoutRepositoryInput[]
+  connectOrCreate?: Prisma.InstanceCreateOrConnectWithoutRepositoryInput | Prisma.InstanceCreateOrConnectWithoutRepositoryInput[]
+  createMany?: Prisma.InstanceCreateManyRepositoryInputEnvelope
+  connect?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+}
+
+export type InstanceUncheckedCreateNestedManyWithoutRepositoryInput = {
+  create?: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput> | Prisma.InstanceCreateWithoutRepositoryInput[] | Prisma.InstanceUncheckedCreateWithoutRepositoryInput[]
+  connectOrCreate?: Prisma.InstanceCreateOrConnectWithoutRepositoryInput | Prisma.InstanceCreateOrConnectWithoutRepositoryInput[]
+  createMany?: Prisma.InstanceCreateManyRepositoryInputEnvelope
+  connect?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+}
+
+export type InstanceUpdateManyWithoutRepositoryNestedInput = {
+  create?: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput> | Prisma.InstanceCreateWithoutRepositoryInput[] | Prisma.InstanceUncheckedCreateWithoutRepositoryInput[]
+  connectOrCreate?: Prisma.InstanceCreateOrConnectWithoutRepositoryInput | Prisma.InstanceCreateOrConnectWithoutRepositoryInput[]
+  upsert?: Prisma.InstanceUpsertWithWhereUniqueWithoutRepositoryInput | Prisma.InstanceUpsertWithWhereUniqueWithoutRepositoryInput[]
+  createMany?: Prisma.InstanceCreateManyRepositoryInputEnvelope
+  set?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  disconnect?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  delete?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  connect?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  update?: Prisma.InstanceUpdateWithWhereUniqueWithoutRepositoryInput | Prisma.InstanceUpdateWithWhereUniqueWithoutRepositoryInput[]
+  updateMany?: Prisma.InstanceUpdateManyWithWhereWithoutRepositoryInput | Prisma.InstanceUpdateManyWithWhereWithoutRepositoryInput[]
+  deleteMany?: Prisma.InstanceScalarWhereInput | Prisma.InstanceScalarWhereInput[]
+}
+
+export type InstanceUncheckedUpdateManyWithoutRepositoryNestedInput = {
+  create?: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput> | Prisma.InstanceCreateWithoutRepositoryInput[] | Prisma.InstanceUncheckedCreateWithoutRepositoryInput[]
+  connectOrCreate?: Prisma.InstanceCreateOrConnectWithoutRepositoryInput | Prisma.InstanceCreateOrConnectWithoutRepositoryInput[]
+  upsert?: Prisma.InstanceUpsertWithWhereUniqueWithoutRepositoryInput | Prisma.InstanceUpsertWithWhereUniqueWithoutRepositoryInput[]
+  createMany?: Prisma.InstanceCreateManyRepositoryInputEnvelope
+  set?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  disconnect?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  delete?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  connect?: Prisma.InstanceWhereUniqueInput | Prisma.InstanceWhereUniqueInput[]
+  update?: Prisma.InstanceUpdateWithWhereUniqueWithoutRepositoryInput | Prisma.InstanceUpdateWithWhereUniqueWithoutRepositoryInput[]
+  updateMany?: Prisma.InstanceUpdateManyWithWhereWithoutRepositoryInput | Prisma.InstanceUpdateManyWithWhereWithoutRepositoryInput[]
+  deleteMany?: Prisma.InstanceScalarWhereInput | Prisma.InstanceScalarWhereInput[]
+}
+
+export type InstanceCreateWithoutRepositoryInput = {
+  id: string
+  node_name?: string | null
+  users_count?: number | null
+  notes_count?: number | null
+  version?: string | null
+  is_alive?: boolean
+  created_at?: Date | string
+  last_updated?: Date | string | null
+  last_check_at?: Date | string | null
+  banner_url?: string | null
+  icon_url?: string | null
+  suspension_state?: $Enums.SuspensionState
+  recommendation_score?: number | null
+}
+
+export type InstanceUncheckedCreateWithoutRepositoryInput = {
+  id: string
+  node_name?: string | null
+  users_count?: number | null
+  notes_count?: number | null
+  version?: string | null
+  is_alive?: boolean
+  created_at?: Date | string
+  last_updated?: Date | string | null
+  last_check_at?: Date | string | null
+  banner_url?: string | null
+  icon_url?: string | null
+  suspension_state?: $Enums.SuspensionState
+  recommendation_score?: number | null
+}
+
+export type InstanceCreateOrConnectWithoutRepositoryInput = {
+  where: Prisma.InstanceWhereUniqueInput
+  create: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput>
+}
+
+export type InstanceCreateManyRepositoryInputEnvelope = {
+  data: Prisma.InstanceCreateManyRepositoryInput | Prisma.InstanceCreateManyRepositoryInput[]
+  skipDuplicates?: boolean
+}
+
+export type InstanceUpsertWithWhereUniqueWithoutRepositoryInput = {
+  where: Prisma.InstanceWhereUniqueInput
+  update: Prisma.XOR<Prisma.InstanceUpdateWithoutRepositoryInput, Prisma.InstanceUncheckedUpdateWithoutRepositoryInput>
+  create: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput>
+}
+
+export type InstanceUpdateWithWhereUniqueWithoutRepositoryInput = {
+  where: Prisma.InstanceWhereUniqueInput
+  data: Prisma.XOR<Prisma.InstanceUpdateWithoutRepositoryInput, Prisma.InstanceUncheckedUpdateWithoutRepositoryInput>
+}
+
+export type InstanceUpdateManyWithWhereWithoutRepositoryInput = {
+  where: Prisma.InstanceScalarWhereInput
+  data: Prisma.XOR<Prisma.InstanceUpdateManyMutationInput, Prisma.InstanceUncheckedUpdateManyWithoutRepositoryInput>
+}
+
+export type InstanceScalarWhereInput = {
+  AND?: Prisma.InstanceScalarWhereInput | Prisma.InstanceScalarWhereInput[]
+  OR?: Prisma.InstanceScalarWhereInput[]
+  NOT?: Prisma.InstanceScalarWhereInput | Prisma.InstanceScalarWhereInput[]
+  id?: Prisma.StringFilter<"Instance"> | string
+  node_name?: Prisma.StringNullableFilter<"Instance"> | string | null
+  users_count?: Prisma.IntNullableFilter<"Instance"> | number | null
+  notes_count?: Prisma.IntNullableFilter<"Instance"> | number | null
+  version?: Prisma.StringNullableFilter<"Instance"> | string | null
+  is_alive?: Prisma.BoolFilter<"Instance"> | boolean
+  created_at?: Prisma.DateTimeFilter<"Instance"> | Date | string
+  last_updated?: Prisma.DateTimeNullableFilter<"Instance"> | Date | string | null
+  last_check_at?: Prisma.DateTimeNullableFilter<"Instance"> | Date | string | null
+  banner_url?: Prisma.StringNullableFilter<"Instance"> | string | null
+  icon_url?: Prisma.StringNullableFilter<"Instance"> | string | null
+  suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
+  recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
+  repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
+}
+
+export type InstanceCreateManyRepositoryInput = {
+  id: string
+  node_name?: string | null
+  users_count?: number | null
+  notes_count?: number | null
+  version?: string | null
+  is_alive?: boolean
+  created_at?: Date | string
+  last_updated?: Date | string | null
+  last_check_at?: Date | string | null
+  banner_url?: string | null
+  icon_url?: string | null
+  suspension_state?: $Enums.SuspensionState
+  recommendation_score?: number | null
+}
+
+export type InstanceUpdateWithoutRepositoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  node_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  users_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
+  recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+}
+
+export type InstanceUncheckedUpdateWithoutRepositoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  node_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  users_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
+  recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+}
+
+export type InstanceUncheckedUpdateManyWithoutRepositoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  node_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  users_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  notes_count?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_alive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  last_updated?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  last_check_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  banner_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
+  recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+}
+
 
 
 export type InstanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -616,6 +812,7 @@ export type InstanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   suspension_state?: boolean
   recommendation_score?: boolean
   repository_url?: boolean
+  repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
 }, ExtArgs["result"]["instance"]>
 
 export type InstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -633,6 +830,7 @@ export type InstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   suspension_state?: boolean
   recommendation_score?: boolean
   repository_url?: boolean
+  repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
 }, ExtArgs["result"]["instance"]>
 
 export type InstanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -650,6 +848,7 @@ export type InstanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   suspension_state?: boolean
   recommendation_score?: boolean
   repository_url?: boolean
+  repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
 }, ExtArgs["result"]["instance"]>
 
 export type InstanceSelectScalar = {
@@ -670,10 +869,21 @@ export type InstanceSelectScalar = {
 }
 
 export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "created_at" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state" | "recommendation_score" | "repository_url", ExtArgs["result"]["instance"]>
+export type InstanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
+}
+export type InstanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
+}
+export type InstanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
+}
 
 export type $InstancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Instance"
-  objects: {}
+  objects: {
+    repository: Prisma.$RepositoryPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     node_name: string | null
@@ -1083,6 +1293,7 @@ readonly fields: InstanceFieldRefs;
  */
 export interface Prisma__InstanceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  repository<T extends Prisma.Instance$repositoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Instance$repositoryArgs<ExtArgs>>): Prisma.Prisma__RepositoryClient<runtime.Types.Result.GetResult<Prisma.$RepositoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1143,6 +1354,10 @@ export type InstanceFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
+  /**
    * Filter, which Instance to fetch.
    */
   where: Prisma.InstanceWhereUniqueInput
@@ -1161,6 +1376,10 @@ export type InstanceFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
+  /**
    * Filter, which Instance to fetch.
    */
   where: Prisma.InstanceWhereUniqueInput
@@ -1178,6 +1397,10 @@ export type InstanceFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the Instance
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
   /**
    * Filter, which Instance to fetch.
    */
@@ -1227,6 +1450,10 @@ export type InstanceFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
+  /**
    * Filter, which Instance to fetch.
    */
   where?: Prisma.InstanceWhereInput
@@ -1275,6 +1502,10 @@ export type InstanceFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
+  /**
    * Filter, which Instances to fetch.
    */
   where?: Prisma.InstanceWhereInput
@@ -1318,6 +1549,10 @@ export type InstanceCreateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
+  /**
    * The data needed to create a Instance.
    */
   data: Prisma.XOR<Prisma.InstanceCreateInput, Prisma.InstanceUncheckedCreateInput>
@@ -1351,6 +1586,10 @@ export type InstanceCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    */
   data: Prisma.InstanceCreateManyInput | Prisma.InstanceCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1365,6 +1604,10 @@ export type InstanceUpdateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Instance
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
   /**
    * The data needed to update a Instance.
    */
@@ -1417,6 +1660,10 @@ export type InstanceUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many Instances to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1431,6 +1678,10 @@ export type InstanceUpsertArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Instance
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
   /**
    * The filter to search for the Instance to update in case it exists.
    */
@@ -1458,6 +1709,10 @@ export type InstanceDeleteArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
+  /**
    * Filter which Instance to delete.
    */
   where: Prisma.InstanceWhereUniqueInput
@@ -1478,6 +1733,25 @@ export type InstanceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * Instance.repository
+ */
+export type Instance$repositoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Repository
+   */
+  select?: Prisma.RepositorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Repository
+   */
+  omit?: Prisma.RepositoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepositoryInclude<ExtArgs> | null
+  where?: Prisma.RepositoryWhereInput
+}
+
+/**
  * Instance without action
  */
 export type InstanceDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1489,4 +1763,8 @@ export type InstanceDefaultArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Omit specific fields from the Instance
    */
   omit?: Prisma.InstanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InstanceInclude<ExtArgs> | null
 }

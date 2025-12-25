@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Instance: 'Instance',
+  Repository: 'Repository',
   Denylist: 'Denylist',
   IgnoreHost: 'IgnoreHost'
 } as const
@@ -88,6 +89,17 @@ export const InstanceScalarFieldEnum = {
 } as const
 
 export type InstanceScalarFieldEnum = (typeof InstanceScalarFieldEnum)[keyof typeof InstanceScalarFieldEnum]
+
+
+export const RepositoryScalarFieldEnum = {
+  url: 'url',
+  name: 'name',
+  description: 'description',
+  updated_at: 'updated_at',
+  created_at: 'created_at'
+} as const
+
+export type RepositoryScalarFieldEnum = (typeof RepositoryScalarFieldEnum)[keyof typeof RepositoryScalarFieldEnum]
 
 
 export const DenylistScalarFieldEnum = {

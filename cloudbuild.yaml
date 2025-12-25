@@ -25,13 +25,15 @@ steps:
           --platform managed \
           --region ${_REGION} \
           --allow-unauthenticated \
-          --update-secrets "DATABASE_URL=DATABASE_URL:latest,TASK_SECRET=TASK_SECRET:latest"
+          --update-secrets "DATABASE_URL=DATABASE_URL:latest,TASK_SECRET=TASK_SECRET:latest,GITHUB_TOKEN=GITHUB_TOKEN:latest"
 availableSecrets:
   secretManager:
     - versionName: projects/1023578240084/secrets/DATABASE_URL/versions/latest
       env: DATABASE_URL
     - versionName: projects/1023578240084/secrets/TASK_SECRET/versions/latest
       env: TASK_SECRET
+    - versionName: projects/1023578240084/secrets/GITHUB_TOKEN/versions/latest
+      env: GITHUB_TOKEN
 substitutions:
   _LOCATION: asia-northeast1
   _REGION: asia-northeast1
