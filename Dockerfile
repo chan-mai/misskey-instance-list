@@ -1,3 +1,4 @@
+
 FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -24,5 +25,8 @@ RUN pnpm nuxt prepare && pnpm prisma generate && pnpm build
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/.output /app/.output
+# prisma directory is needed for migrations
+COPY --from=build /app/prisma /app/prisma 
+
 EXPOSE 3000
 CMD [ "sh", "-c", "pnpm prisma migrate deploy && pnpm start" ]
