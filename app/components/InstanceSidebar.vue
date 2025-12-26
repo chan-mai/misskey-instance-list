@@ -63,32 +63,6 @@
           </div>
         </form>
 
-        <!-- リポジトリフィルタ -->
-        <div class="mb-6">
-          <label class="form-label block text-sm font-medium mb-1" for="repository">Software / Repository Filter</label>
-          <div class="relative">
-            <select 
-              id="repository" 
-              v-model="repositoryPartial"
-              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 appearance-none"
-            >
-              <option value="">All Software</option>
-              <option 
-                v-for="repo in repositories" 
-                :key="repo.url" 
-                :value="repo.url"
-              >
-                {{ repo.name || repo.url }}
-              </option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        
         <!-- 並び順 -->
         <div>
           <label class="form-label block text-sm font-medium mb-1" for="orderBy">並び順</label>
@@ -108,6 +82,59 @@
               </svg>
             </button>
           </div>
+        </div>
+
+        <!-- リポジトリフィルタ -->
+        <div class="mb-6">
+          <label class="form-label block text-sm font-medium mb-1" for="repository">ソフトウェア</label>
+          <div class="relative">
+            <select 
+              id="repository" 
+              v-model="repositoryPartial"
+              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 appearance-none"
+            >
+              <option value="">すべてのソフトウェア</option>
+              <option 
+                v-for="repo in repositories" 
+                :key="repo.url" 
+                :value="repo.url"
+              >
+                {{ repo.name || repo.url }}
+              </option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 言語フィルタ -->
+        <div class="mb-6">
+          <label class="form-label block text-sm font-medium mb-1" for="language">言語</label>
+          <div class="relative">
+            <select 
+              id="language" 
+              v-model="languagePartial"
+              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 appearance-none"
+            >
+              <option value="">すべての言語</option>
+              <option 
+                v-for="lang in languages" 
+                :key="lang.code" 
+                :value="lang.code"
+              >
+                {{ getLanguageName(lang.code) }}
+              </option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">※ 自動検出のため、実際の主要言語と異なる場合があります</p>
         </div>
         
         <!-- 表示 -->
@@ -158,6 +185,8 @@ const props = defineProps<{
   searchQuery: string;
   repositoryFilter: string;
   repositories?: { url: string; name: string | null; count: number }[];
+  languageFilter: string;
+  languages?: { code: string; count: number }[];
   orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
   order: 'asc' | 'desc';
   view: 'grid' | 'list';
@@ -166,6 +195,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   search: [query: string];
   'update:repositoryFilter': [value: string];
+  'update:languageFilter': [value: string];
   'update:orderBy': [value: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt'];
   'update:order': [value: 'asc' | 'desc'];
   'update:view': [value: 'grid' | 'list'];
@@ -174,6 +204,7 @@ const emit = defineEmits<{
 const isOpen = ref(false);
 const queryPartial = ref(props.searchQuery);
 const repositoryPartial = ref(props.repositoryFilter);
+const languagePartial = ref(props.languageFilter);
 
 watch(() => props.searchQuery, (newVal) => {
   queryPartial.value = newVal;
@@ -183,9 +214,19 @@ watch(() => props.repositoryFilter, (newVal) => {
   repositoryPartial.value = newVal;
 });
 
+watch(() => props.languageFilter, (newVal) => {
+  languagePartial.value = newVal;
+});
+
 watch(repositoryPartial, (newVal) => {
   if (newVal !== props.repositoryFilter) {
     emit('update:repositoryFilter', newVal);
+  }
+});
+
+watch(languagePartial, (newVal) => {
+  if (newVal !== props.languageFilter) {
+    emit('update:languageFilter', newVal);
   }
 });
 
@@ -203,6 +244,19 @@ const viewValue = computed({
   get: () => props.view,
   set: (val) => emit('update:view', val)
 });
+
+function getLanguageName(code: string) {
+  try {
+    // detectLanguage now returns ISO 639-1 directly
+    const name = new Intl.DisplayNames(code, { type: 'language' }).of(code);
+    if (name && name !== code) {
+      return `${name} (${code})`;
+    }
+  } catch {
+    // ignore
+  }
+  return code;
+}
 
 function applyQuery() {
   isOpen.value = false;

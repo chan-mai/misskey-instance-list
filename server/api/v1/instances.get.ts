@@ -6,9 +6,11 @@ import { prisma } from '~~/server/utils/prisma';
  * クエリパラメータ:
  * - sort: ソート項目 ('notes' | 'users')
  * - order: ソート順序 ('asc' | 'desc')
- * - limit: 1ページあたりの件数（デフォルト: 30）
- * - offset: オフセット（デフォルト: 0）
- * - search: 検索クエリ（オプション）
+ * - limit: 1ページあたりの件数 (デフォルト: 30)
+ * - offset: オフセット (デフォルト: 0)
+ * - search: 検索クエリ (オプション)
+ * - language: 言語コード (ISO 639-1) (オプション)
+ * - repository: リポジトリURL (オプション)
  *
  * レスポンス:
  * - items: インスタンス配列
@@ -36,7 +38,13 @@ export default defineCachedEventHandler(async(event) => {
     created_at?: 'asc' | 'desc';
     recommendation_score?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
     repository_url?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
-  };
+  } | Array<{
+    notes_count?: 'asc' | 'desc';
+    users_count?: 'asc' | 'desc';
+    created_at?: 'asc' | 'desc';
+    recommendation_score?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
+    repository_url?: 'asc' | 'desc' | { sort: 'asc' | 'desc', nulls: 'last' | 'first' };
+  }>;
   let orderBy: OrderByType;
   switch (sort) {
     case 'notes':
@@ -75,6 +83,7 @@ export default defineCachedEventHandler(async(event) => {
       node_name?: { contains: string; mode: 'insensitive' };
     }>;
     repository_url?: string | { contains: string; mode: 'insensitive' };
+    language?: string;
   }
 
   const where: WhereCondition = {
@@ -98,6 +107,12 @@ export default defineCachedEventHandler(async(event) => {
     } else {
       where.repository_url = repository;
     }
+  }
+
+  // 言語フィルタ
+  const language = query.language as string | undefined;
+  if (language) {
+    where.language = language;
   }
 
   // 総件数を取得
@@ -127,6 +142,7 @@ export default defineCachedEventHandler(async(event) => {
     icon_url: i.icon_url,
     recommendation_score: i.recommendation_score ?? null,
     repository_url: i.repository_url,
+    language: i.language ?? null,
   }));
 
   return {

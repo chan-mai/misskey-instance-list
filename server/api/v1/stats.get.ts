@@ -1,7 +1,7 @@
 import { prisma } from '~~/server/utils/prisma';
 
 export default defineCachedEventHandler(async() => {
-  // 関知済みインスタンス数をカウント（停止中・消滅したものも含む）
+  // 関知済みインスタンス数をカウント (停止中・消滅したものも含む)
   const known = await prisma.instance.count();
 
   // アクティブなインスタンス数をカウント
@@ -52,6 +52,27 @@ export default defineCachedEventHandler(async() => {
     };
   });
 
+  // 言語の使用状況を取得
+  const langStats = await prisma.instance.groupBy({
+    by: ['language'],
+    where: {
+      is_alive: true,
+      language: { not: null }
+    },
+    _count: {
+      language: true
+    },
+    orderBy: {
+      _count: {
+        language: 'desc'
+      }
+    }
+  });
+
+  const languages = langStats.map(stat => ({
+    code: stat.language as string,
+    count: stat._count.language
+  }));
 
   return {
     counts: {
@@ -60,7 +81,8 @@ export default defineCachedEventHandler(async() => {
       denies: denyCount,
       ignores: ignoreCount
     },
-    repositories
+    repositories,
+    languages
   };
 }, {
   maxAge: 60 * 60

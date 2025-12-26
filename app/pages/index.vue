@@ -19,6 +19,7 @@ if (import.meta.client) {
 
 const f_query = ref<string>('');
 const f_repository = ref<string>('');
+const f_language = ref<string>('');
 const f_orderBy = ref<Mq1MisskeyInstanceListStorage['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
 const f_order = ref<Mq1MisskeyInstanceListStorage['f_order']>(savedSettings?.f_order ?? 'desc');
 const v_view = ref<Mq1MisskeyInstanceListStorage['v_view']>(savedSettings?.v_view ?? 'grid');
@@ -73,7 +74,8 @@ async function fetchInstances(reset = false) {
       limit: PAGE_SIZE.toString(),
       offset: currentOffset.toString(),
       ...(f_query.value && { search: f_query.value }),
-      ...(f_repository.value && { repository: f_repository.value })
+      ...(f_repository.value && { repository: f_repository.value }),
+      ...(f_language.value && { language: f_language.value })
     });
     
     const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`);
@@ -157,11 +159,14 @@ useHead({
           :search-query="f_query"
           :repository-filter="f_repository"
           :repositories="stats?.repositories"
+          :language-filter="f_language"
+          :languages="stats?.languages"
           v-model:order-by="f_orderBy"
           v-model:order="f_order"
           v-model:view="v_view"
           @search="(q) => { f_query = q; fetchInstances(true); }"
           @update:repository-filter="(r) => { f_repository = r; fetchInstances(true); }"
+          @update:language-filter="(l) => { f_language = l; fetchInstances(true); }"
         />
         
         <!-- サーバー一覧 -->

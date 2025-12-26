@@ -28,10 +28,12 @@ model Instance {
   suspension_state SuspensionState  @default(none)
   recommendation_score Float?
   repository_url   String?
+  language         String?
   repository       Repository?      @relation(fields: [repository_url], references: [url])
 
   @@map("instances")
   @@index([repository_url])
+  @@index([language])
 }
 
 model Repository {
