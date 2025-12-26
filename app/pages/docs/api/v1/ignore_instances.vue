@@ -38,7 +38,7 @@
         </p>
         <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 ml-4">
           <li><code>domain</code> (string): ホスト名</li>
-          <li><code>reason</code> (string | null): 無視理由（設定されている場合）</li>
+          <li><code>reason</code> (string | null): 無視理由 (設定されている場合)</li>
         </ul>
       </section>
 

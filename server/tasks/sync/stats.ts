@@ -1,5 +1,6 @@
 import { prisma } from '../../utils/prisma';
 import { validateInstance, saveInstance } from '../../utils/misskey';
+import { detectLanguage } from '../../utils/detectLanguage';
 
 export default defineTask({
   meta: {
@@ -49,8 +50,14 @@ export default defineTask({
       await Promise.all(chunk.map(async(row: { id: string }) => {
         try {
           const res = await validateInstance(prisma, row.id);
+          
+          let language: string | null = null;
+          if (res.info && res.info.description) {
+            language = detectLanguage(res.info.description);
+          }
+
           // repository_url is updated in saveInstance if present in res.info
-          await saveInstance(prisma, row.id, res, now);
+          await saveInstance(prisma, row.id, res, now, language);
         } catch(e) {
           console.error(`Error syncing ${row.id}:`, e);
         }

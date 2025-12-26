@@ -11,4 +11,5 @@ interface Instance {
   icon_url: string | null;
   banner_url: string | null;
   recommendation_score: number | null;
+  language?: string | null;
 }

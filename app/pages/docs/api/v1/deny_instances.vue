@@ -11,7 +11,7 @@
         <h1 class="text-3xl font-bold text-slate-900 dark:text-white font-mono">/api/v1/deny_instances</h1>
       </div>
       <p class="text-slate-600 dark:text-slate-300 mb-8">
-        拒否リスト（Denylist）に登録されているサーバーの一覧を取得します。
+        拒否リスト (Denylist)に登録されているサーバーの一覧を取得します。
         これらのサーバーはリストから除外されています。
       </p>
 
@@ -38,7 +38,7 @@
         </p>
         <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 ml-4">
           <li><code>domain</code> (string): ホスト名</li>
-          <li><code>reason</code> (string | null): 拒否理由（設定されている場合）</li>
+          <li><code>reason</code> (string | null): 拒否理由 (設定されている場合)</li>
         </ul>
       </section>
 

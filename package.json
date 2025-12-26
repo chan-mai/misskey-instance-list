@@ -17,6 +17,7 @@
     "@prisma/client": "^7.2.0",
     "js-yaml": "^4.1.1",
     "kiso.css": "^1.2.2",
+    "languagedetect": "^2.0.0",
     "nuxt": "^4.2.2",
     "nuxt-gtag": "4.1.0",
     "pg": "^8.16.3",

@@ -11,6 +11,7 @@ export interface InstanceInfo {
   repositoryUrl: string | null;
   nodeinfoRepositoryUrl?: string | null;
   metaRepositoryUrl?: string | null;
+  description?: string;
 }
 
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
@@ -193,7 +194,8 @@ export type InstanceResult = {
           icon,
           repositoryUrl,
           nodeinfoRepositoryUrl,
-          metaRepositoryUrl
+          metaRepositoryUrl,
+          description
         },
       };
 
@@ -223,7 +225,7 @@ export async function validateInstance(
   // Botで既にGONEならBrowserチェックするまでもなくGONE
   if (botRes.error === 'GONE') return botRes;
 
-  // Botでタイムアウトなら、とりあえずタイムアウトとして返す（ブラウザチェック不要）
+  // Botでタイムアウトなら、とりあえずタイムアウトとして返す (ブラウザチェック不要)
   // NOTE: ブラウザだと通るケースも考えられるが、クローラーがアクセスできなければ意味がないので
   if (!botRes.info) return botRes;
 
@@ -282,7 +284,7 @@ export async function validateInstance(
     const botSoftware = botInfo.softwareName?.toLowerCase() || '';
     const browserSoftware = browserInfo.softwareName?.toLowerCase() || '';
 
-    // JoinMisskey相手にはMisskeyを返すが、ブラウザにはそれ以外（かつEmptyでない）を返す場合
+    // JoinMisskey相手にはMisskeyを返すが、ブラウザにはそれ以外 (かつEmptyでない)を返す場合
     if (
       botSoftware === 'misskey' &&
       browserSoftware !== 'misskey' &&
@@ -373,7 +375,7 @@ async function resolveRepositoryInfo(repositoryUrl: string) {
                                 // 成功した場合のみキャッシュする
                                 repositoryCache.set(repositoryName, repository);
                             } else {
-                                // その他のエラー（404, 500等）
+                                // その他のエラー (404, 500等)
                                 console.warn(`GitHub API Error for ${repositoryName}: ${ghRes.status}`);
                                 // 404の場合は、繰り返しの404を防ぐためにnullをキャッシュする
                                 // それ以外はスキップする
@@ -411,12 +413,14 @@ async function resolveRepositoryInfo(repositoryUrl: string) {
  *
  * @param res - The fetched instance result containing `info` (metadata) or an `error` code
  * @param now - Timestamp to record as the last check time
+ * @param language - Optional language detected from instance description
  */
 export async function saveInstance(
   prisma: PrismaClient,
   id: string,
   res: InstanceResult,
-  now: Date
+  now: Date,
+  language?: string | null
 ) {
   const info = res.info;
 
@@ -435,11 +439,12 @@ export async function saveInstance(
                   last_check_at: now,
                   banner_url: info.banner,
                   icon_url: info.icon,
-                  suspension_state: 'none' as SuspensionState
+                  suspension_state: 'none' as SuspensionState,
+                  language: language
               }
           });
 
-          // リポジトリのリレーションを更新（connectOrCreate/upsertロジックを使用）
+          // リポジトリのリレーションを更新 (connectOrCreate/upsertロジックを使用)
           if (info.repositoryUrl && repoInfo) {
               const { repositoryName, repository } = repoInfo;
 
@@ -463,7 +468,7 @@ export async function saveInstance(
                   }
               });
           } else {
-              // repositoryUrlがnullの場合、リレーションを解除する（nullを設定）
+              // repositoryUrlがnullの場合、リレーションを解除する (nullを設定)
               await tx.instance.update({
                   where: { id },
                   data: {

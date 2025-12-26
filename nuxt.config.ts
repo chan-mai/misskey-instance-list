@@ -60,6 +60,9 @@ export default defineNuxtConfig({
     taskSecret: process.env.TASK_SECRET,
     githubToken: process.env.GITHUB_TOKEN,
   },
+  build: {
+    transpile: ['languagedetect']
+  },
   nitro: {
     experimental: { tasks: true },
     prerender: {

@@ -47,10 +47,10 @@
             <li><code class="font-mono text-sm">counts.active</code>: 生存確認ができているインスタンス数</li>
             <li><code class="font-mono text-sm">counts.denies</code>: 拒否リストに含まれるドメイン数</li>
             <li><code class="font-mono text-sm">counts.ignores</code>: 無視リストに含まれるドメイン数</li>
-            <li><code class="font-mono text-sm">repositories</code>: リポジトリごとの使用インスタンス数（多い順）</li>
+            <li><code class="font-mono text-sm">repositories</code>: リポジトリごとの使用インスタンス数 (多い順)</li>
             <li><code class="font-mono text-sm">repositories[].url</code>: リポジトリのURL</li>
             <li><code class="font-mono text-sm">repositories[].name</code>: リポジトリ名 (e.g. user/repo)</li>
-            <li><code class="font-mono text-sm">repositories[].description</code>: リポジトリの説明（GitHubの場合）</li>
+            <li><code class="font-mono text-sm">repositories[].description</code>: リポジトリの説明 (GitHubの場合)</li>
             <li><code class="font-mono text-sm">repositories[].count</code>: このリポジトリを使用しているインスタンス数</li>
           </ul>
         </div>
