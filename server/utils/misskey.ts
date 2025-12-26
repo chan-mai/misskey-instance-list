@@ -454,7 +454,7 @@ async function resolveRepositoryInfo(repositoryUrl: string) {
       repositoryName = repositoryName.replace(/\.git$/, '');
     }
   } catch {
-    // console.warn(`Failed to parse repository URL: ${repositoryUrl}`);
+    console.warn(`Failed to parse repository URL: ${repositoryUrl}`);
   }
 
   return { repositoryName, repository };
@@ -546,7 +546,7 @@ export async function saveInstance(
         });
 
         // トランザクション成功ならループを抜ける
-        return;
+        break;
       } catch (e: any) {
         lastError = e;
         // P2034 (Write conflict) の場合のみリトライ
@@ -560,6 +560,8 @@ export async function saveInstance(
         throw e;
       }
     }
+    // ループ完了後もlastErrorがある場合はthrow（通常到達しないが安全のため）
+    if (lastError) throw lastError;
   } else {
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
