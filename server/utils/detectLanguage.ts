@@ -10,10 +10,15 @@ import { franc } from 'franc';
 export function detectLanguage(text: string | null | undefined): string | null {
   if (!text || text.trim().length === 0) return null;
 
-  const langCode = franc(text, { minLength: 10 });
+  try {
+    const langCode = franc(text, { minLength: 10 });
 
-  // 'und' は undetermined
-  if (langCode === 'und') return null;
+    // 'und' は undetermined
+    if (langCode === 'und') return null;
 
-  return langCode;
+    return langCode;
+  } catch (e) {
+    console.warn('Language detection failed:', e);
+    return null;
+  }
 }
