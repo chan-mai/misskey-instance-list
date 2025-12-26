@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/triple-slash-reference */
+/// <reference path="../types/eld.d.ts" />
 import { detect as tinyDetect } from 'tinyld';
 import { franc } from 'franc';
 import { eld } from 'eld';
@@ -74,7 +76,8 @@ function detectByLibraries(text: string): string | null {
 
   // 2票以上で確定、それ以外はnull
   const sorted = Object.entries(results).sort((a, b) => b[1] - a[1]);
-  if (sorted.length > 0 && sorted[0][1] >= 2) return sorted[0][0];
+  const topResult = sorted[0];
+  if (topResult && topResult[1] >= 2) return topResult[0];
 
   return null;
 }
