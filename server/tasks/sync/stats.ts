@@ -69,7 +69,7 @@ export default defineTask({
           // repository_url is updated in saveInstance if present in res.info
           await saveInstance(prisma, row.id, res, now, language);
         } catch(e) {
-          console.error(`Error syncing ${row.id}:`, e);
+          console.warn(`Error syncing ${row.id}:`, e);
         }
       }));
 
