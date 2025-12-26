@@ -101,7 +101,7 @@ export function detectLanguage(text: string | null | undefined): string | null {
 
 /**
  * 複数のテキストから言語を検出し、最も多く検出された言語を返します。
- * スーパーマジョリティ投票（≥50%）により、精度を向上させます。
+ * スーパーマジョリティ投票（≥60%）により、精度を向上させます。
  *
  * @param texts - 解析するテキストの配列
  * @returns ISO 639-1 言語コード または null
@@ -130,8 +130,8 @@ export function detectLanguageFromTexts(texts: (string | null | undefined)[]): s
     }
   }
 
-  // スーパーマジョリティ（≥50%）を要求
-  const threshold = totalVotes * 0.5;
+  // スーパーマジョリティ（≥60%）を要求
+  const threshold = totalVotes * 0.6;
   if (maxCount < threshold) return null;
 
   return result;
