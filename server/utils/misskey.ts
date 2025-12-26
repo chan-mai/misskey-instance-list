@@ -427,56 +427,80 @@ export async function saveInstance(
   if (info) {
       const repoInfo = info.repositoryUrl ? await resolveRepositoryInfo(info.repositoryUrl) : null;
 
-      await prisma.$transaction(async(tx) => {
-          await tx.instance.updateMany({
-              where: { id },
-              data: {
-                  node_name: info.name,
-                  users_count: info.users,
-                  notes_count: info.notes,
-                  version: info.version,
-                  is_alive: true,
-                  last_check_at: now,
-                  banner_url: info.banner,
-                  icon_url: info.icon,
-                  suspension_state: 'none' as SuspensionState,
-                  language: language
+      const MAX_RETRIES = 3;
+      let lastError: any;
+
+      for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+          await prisma.$transaction(async(tx) => {
+              await tx.instance.updateMany({
+                  where: { id },
+                  data: {
+                      node_name: info.name,
+                      users_count: info.users,
+                      notes_count: info.notes,
+                      version: info.version,
+                      is_alive: true,
+                      last_check_at: now,
+                      banner_url: info.banner,
+                      icon_url: info.icon,
+                      suspension_state: 'none' as SuspensionState,
+                      language: language
+                  }
+              });
+    
+              // リポジトリのリレーションを更新 (connectOrCreate/upsertロジックを使用)
+              if (info.repositoryUrl && repoInfo) {
+                  const { repositoryName, repository } = repoInfo;
+    
+                  await tx.repository.upsert({
+                      where: { url: info.repositoryUrl },
+                      update: {
+                          ...(repositoryName ? { name: repositoryName } : {}),
+                          ...(repository?.description ? { description: repository.description } : {})
+                      },
+                      create: { 
+                          url: info.repositoryUrl,
+                          name: repositoryName,
+                          description: repository?.description || null
+                      }
+                  });
+    
+                  await tx.instance.update({
+                      where: { id },
+                      data: {
+                          repository_url: info.repositoryUrl
+                      }
+                  });
+              } else {
+                  // repositoryUrlがnullの場合、リレーションを解除する (nullを設定)
+                  await tx.instance.update({
+                      where: { id },
+                      data: {
+                          repository_url: null
+                      }
+                  });
               }
           });
-
-          // リポジトリのリレーションを更新 (connectOrCreate/upsertロジックを使用)
-          if (info.repositoryUrl && repoInfo) {
-              const { repositoryName, repository } = repoInfo;
-
-              await tx.repository.upsert({
-                  where: { url: info.repositoryUrl },
-                  update: {
-                      ...(repositoryName ? { name: repositoryName } : {}),
-                      ...(repository?.description ? { description: repository.description } : {})
-                  },
-                  create: { 
-                      url: info.repositoryUrl,
-                      name: repositoryName,
-                      description: repository?.description || null
-                  }
-              });
-
-              await tx.instance.update({
-                  where: { id },
-                  data: {
-                      repository_url: info.repositoryUrl
-                  }
-              });
-          } else {
-              // repositoryUrlがnullの場合、リレーションを解除する (nullを設定)
-              await tx.instance.update({
-                  where: { id },
-                  data: {
-                      repository_url: null
-                  }
-              });
+          
+          // トランザクション成功ならループを抜ける
+          return;
+        } catch (e: any) {
+          lastError = e;
+          // P2034 (Write conflict) の場合のみリトライ
+          if (e.code === 'P2034' && i < MAX_RETRIES - 1) {
+            // 指数バックオフ + ランダムジッター (50ms ~ 200ms程度)
+            const delay = Math.random() * (50 * Math.pow(2, i)); 
+            await new Promise(r => setTimeout(r, 50 + delay));
+            continue;
           }
-      });
+          // その他のエラー、またはリトライ上限の場合はthrow
+          throw e;
+        }
+      }
+      
+      // ここに来ることは基本ないが、念のため
+      if (lastError) throw lastError;
   } else {
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
