@@ -268,6 +268,7 @@ export async function validateInstance(
     'rumisskey',
     'iceshrimp',
     'catodon',
+    'vickey',
   ];
 
   if (botInfo) {
