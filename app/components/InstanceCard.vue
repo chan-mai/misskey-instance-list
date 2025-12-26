@@ -192,18 +192,40 @@ function getProxiedUrl(url: string): string {
   return `/api/image?url=${encodeURIComponent(url)}`;
 }
 
-function resolveUrl(url: string | null | undefined): string | null {
+async function resolveUrl(url: string | null | undefined): Promise<string | null> {
   if (!url) return null;
-  // はなみは強制的にプロキシ
-  if (url.includes('misskey.flowers') || props.instance.id === 'misskey.flowers') {
-    return getProxiedUrl(url);
+  
+  // GETリクエストを送ってみる
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s
+
+    const res = await fetch(url, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      // 200 OK ならそのまま使用
+      return url;
+    }
+  } catch (error) {
+    // CORSエラー、タイムアウト、ネットワークエラーなどはプロキシを使用
+    console.debug(`Direct fetch failed for ${url}, falling back to proxy:`, error);
   }
-  return url;
+
+  // 200以外、またはエラーの場合はプロキシを使用
+  return getProxiedUrl(url);
 }
 
-function updateImages() {
-  fetchedIcon.value = resolveUrl(props.instance.icon_url);
-  fetchedBanner.value = resolveUrl(props.instance.banner_url);
+async function updateImages() {
+  const icon = await resolveUrl(props.instance.icon_url);
+  fetchedIcon.value = icon;
+  
+  const banner = await resolveUrl(props.instance.banner_url);
+  fetchedBanner.value = banner;
 }
 
 // 説明文の状態
@@ -255,14 +277,16 @@ async function updateDescription() {
     clearTimeout(timeoutId);
     
     if (res.ok) {
-      const meta = await res.json();
+      const meta = await res.json() as { description?: string, iconUrl?: string, bannerUrl?: string, backgroundImageUrl?: string };
       if (meta.description) description.value = stripTags(meta.description);
       
       if (meta.iconUrl) {
-          fetchedIcon.value = resolveUrl(meta.iconUrl);
+          const resolved = await resolveUrl(meta.iconUrl);
+          fetchedIcon.value = resolved;
       }
-      if (meta.bannerUrl) {
-          fetchedBanner.value = resolveUrl(meta.bannerUrl || meta.backgroundImageUrl);
+      if (meta.bannerUrl || meta.backgroundImageUrl) {
+          const resolved = await resolveUrl(meta.bannerUrl || meta.backgroundImageUrl);
+          fetchedBanner.value = resolved;
       }
     }
   } catch {
