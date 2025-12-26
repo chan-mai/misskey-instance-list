@@ -62,6 +62,32 @@
             </button>
           </div>
         </form>
+
+        <!-- リポジトリフィルタ -->
+        <div class="mb-6">
+          <label class="form-label block text-sm font-medium mb-1" for="repository">Software / Repository Filter</label>
+          <div class="relative">
+            <select 
+              id="repository" 
+              v-model="repositoryPartial"
+              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 appearance-none"
+            >
+              <option value="">All Software</option>
+              <option 
+                v-for="repo in repositories" 
+                :key="repo.url" 
+                :value="repo.url"
+              >
+                {{ repo.name || repo.url }}
+              </option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
         
         <!-- 並び順 -->
         <div>
@@ -130,6 +156,8 @@ const props = defineProps<{
   loading: boolean;
   totalCount: string;
   searchQuery: string;
+  repositoryFilter: string;
+  repositories?: { url: string; name: string | null; count: number }[];
   orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
   order: 'asc' | 'desc';
   view: 'grid' | 'list';
@@ -137,6 +165,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   search: [query: string];
+  'update:repositoryFilter': [value: string];
   'update:orderBy': [value: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt'];
   'update:order': [value: 'asc' | 'desc'];
   'update:view': [value: 'grid' | 'list'];
@@ -144,9 +173,20 @@ const emit = defineEmits<{
 
 const isOpen = ref(false);
 const queryPartial = ref(props.searchQuery);
+const repositoryPartial = ref(props.repositoryFilter);
 
 watch(() => props.searchQuery, (newVal) => {
   queryPartial.value = newVal;
+});
+
+watch(() => props.repositoryFilter, (newVal) => {
+  repositoryPartial.value = newVal;
+});
+
+watch(repositoryPartial, (newVal) => {
+  if (newVal !== props.repositoryFilter) {
+    emit('update:repositoryFilter', newVal);
+  }
 });
 
 const orderByValue = computed({

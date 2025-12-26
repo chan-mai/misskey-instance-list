@@ -32,7 +32,7 @@
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">sort</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">string</td>
                 <td class="py-3 px-4 text-slate-500 dark:text-slate-400">"users"</td>
-                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">ソート項目。<code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">users</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">notes</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">createdAt</code> のいずれか</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">ソート項目。<code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">users</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">notes</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">createdAt</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">recommended</code>, <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">repository</code> のいずれか</td>
               </tr>
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">order</td>
@@ -57,6 +57,12 @@
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">string</td>
                 <td class="py-3 px-4 text-slate-500 dark:text-slate-400">-</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">サーバー名で検索（部分一致）</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">repository</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">string</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">-</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">リポジトリURL（完全一致）</td>
               </tr>
             </tbody>
           </table>
