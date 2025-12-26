@@ -35,7 +35,7 @@ export default defineTask({
 
     console.log(`Syncing stats for ${all.length} instances...`);
 
-    const chunkSize = 50; 
+    const chunkSize = 25; 
     let processed = 0;
 
     for (let i = 0; i < all.length; i += chunkSize) {
