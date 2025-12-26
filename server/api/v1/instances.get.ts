@@ -96,7 +96,7 @@ export default defineCachedEventHandler(async(event) => {
     if (repository === 'official') {
       where.repository_url = 'https://github.com/misskey-dev/misskey';
     } else {
-      where.repository_url = { contains: repository, mode: 'insensitive' };
+      where.repository_url = repository;
     }
   }
 
