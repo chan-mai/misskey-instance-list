@@ -67,12 +67,14 @@ export async function getInstanceInfo(
         }
       }
       // 再試行しないエラー、または再試行上限
-      console.warn(
-        `Failed to fetch nodeinfo for ${host} (Attempt ${
-          i + 1
-        }/${RETRY_LIMIT}):`,
-        e.message
-      );
+      if (i === RETRY_LIMIT - 1) {
+        console.warn(
+          `Failed to fetch nodeinfo for ${host} (Attempt ${
+            i + 1
+          }/${RETRY_LIMIT}):`,
+          e.message
+        );
+      }
       return { info: null, error: 'TIMEOUT' };
     }
   }
@@ -186,25 +188,23 @@ export async function getInstanceInfo(
           });
 
           if (metaRes.ok) {
-            let meta: any;
             try {
-              meta = await metaRes.json();
+              const meta = await metaRes.json();
+              clearTimeout(metaTimeoutId); // 成功したらタイマー解除
+
+              if (meta.bannerUrl) banner = meta.bannerUrl;
+              if (meta.iconUrl) icon = meta.iconUrl;
+              if (meta.name) name = meta.name;
+              if (meta.description) description = meta.description;
+              if (meta.version) version = meta.version;
+              // api/metaの情報を優先して採用する
+              if (meta.repositoryUrl) {
+                repositoryUrl = meta.repositoryUrl;
+                metaRepositoryUrl = meta.repositoryUrl;
+              }
             } catch {
               console.warn(`Failed to parse api/meta for ${host}: Invalid JSON`);
-              // JSONパースエラー時はmetaRes処理をスキップ
-              return;
-            }
-            clearTimeout(metaTimeoutId); // 成功したらタイマー解除
-
-            if (meta.bannerUrl) banner = meta.bannerUrl;
-            if (meta.iconUrl) icon = meta.iconUrl;
-            if (meta.name) name = meta.name;
-            if (meta.description) description = meta.description;
-            if (meta.version) version = meta.version;
-            // api/metaの情報を優先して採用する
-            if (meta.repositoryUrl) {
-              repositoryUrl = meta.repositoryUrl;
-              metaRepositoryUrl = meta.repositoryUrl;
+              // JSONパースエラー時は何もせず続行
             }
           }
         } finally {
