@@ -353,13 +353,14 @@ export async function validateInstance(
 type GitHubRepository = {
   description: string | null;
   cachedAt: number;
+  notFound?: boolean; // 404エラーの場合はtrue
 };
-const repositoryCache = new Map<string, GitHubRepository | null>();
+const repositoryCache = new Map<string, GitHubRepository>();
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 function getCachedRepository(
   name: string
-): GitHubRepository | null | undefined {
+): GitHubRepository | undefined {
   const cached = repositoryCache.get(name);
   if (cached && Date.now() - cached.cachedAt > CACHE_TTL_MS) {
     repositoryCache.delete(name);
@@ -384,7 +385,8 @@ async function resolveRepositoryInfo(repositoryUrl: string) {
         if (repositoryName) {
           const cached = getCachedRepository(repositoryName);
           if (cached !== undefined) {
-            repository = cached;
+            // notFoundフラグがある場合はnullとして扱う
+            repository = cached.notFound ? null : cached;
           } else {
             try {
               const headers: Record<string, string> = {
@@ -426,10 +428,14 @@ async function resolveRepositoryInfo(repositoryUrl: string) {
                 console.warn(
                   `GitHub API Error for ${repositoryName}: ${ghRes.status}`
                 );
-                // 404の場合は、繰り返しの404を防ぐためにnullをキャッシュする
+                // 404の場合は、繰り返しの404を防ぐためにキャッシュする
                 // それ以外はスキップする
                 if (ghRes.status === 404) {
-                  repositoryCache.set(repositoryName, null);
+                  repositoryCache.set(repositoryName, {
+                    description: null,
+                    cachedAt: Date.now(),
+                    notFound: true,
+                  });
                 }
               }
             } catch (e: any) {
