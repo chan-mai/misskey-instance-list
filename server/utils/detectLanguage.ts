@@ -53,8 +53,8 @@ export function detectLanguage(text: string | null | undefined): string | null {
   
   const results = detector.detect(text, 1); // 上位1件を取得
 
-  if (results.length > 0) {
-    const [language] = results[0];
+  if (results.length > 0 && results[0]) {
+    const language = results[0][0];
     
     // マッピングされている最上位のものを採用
     const formattedLang = language.toLowerCase();
