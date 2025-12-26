@@ -20,6 +20,9 @@ importers:
       '@prisma/client':
         specifier: ^7.2.0
         version: 7.2.0(prisma@7.2.0(@types/react@19.2.7)(magicast@0.5.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3)
+      eld:
+        specifier: ^1.0.1
+        version: 1.0.1
       franc:
         specifier: ^6.2.0
         version: 6.2.0
@@ -44,6 +47,9 @@ importers:
       prisma:
         specifier: ^7.2.0
         version: 7.2.0(@types/react@19.2.7)(magicast@0.5.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
+      tinyld:
+        specifier: ^1.3.4
+        version: 1.3.4
       vue:
         specifier: ^3.5.25
         version: 3.5.26(typescript@5.9.3)
@@ -2177,6 +2183,9 @@ packages:
   effect@3.18.4:
     resolution: {integrity: sha512-b1LXQJLe9D11wfnOKAk3PKxuqYshQ0Heez+y5pnkd3jLj1yx9QhM72zZ9uUrOQyNvrs2GZZd/3maL0ZV18YuDA==}
 
+  eld@1.0.1:
+    resolution: {integrity: sha512-+6BuR0EY2CsUZZGgGfOhV5iq9b7HdhwqwvxkdcxI+w/Mr3P22ic9VuxYnPkwh2HZNJC23wPI4pIYe+hKEbiyYA==}
+
   electron-to-chromium@1.5.267:
     resolution: {integrity: sha512-0Drusm6MVRXSOJpGbaSVgcQsuB4hEkMpHXaVstcPmhu5LIedxs1xNK/nIxmQIU/RPC0+1/o0AVZfBTkTNJOdUw==}
 
@@ -4006,6 +4015,11 @@ packages:
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
+
+  tinyld@1.3.4:
+    resolution: {integrity: sha512-u26CNoaInA4XpDU+8s/6Cq8xHc2T5M4fXB3ICfXPokUQoLzmPgSZU02TAkFwFMJCWTjk53gtkS8pETTreZwCqw==}
+    engines: {node: '>= 12.10.0', npm: '>= 6.12.0', yarn: '>= 1.20.0'}
+    hasBin: true
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -6653,6 +6667,8 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
 
+  eld@1.0.1: {}
+
   electron-to-chromium@1.5.267: {}
 
   emoji-regex@8.0.0: {}
@@ -8784,6 +8800,8 @@ snapshots:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
+
+  tinyld@1.3.4: {}
 
   to-regex-range@5.0.1:
     dependencies:

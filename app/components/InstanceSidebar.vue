@@ -245,24 +245,16 @@ const viewValue = computed({
   set: (val) => emit('update:view', val)
 });
 
-// ISO 639-3 から ISO 639-1 への変換を使用
-import { iso6393To1 } from 'iso-639-3';
-
 function getLanguageName(code: string) {
   try {
-    // ISO 639-3 を ISO 639-1 に変換（Intl.DisplayNamesがISO 639-1をより良くサポート）
-    const iso1Code = iso6393To1[code];
-    const displayCode = iso1Code || code;
-    
-    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(displayCode);
-    // Intl.DisplayNamesがコードをそのまま返す場合は変換失敗
-    if (name && name !== displayCode && name !== code) {
+    // detectLanguage now returns ISO 639-1 directly
+    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(code);
+    if (name && name !== code) {
       return `${name} (${code})`;
     }
   } catch {
     // ignore
   }
-  
   return code;
 }
 
