@@ -1,0 +1,16 @@
+declare module 'eld' {
+  interface LanguageResult {
+    language: string;
+    getScores(): Record<string, number>;
+    isReliable(): boolean;
+  }
+
+  export const eld: {
+    detect(text: string): LanguageResult;
+    cleanText(flag: boolean): void;
+    dynamicLangSubset(languages: string[] | false): void;
+    saveSubset(languages: string[]): void;
+    loadNgrams(path: string): Promise<void>;
+    info(): object;
+  };
+}

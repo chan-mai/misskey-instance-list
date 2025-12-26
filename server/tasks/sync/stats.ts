@@ -1,5 +1,6 @@
 import { prisma } from '../../utils/prisma';
-import { validateInstance, saveInstance } from '../../utils/misskey';
+import { validateInstance, saveInstance, fetchLocalTimeline } from '../../utils/misskey';
+import { detectLanguageFromTexts } from '../../utils/detectLanguage';
 
 export default defineTask({
   meta: {
@@ -49,10 +50,26 @@ export default defineTask({
       await Promise.all(chunk.map(async(row: { id: string }) => {
         try {
           const res = await validateInstance(prisma, row.id);
+          
+          let language: string | null = null;
+          if (res.info) {
+            const texts: string[] = [];
+            
+            // サーバー名と説明文を追加
+            if (res.info.name) texts.push(res.info.name);
+            if (res.info.description) texts.push(res.info.description);
+            
+            // タイムラインの投稿を取得して言語検出の精度を向上
+            const timelinePosts = await fetchLocalTimeline(row.id, 30);
+            texts.push(...timelinePosts);
+            
+            language = detectLanguageFromTexts(texts);
+          }
+
           // repository_url is updated in saveInstance if present in res.info
-          await saveInstance(prisma, row.id, res, now);
+          await saveInstance(prisma, row.id, res, now, language);
         } catch(e) {
-          console.error(`Error syncing ${row.id}:`, e);
+          console.warn(`Error syncing ${row.id}:`, e);
         }
       }));
 
