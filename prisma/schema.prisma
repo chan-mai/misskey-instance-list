@@ -33,6 +33,7 @@ model Instance {
 
   @@map("instances")
   @@index([repository_url])
+  @@index([language])
 }
 
 model Repository {
