@@ -91,7 +91,8 @@
       "last_updated": 1704153600000,
       "last_check_at": 1704153600000,
       "banner_url": "https://example.com/banner.jpg",
-      "icon_url": "https://example.com/icon.png"
+      "icon_url": "https://example.com/icon.png",
+      "language": "ja"
     }
   ],
   "total": 500,
