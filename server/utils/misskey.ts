@@ -466,7 +466,7 @@ export async function saveInstance(
                       }
                   });
     
-                  await tx.instance.update({
+                  await tx.instance.updateMany({
                       where: { id },
                       data: {
                           repository_url: info.repositoryUrl
@@ -474,7 +474,7 @@ export async function saveInstance(
                   });
               } else {
                   // repositoryUrlがnullの場合、リレーションを解除する (nullを設定)
-                  await tx.instance.update({
+                  await tx.instance.updateMany({
                       where: { id },
                       data: {
                           repository_url: null
