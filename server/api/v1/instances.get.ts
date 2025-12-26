@@ -9,6 +9,8 @@ import { prisma } from '~~/server/utils/prisma';
  * - limit: 1ページあたりの件数 (デフォルト: 30)
  * - offset: オフセット (デフォルト: 0)
  * - search: 検索クエリ (オプション)
+ * - language: 言語コード (ISO 639-1) (オプション)
+ * - repository: リポジトリURL (オプション)
  *
  * レスポンス:
  * - items: インスタンス配列
