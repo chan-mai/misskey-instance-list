@@ -248,7 +248,7 @@ const viewValue = computed({
 function getLanguageName(code: string) {
   try {
     // detectLanguage now returns ISO 639-1 directly
-    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(code);
+    const name = new Intl.DisplayNames(code, { type: 'language' }).of(code);
     if (name && name !== code) {
       return `${name} (${code})`;
     }
