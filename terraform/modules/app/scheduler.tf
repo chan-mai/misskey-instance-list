@@ -7,7 +7,7 @@ resource "google_cloud_scheduler_job" "sync_recommendation_scores" {
   description      = "Update instance recommendation scores (Version usage, Activity, etc.)"
   schedule         = "0 */6 * * *"
   time_zone        = "Asia/Tokyo"
-  attempt_deadline = "180s"
+  attempt_deadline = "1800s"
   project          = var.project_id
 
   retry_config {
@@ -31,8 +31,8 @@ resource "google_cloud_scheduler_job" "sync_stats" {
   region           = var.region
   description      = "Sync instance statistics (users, notes, etc.)"
   schedule         = "0 */6 * * *"
-  time_zone        = "Etc/UTC"
-  attempt_deadline = "180s"
+  time_zone        = "Asia/Tokyo"
+  attempt_deadline = "1800s"
   project          = var.project_id
 
   retry_config {
@@ -57,8 +57,8 @@ resource "google_cloud_scheduler_job" "discovery" {
   region           = var.region
   description      = "Discover new Misskey instances from known instances"
   schedule         = "*/30 * * * *"
-  time_zone        = "Etc/UTC"
-  attempt_deadline = "180s"
+  time_zone        = "Asia/Tokyo"
+  attempt_deadline = "1800s"
   project          = var.project_id
 
   retry_config {
@@ -83,8 +83,8 @@ resource "google_cloud_scheduler_job" "update" {
   region           = var.region
   description      = "Update instance information (version, name, etc.)"
   schedule         = "*/10 * * * *"
-  time_zone        = "Etc/UTC"
-  attempt_deadline = "180s"
+  time_zone        = "Asia/Tokyo"
+  attempt_deadline = "1800s"
   project          = var.project_id
 
   retry_config {
@@ -109,8 +109,8 @@ resource "google_cloud_scheduler_job" "sync_denylist" {
   region           = var.region
   description      = "Sync denylist from external source"
   schedule         = "0 * * * *"
-  time_zone        = "Etc/UTC"
-  attempt_deadline = "180s"
+  time_zone        = "Asia/Tokyo"
+  attempt_deadline = "1800s"
   project          = var.project_id
 
   retry_config {
