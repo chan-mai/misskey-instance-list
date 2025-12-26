@@ -8,6 +8,7 @@ resource "google_cloud_run_service" "main" {
 
   template {
     spec {
+      timeout_seconds = 1800
       containers {
         # Deploy from Artifact Registry
         image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.cloud_run_source_deploy.repository_id}/${var.service_name}:latest"
