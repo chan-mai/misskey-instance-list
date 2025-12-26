@@ -83,7 +83,12 @@ export async function getInstanceInfo(
     return { info: null, error: 'TIMEOUT' }; // TIMEOUTというか接続不可全般
   }
 
-  const wkJson = (await wkRes.json()) as any;
+  let wkJson: any;
+  try {
+    wkJson = await wkRes.json();
+  } catch {
+    return { info: null, error: 'UNKNOWN' };
+  }
   const links = wkJson.links || [];
 
   const link =
@@ -111,7 +116,13 @@ export async function getInstanceInfo(
       return { info: null, error: 'TIMEOUT' };
     }
 
-    const ni = (await niRes.json()) as any;
+    let ni: any;
+    try {
+      ni = await niRes.json();
+    } catch {
+      console.warn(`Failed to parse nodeinfo for ${host}: Invalid JSON`);
+      return { info: null, error: 'UNKNOWN' };
+    }
 
     const metadata = ni.metadata || {};
     const usage = ni.usage || {};
@@ -175,7 +186,14 @@ export async function getInstanceInfo(
           });
 
           if (metaRes.ok) {
-            const meta = (await metaRes.json()) as any;
+            let meta: any;
+            try {
+              meta = await metaRes.json();
+            } catch {
+              console.warn(`Failed to parse api/meta for ${host}: Invalid JSON`);
+              // JSONパースエラー時はmetaRes処理をスキップ
+              return;
+            }
             clearTimeout(metaTimeoutId); // 成功したらタイマー解除
 
             if (meta.bannerUrl) banner = meta.bannerUrl;
