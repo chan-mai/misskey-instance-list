@@ -16,6 +16,7 @@
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "franc": "^6.2.0",
+    "iso-639-3": "^3.0.1",
     "js-yaml": "^4.1.1",
     "kiso.css": "^1.2.2",
     "nuxt": "^4.2.2",
