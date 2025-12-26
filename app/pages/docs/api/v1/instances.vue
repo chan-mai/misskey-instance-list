@@ -38,7 +38,7 @@
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">language</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">string</td>
                 <td class="py-3 px-4 text-slate-500 dark:text-slate-400">なし</td>
-                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">言語コード (ISO 639-1)</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">言語コード (ISO 639-3)。自動検出のため、実際の主要言語と異なる場合があります。</td>
               </tr>
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">order</td>
@@ -92,7 +92,7 @@
       "last_check_at": 1704153600000,
       "banner_url": "https://example.com/banner.jpg",
       "icon_url": "https://example.com/icon.png",
-      "language": "ja"
+      "language": "jpn"
     }
   ],
   "total": 500,
