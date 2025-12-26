@@ -19,8 +19,14 @@
       <section class="mb-12">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Response</h2>
         <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>[
-  "example1.com",
-  "example2.com"
+  {
+    "domain": "example1.com",
+    "reason": "Spam"
+  },
+  {
+    "domain": "example2.com",
+    "reason": null
+  }
 ]</code></pre>
       </section>
 
@@ -28,8 +34,12 @@
       <section class="mb-12">
         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Response Body</h2>
         <p class="text-slate-600 dark:text-slate-300 mb-4">
-          拒否リストに登録されているホスト名（ドメイン）の配列（string[]）を返します。
+          以下のプロパティを持つオブジェクトの配列を返します。
         </p>
+        <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 ml-4">
+          <li><code>domain</code> (string): ホスト名</li>
+          <li><code>reason</code> (string | null): 拒否理由（設定されている場合）</li>
+        </ul>
       </section>
 
       <!-- Example -->
