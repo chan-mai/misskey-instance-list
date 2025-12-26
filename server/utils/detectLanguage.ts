@@ -37,7 +37,6 @@ const languageToIso639: Record<string, string> = {
   'norwegian': 'no',
   'slovak': 'sk',
   'malay': 'ms',
-  'filipino': 'tl',
   'tagalog': 'tl',
 };
 
