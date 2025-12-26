@@ -1,6 +1,6 @@
 import { prisma } from '../../utils/prisma';
-import { validateInstance, saveInstance } from '../../utils/misskey';
-import { detectLanguage } from '../../utils/detectLanguage';
+import { validateInstance, saveInstance, fetchLocalTimeline } from '../../utils/misskey';
+import { detectLanguageFromTexts } from '../../utils/detectLanguage';
 
 export default defineTask({
   meta: {
@@ -52,8 +52,18 @@ export default defineTask({
           const res = await validateInstance(prisma, row.id);
           
           let language: string | null = null;
-          if (res.info && res.info.description) {
-            language = detectLanguage(res.info.description);
+          if (res.info) {
+            const texts: string[] = [];
+            
+            // サーバー名と説明文を追加
+            if (res.info.name) texts.push(res.info.name);
+            if (res.info.description) texts.push(res.info.description);
+            
+            // タイムラインの投稿を取得して言語検出の精度を向上
+            const timelinePosts = await fetchLocalTimeline(row.id, 30);
+            texts.push(...timelinePosts);
+            
+            language = detectLanguageFromTexts(texts);
           }
 
           // repository_url is updated in saveInstance if present in res.info

@@ -574,3 +574,44 @@ export async function saveInstance(
     });
   }
 }
+
+/**
+ * Fetch recent public notes from an instance's local timeline.
+ * Used for language detection improvement.
+ *
+ * @param host - Instance host (domain)
+ * @param limit - Number of notes to fetch (default: 10)
+ * @returns Array of note text contents
+ */
+export async function fetchLocalTimeline(
+  host: string,
+  limit = 10
+): Promise<string[]> {
+  const TIMEOUT_MS = 10000;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    const res = await fetch(`https://${host}/api/notes/local-timeline`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'MisskeyInstanceList/0.1.0',
+      },
+      body: JSON.stringify({ limit }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return [];
+
+    const notes = (await res.json()) as { text?: string | null }[];
+    return notes
+      .map((note) => note.text)
+      .filter((text): text is string => !!text && text.length >= 10);
+  } catch {
+    return [];
+  }
+}
