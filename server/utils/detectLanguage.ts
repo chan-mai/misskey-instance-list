@@ -23,6 +23,8 @@ function detectByScript(text: string): string | null {
   // 10%以上のひらがな/カタカナ → 日本語（混合言語対策）
   if ((hiragana + katakana) / total > 0.1) return 'ja';
   if (hangul / total > 0.1) return 'ko';
+  // Note: キリル文字は多言語（ウクライナ語、ブルガリア語、セルビア語など）で使用されますが、
+  // ここでは簡易的にロシア語 ('ru') として判定しています。
   if (cyrillic / total > 0.2) return 'ru';
   if (thai / total > 0.2) return 'th';
   if (arabic / total > 0.2) return 'ar';
