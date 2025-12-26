@@ -9,6 +9,8 @@ declare module 'eld' {
     detect(text: string): LanguageResult;
     cleanText(flag: boolean): void;
     dynamicLangSubset(languages: string[] | false): void;
+    saveSubset(languages: string[]): void;
+    loadNgrams(path: string): Promise<void>;
     info(): object;
   };
 }
