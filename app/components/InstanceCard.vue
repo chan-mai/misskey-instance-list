@@ -6,7 +6,7 @@
     :to="`https://${instance.id}`"
     target="_blank"
     rel="noopener noreferrer"
-    class="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    class="group flex h-full flex-col rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
   >
     <!-- 画像エリア -->
     <div class="relative aspect-video w-full bg-gray-100 dark:bg-slate-700 overflow-hidden">
@@ -61,7 +61,7 @@
       </p>
 
       <!-- 統計情報 -->
-      <div class="mb-3 flex flex-wrap gap-2">
+      <div class="mb-3 flex flex-wrap gap-2 overflow-visible">
         <span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/30">
           Users: {{ formatNumber(instance.users_count) }}
         </span>
@@ -73,6 +73,18 @@
           :class="instance.is_alive ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'"
         >
           Status: {{ instance.is_alive ? 'Online' : 'Offline' }}
+        </span>
+        <span 
+          v-if="instance.language"
+          class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700 inline-flex items-center gap-1 relative group/lang"
+        >
+          {{ getLanguageName(instance.language) }}
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-[10px] text-white bg-gray-800 dark:bg-slate-600 rounded shadow-lg whitespace-nowrap opacity-0 group-hover/lang:opacity-100 transition-opacity pointer-events-none z-50">
+            ※ 自動検出のため、実際の主要言語と異なる場合があります
+          </span>
         </span>
       </div>
 
@@ -151,7 +163,7 @@
               <span v-else>{{ description || instance.id }}</span>
             </p>
 
-            <div class="flex flex-wrap gap-2 mt-4">
+            <div class="flex flex-wrap gap-2 mt-4 overflow-visible">
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/30">
                 Users: {{ formatNumber(instance.users_count) }}
               </span>
@@ -163,6 +175,18 @@
                 :class="instance.is_alive ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'"
               >
                 Status: {{ instance.is_alive ? 'Online' : 'Offline' }}
+              </span>
+              <span 
+                v-if="instance.language"
+                class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700 inline-flex items-center gap-1 relative group/lang"
+              >
+                {{ getLanguageName(instance.language) }}
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-[10px] text-white bg-gray-800 dark:bg-slate-600 rounded shadow-lg whitespace-nowrap opacity-0 group-hover/lang:opacity-100 transition-opacity pointer-events-none z-50">
+                  ※ 自動検出のため、実際の主要言語と異なる場合があります
+                </span>
               </span>
             </div>
           </div>
@@ -307,6 +331,27 @@ watch(instance, () => {
   updateImages();
   updateDescription();
 }, { immediate: true });
+
+// ISO 639-3 から ISO 639-1 への変換を使用
+import { iso6393To1 } from 'iso-639-3';
+
+function getLanguageName(code: string) {
+  try {
+    // ISO 639-3 を ISO 639-1 に変換（Intl.DisplayNamesがISO 639-1をより良くサポート）
+    const iso1Code = iso6393To1[code];
+    const displayCode = iso1Code || code;
+    
+    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(displayCode);
+    // Intl.DisplayNamesがコードをそのまま返す場合は変換失敗
+    if (name && name !== displayCode && name !== code) {
+      return name;
+    }
+  } catch {
+    // ignore
+  }
+  
+  return code;
+}
 </script>
 
 <style scoped>
