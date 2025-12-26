@@ -71,7 +71,11 @@ export default defineNuxtConfig({
         '/docs/api/v1/deny_instances',
         '/docs/api/v1/ignore_instances'
       ]
-    }
+    },
+    // dev環境ではAPIキャッシュを無効化
+    routeRules: process.env.NODE_ENV === 'development'
+      ? { '/api/**': { cache: false, headers: { 'Cache-Control': 'no-cache, no-store' } } }
+      : {}
   },
   gtag: {
     id: 'G-3VEDN6VL0W'
