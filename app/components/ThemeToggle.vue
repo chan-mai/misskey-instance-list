@@ -53,8 +53,8 @@ const MoonIcon: FunctionalComponent = () =>
 
 const LaptopIcon: FunctionalComponent = () =>
   h('svg', { class: 'h-4 w-4', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M3 5.5A1.5 1.5 0 014.5 4h15A1.5 1.5 0 0121 5.5v9A1.5 1.5 0 0119.5 16h-15A1.5 1.5 0 013 14.5v-9z' }),
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M2.5 18h19' }),
+    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M3 4.5A1.5 1.5 0 014.5 3h15A1.5 1.5 0 0121 4.5v9A1.5 1.5 0 0119.5 15h-15A1.5 1.5 0 013 13.5v-9z' }),
+    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M2.5 19h19' }),
   ]);
 
 // optionたち

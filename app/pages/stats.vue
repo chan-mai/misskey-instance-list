@@ -215,13 +215,13 @@
       <!-- Software Section -->
       <section class="py-32 bg-back dark:bg-[#0b1220]">
           <div class="container mx-auto max-w-screen-lg px-6">
-              <div class="flex items-end justify-between mb-24 border-b border-primary/70 pb-6">
+              <div class="flex items-end justify-between mb-12 md:mb-24 border-b border-primary/70 pb-6">
                   <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Software</h2>
                   <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">02 Distribution</span>
               </div>
               
               <!-- Header -->
-              <div class="flex items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-2 mb-2">
+              <div class="hidden md:flex items-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-2 mb-2">
                 <div class="w-16">Rank</div>
                 <div class="flex-1 px-4">Software / Repository</div>
                 <div class="text-right whitespace-nowrap">Instances & Share</div>
@@ -234,40 +234,46 @@
                   :to="repo.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="group flex items-center p-4 rounded-lg border border-slate-300 dark:border-slate-800 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/15 transition-all duration-200"
+                  class="group flex flex-col md:flex-row items-stretch md:items-center p-4 rounded-lg border border-slate-300 dark:border-slate-800 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/15 transition-all duration-200"
                 >
-                  <!-- Rank -->
-                  <div class="w-16 font-mono font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors text-xl">
-                    #{{ index + 1 }}
-                  </div>
-
-                  <!-- Name / Desc -->
-                  <div class="flex-1 min-w-0 px-4">
-                    <div class="flex items-center gap-2 mb-1">
-                      <h3 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors truncate">
-                        {{ repo.name || repo.url }}
-                      </h3>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                      </svg>
+                  <!-- Rank & Name Wrapper -->
+                  <div class="flex items-center mb-3 md:mb-0 md:flex-1 md:min-w-0">
+                    <!-- Rank -->
+                    <div class="w-10 md:w-16 font-mono font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors text-lg md:text-xl">
+                      #{{ index + 1 }}
                     </div>
-                    <p v-if="repo.description" class="text-xs text-slate-500 dark:text-slate-400 group-hover:text-primary/70 transition-colors line-clamp-1">
-                      {{ repo.description }}
-                    </p>
+
+                    <!-- Name / Desc -->
+                    <div class="flex-1 min-w-0 px-2 md:px-4">
+                      <div class="flex items-center gap-2 mb-1">
+                        <h3 class="font-bold text-base md:text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors truncate">
+                          {{ repo.name || repo.url }}
+                        </h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                          <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                      </div>
+                      <p v-if="repo.description" class="text-xs text-slate-500 dark:text-slate-400 group-hover:text-primary/70 transition-colors line-clamp-1">
+                        {{ repo.description }}
+                      </p>
+                    </div>
                   </div>
 
                   <!-- Count & Share -->
-                  <div class="text-right shrink-0">
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                      {{ formatNumber(repo.count) }}
-                    </div>
-                    <div class="flex items-center justify-end gap-2 mt-1">
-                      <span class="text-xs text-slate-400 group-hover:text-primary/70 transition-colors">
-                        {{ calculateShare(repo.count, stats?.counts?.active) }}%
-                      </span>
-                      <div class="w-16 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div class="h-full bg-primary dark:bg-primary/70 group-hover:bg-primary transition-colors" :style="{ width: `${calculateShare(repo.count, stats?.counts?.active)}%` }"></div>
+                  <div class="flex items-center justify-between md:block md:text-right md:shrink-0">
+                    <span class="md:hidden text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Instances</span>
+                    <div class="text-right">
+                      <div class="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                        {{ formatNumber(repo.count) }}
+                      </div>
+                      <div class="flex items-center justify-end gap-2 mt-1">
+                        <span class="text-xs text-slate-400 group-hover:text-primary/70 transition-colors">
+                          {{ calculateShare(repo.count, stats?.counts?.active) }}%
+                        </span>
+                        <div class="w-16 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div class="h-full bg-primary dark:bg-primary/70 group-hover:bg-primary transition-colors" :style="{ width: `${calculateShare(repo.count, stats?.counts?.active)}%` }"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
