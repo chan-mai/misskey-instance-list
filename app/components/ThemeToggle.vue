@@ -8,7 +8,19 @@
         dark:bg-slate-800 dark:text-slate-300
         dark:hover:bg-primary dark:hover:text-white" :aria-label="`テーマ: ${currentLabel}`" :aria-expanded="isOpen"
       @click.stop="toggle">
-      <component :is="currentIcon" class="h-5 w-5 transition-colors duration-300" />
+      
+      <!-- Icons -->
+      <svg v-if="current === 'light'" class="h-5 w-5 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+      </svg>
+      <svg v-else-if="current === 'dark'" class="h-5 w-5 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+      </svg>
+      <svg v-else class="h-5 w-5 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5A1.5 1.5 0 014.5 3h15A1.5 1.5 0 0121 4.5v9A1.5 1.5 0 0119.5 15h-15A1.5 1.5 0 013 13.5v-9z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 19h19" />
+      </svg>
+
     </button>
 
     <!-- Dropdown -->
@@ -25,7 +37,18 @@
               ? 'bg-primary text-white cursor-default'
               : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white cursor-pointer'"
             @click="select(option.value)">
-            <component :is="option.icon" class="h-4 w-4 shrink-0" />
+
+            <svg v-if="option.value === 'light'" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+            </svg>
+            <svg v-else-if="option.value === 'dark'" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+            </svg>
+            <svg v-else class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5A1.5 1.5 0 014.5 3h15A1.5 1.5 0 0121 4.5v9A1.5 1.5 0 0119.5 15h-15A1.5 1.5 0 013 13.5v-9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 19h19" />
+            </svg>
+
             <span>{{ option.label }}</span>
           </button>
         </div>
@@ -35,34 +58,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
-import type { FunctionalComponent } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 
 type ThemeMode = 'light' | 'system' | 'dark';
 
-// Iconたち
-const SunIcon: FunctionalComponent = () =>
-  h('svg', { class: 'h-4 w-4', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z' }),
-  ]);
-
-const MoonIcon: FunctionalComponent = () =>
-  h('svg', { class: 'h-4 w-4', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z' }),
-  ]);
-
-const LaptopIcon: FunctionalComponent = () =>
-  h('svg', { class: 'h-4 w-4', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '2' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M3 4.5A1.5 1.5 0 014.5 3h15A1.5 1.5 0 0121 4.5v9A1.5 1.5 0 0119.5 15h-15A1.5 1.5 0 013 13.5v-9z' }),
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d: 'M2.5 19h19' }),
-  ]);
-
 // optionたち
 const options = [
-  { value: 'light' as ThemeMode, label: 'Light', icon: SunIcon },
-  { value: 'dark' as ThemeMode, label: 'Dark', icon: MoonIcon },
-  { value: 'system' as ThemeMode, label: 'System', icon: LaptopIcon }
-
+  { value: 'light' as ThemeMode, label: 'Light' },
+  { value: 'dark' as ThemeMode, label: 'Dark' },
+  { value: 'system' as ThemeMode, label: 'System' }
 ] as const;
 
 // colormodeを取得
@@ -79,15 +83,6 @@ const resolvedTheme = computed<'light' | 'dark'>(() => {
   if (current.value !== 'system') return current.value;
   if (colorMode.value === 'dark' || colorMode.value === 'light') return colorMode.value;
   return systemPrefersDark.value ? 'dark' : 'light';
-});
-
-const currentIcon = computed(() => {
-  switch (current.value) {
-    case 'light': return MoonIcon;
-    case 'dark': return SunIcon;
-    case 'system': return LaptopIcon;
-    default: return LaptopIcon;
-  }
 });
 
 const currentLabel = computed(() => {

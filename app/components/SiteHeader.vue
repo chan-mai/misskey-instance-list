@@ -38,12 +38,7 @@
             API Docs
           </NuxtLink>
 
-          <ClientOnly>
-            <ThemeToggle />
-            <template #fallback>
-              <div class="h-9 w-9"></div>
-            </template>
-          </ClientOnly>
+          <ThemeToggle />
           
         </nav>
       </div>
