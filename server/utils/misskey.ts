@@ -189,7 +189,7 @@ export async function getInstanceInfo(
                 (usage as any).localPosts = stats.notesCount;
             }
         }
-    } catch (e: unknown) {
+    } catch {
         // statsの取得失敗は無視し、nodeinfoの情報を使用する
     }
 
