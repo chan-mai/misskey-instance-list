@@ -18,14 +18,14 @@
         <!-- Header -->
         <div class="sticky top-0 flex items-center justify-between px-6 py-4 bg-neutral-50 dark:bg-neutral-900">
           <h2 class="text-lg font-medium text-neutral-900 dark:text-white tracking-wide">FILTERS</h2>
-          <button 
+          <BaseButton 
+            variant="icon"
             @click="emit('close')"
-            class="p-2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-          </button>
+          </BaseButton>
         </div>
 
         <!-- Content -->
@@ -42,20 +42,19 @@
               Search
             </label>
             <div class="flex">
-              <input
+              <BaseInput
                 type="search"
                 v-model="localQuery"
                 placeholder="Server name..."
-                class="flex-1 px-4 py-3 bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500"
+                class="flex-1"
               />
-              <button
+              <BaseButton
                 @click="applySearch"
-                class="px-4 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </button>
+              </BaseButton>
             </div>
           </div>
 
@@ -81,9 +80,8 @@
                   </svg>
                 </div>
               </div>
-              <button
+              <BaseButton
                 @click="toggleOrder"
-                class="px-4 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
                 :title="order === 'desc' ? 'Descending' : 'Ascending'"
               >
                 <svg v-if="order === 'desc'" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,7 +90,7 @@
                 <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                 </svg>
-              </button>
+              </BaseButton>
             </div>
           </div>
 
@@ -124,18 +122,19 @@
         <!-- Footer -->
         <div class="sticky bottom-0 p-6 bg-neutral-50 dark:bg-neutral-900">
           <div class="flex gap-3">
-            <button
+            <BaseButton
+              variant="secondary"
               @click="resetFilters"
-              class="flex-1 py-3 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 font-medium tracking-wide hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors flex items-center justify-center"
+              class="flex-1"
             >
               RESET
-            </button>
-            <button
+            </BaseButton>
+            <BaseButton
               @click="applyAndClose"
-              class="flex-1 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium tracking-wide hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center"
+              class="flex-1"
             >
               APPLY
-            </button>
+            </BaseButton>
           </div>
         </div>
       </div>

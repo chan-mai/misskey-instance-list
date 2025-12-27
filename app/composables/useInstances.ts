@@ -1,15 +1,8 @@
 import type { SortField, SortOrder, FilterSettings } from '~/types/filters';
+import type { InstancesResponse } from '~/types/api';
+import { PAGE_SIZE, STORAGE_KEY, SORT_API_MAP } from '~/utils/constants';
 
 export const useInstances = () => {
-  const PAGE_SIZE = 30;
-  const STORAGE_KEY = 'miHub_server_finder';
-  const SORT_API_MAP: Record<SortField, string> = {
-    recommendedScore: 'recommended',
-    notesCount: 'notes',
-    usersCount: 'users',
-    createdAt: 'createdAt'
-  };
-
   // Saved settings
   const savedSettings = import.meta.client 
     ? JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Partial<FilterSettings> | null
@@ -79,7 +72,7 @@ export const useInstances = () => {
       if (filters.repository) params.set('repository', filters.repository);
       if (filters.language) params.set('language', filters.language);
       
-      const response = await $fetch<{ items: Instance[], total: number, limit: number }>(`/api/v1/instances?${params}`);
+      const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`);
       
       if (reset) {
         instances.value = response.items;

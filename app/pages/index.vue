@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useInstances } from '~/composables/useInstances';
 import { useFormat } from '~/composables/useFormat';
+import { useInfiniteScroll } from '~/composables/useInfiniteScroll';
 
 const { 
   instances, 
@@ -37,20 +38,13 @@ const softwareTabs = computed(() => {
 onMounted(() => fetchInstances(true));
 
 // Infinite scroll observer
-watch(loadMoreTrigger, (el) => {
-  if (!import.meta.client || !el) return;
-  
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry?.isIntersecting && hasMore.value && !isLoading.value) {
-        fetchInstances(false);
-      }
-    },
-    { rootMargin: '200px' }
-  );
-  observer.observe(el);
-  onUnmounted(() => observer.disconnect());
-});
+useInfiniteScroll(
+  loadMoreTrigger,
+  () => fetchInstances(false),
+  {
+    canLoad: () => hasMore.value && !isLoading.value
+  }
+);
 
 // Event handlers
 function handleSearch(query: string) {
@@ -144,20 +138,12 @@ useHead({
           />
           
           <!-- Empty state -->
-          <div
+          <StateEmpty
             v-else-if="!initialLoading"
-            class="col-span-full py-24 text-center"
+            :message="filters.query ? `&quot;${filters.query}&quot; に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした'"
+            sub-message="検索条件を変更してみてください"
           >
-            <div class="max-w-sm mx-auto">
-              <div class="w-20 h-20 mx-auto mb-6 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-neutral-400 dark:text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <p class="text-neutral-600 dark:text-neutral-400 mb-2">
-                {{ filters.query ? `"${filters.query}" に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした' }}
-              </p>
-              <p class="text-xs text-neutral-400 dark:text-neutral-500 mb-6">検索条件を変更してみてください</p>
+            <template #action>
               <button 
                 v-if="filters.query || filters.repository || filters.language"
                 @click="handleReset"
@@ -165,19 +151,14 @@ useHead({
               >
                 Reset Filters
               </button>
-            </div>
-          </div>
+            </template>
+          </StateEmpty>
           
           <!-- Loading state -->
-          <div
+          <StateLoading
             v-else
-            class="col-span-full py-24 flex items-center justify-center"
-          >
-            <div class="text-center">
-              <div class="w-10 h-10 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin mx-auto"></div>
-              <p class="text-neutral-400 dark:text-neutral-500 mt-6 text-xs tracking-widest uppercase">Loading servers</p>
-            </div>
-          </div>
+            message="Loading servers"
+          />
         </div>
         
         <!-- Infinite scroll trigger -->
