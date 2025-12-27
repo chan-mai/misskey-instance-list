@@ -4,19 +4,19 @@
         <header class="min-h-screen flex flex-col justify-center relative py-24 overflow-hidden">
             <!-- 背景テキスト -->
             <div
-                class="absolute right-0 top-1/4 text-[15vw] font-bold text-primary/70 opacity-30 pointer-events-none select-none leading-none whitespace-nowrap">
+                class="hidden md:visible absolute right-0 top-1/4 text-[15vw] font-bold text-primary/70 opacity-30 pointer-events-none select-none leading-none whitespace-nowrap">
                 ABOUT<br>LIST
             </div>
 
             <div class="container mx-auto max-w-screen-lg px-6 relative z-10">
-                <p
-                    class="text-xs md:text-sm uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 font-medium">
+                <p class="text-xs md:text-sm uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 font-medium">
                     (非公式)Misskeyサーバーリスト
                 </p>
 
                 <h1
                     class="text-5xl md:text-7xl lg:text-8xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-12 leading-tight">
-                    <span class="text-2xl md:text-5xl font-bold tracking-wider">(Unofficial)</span><br>Misskey <br class="md:hidden">Server List
+                    <span class="text-2xl md:text-5xl font-bold tracking-wider">(Unofficial)</span><br>Misskey <br
+                        class="md:hidden">Server List
                 </h1>
 
                 <div class="w-16 md:w-24 h-0.5 bg-slate-900 dark:bg-white mb-12"></div>
@@ -108,11 +108,10 @@
             </div>
         </section>
 
-        <!-- Contact / Footer -->
+        <!-- Action -->
         <section class="relative py-32 bg-white dark:bg-slate-900 overflow-hidden">
-            <div ref="illustrationRef"
-                class="absolute top-1/2 -right-[20%] md:-right-[10%] w-[120vw] h-[120vw] md:w-[60vw] md:h-[60vw] -translate-y-1/2 transition-all duration-1000 ease-out transform rounded-full border border-slate-100 dark:border-slate-700/50 pointer-events-none"
-                :class="isIllustrationVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'">
+            <div
+                class="absolute top-1/2 -right-[20%] md:-right-[10%] w-[120vw] h-[120vw] md:w-[60vw] md:h-[60vw] -translate-y-1/2 rounded-full border border-slate-200 dark:border-slate-800 pointer-events-none">
                 <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] rounded-full overflow-hidden"
                     style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 24px 24px;">
                 </div>
@@ -120,26 +119,33 @@
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div class="relative w-full h-full">
                         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <div
-                                class="w-6 h-6 bg-primary rounded-full shadow-lg shadow-primary/50 animate-pulse">
+                            <div class="w-6 h-6 bg-primary rounded-full shadow-lg shadow-primary/50 animate-pulse">
                             </div>
-                            <div
-                                class="absolute inset-0 w-6 h-6 bg-primary rounded-full animate-ping opacity-20">
+                            <div class="absolute inset-0 w-6 h-6 bg-primary rounded-full animate-ping opacity-20">
                             </div>
                         </div>
-                        <div class="absolute top-1/2 left-1/2 w-[70%] h-[70%] border border-slate-200 dark:border-slate-600 rounded-full"
+
+                        <!-- Most Outer Orbit -->
+                        <div class="absolute top-1/2 left-1/2 w-full h-full rounded-full"
+                            style="animation: orbit-outer 30s linear infinite;">
+                            <div
+                                class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-slate-300 dark:bg-slate-600 rounded-full">
+                            </div>
+                        </div>
+
+                        <div class="absolute top-1/2 left-1/2 w-[70%] h-[70%] border border-slate-400 dark:border-slate-600 rounded-full"
                             style="animation: orbit-outer 20s linear infinite;">
                             <div
-                                class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-400 rounded-full">
+                                class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-500 dark:bg-slate-400 rounded-full">
                             </div>
                             <div
-                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-300 rounded-full">
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-400 dark:bg-slate-500 rounded-full">
                             </div>
                         </div>
-                        <div class="absolute top-1/2 left-1/2 w-[45%] h-[45%] border border-slate-200 dark:border-slate-600 rounded-full"
+                        <div class="absolute top-1/2 left-1/2 w-[45%] h-[45%] border border-slate-300 dark:border-slate-700 rounded-full"
                             style="animation: orbit-inner 15s linear infinite;">
                             <div
-                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-400 rounded-full">
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-500 dark:bg-slate-400 rounded-full">
                             </div>
                         </div>
                     </div>
@@ -155,8 +161,8 @@
                         </h2>
                         <div class="mb-12">
                             <NuxtLink to="/"
-                                class="inline-flex items-center gap-2 text-lg font-light text-primary hover:text-primary/70 transition-colors">
-                                サーバー一覧を見る
+                                class="inline-flex items-center gap-2 text-lg text-primary hover:text-primary/70 transition-colors">
+                                サーバーを探す
                                 <span class="text-xs">→</span>
                             </NuxtLink>
                         </div>
@@ -170,21 +176,6 @@
 </template>
 
 <script setup lang="ts">
-const illustrationRef = ref<HTMLElement | null>(null);
-const isIllustrationVisible = ref(false);
-
-onMounted(() => {
-    if (illustrationRef.value) {
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0] && entries[0].isIntersecting) {
-                isIllustrationVisible.value = true;
-                observer.disconnect();
-            }
-        }, { threshold: 0.2 });
-        observer.observe(illustrationRef.value);
-    }
-});
-
 useHead({
     title: 'About - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
     meta: [

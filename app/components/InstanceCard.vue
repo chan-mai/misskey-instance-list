@@ -6,7 +6,7 @@
     :to="`https://${instance.id}`"
     target="_blank"
     rel="noopener noreferrer"
-    class="group flex h-full flex-col rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    class="group flex h-full flex-col rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
   >
     <!-- 画像エリア -->
     <div class="relative aspect-video w-full bg-gray-100 dark:bg-slate-700 overflow-hidden">

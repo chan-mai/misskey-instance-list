@@ -3,7 +3,7 @@
     class="transition-all duration-300 lg:static lg:z-auto lg:w-full lg:mx-0 lg:shadow-none lg:bg-transparent lg:dark:bg-transparent lg:backdrop-blur-none lg:border-none"
     :class="isOpen
       ? 'fixed inset-0 z-50 w-full h-full bg-slate-50 dark:bg-slate-900 overflow-y-auto'
-      : 'sticky top-16 z-40 -mx-6 w-[calc(100%+3rem)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm border-b border-black/5 dark:border-white/10'">
+      : 'sticky top-16 z-40 -mx-6 w-[calc(100%+3rem)] bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm shadow-sm border-b border-slate-200 dark:border-slate-700'">
     <!-- Toggle Button (Mobile Only) -->
     <button @click="isOpen = !isOpen"
       class="flex items-center justify-between w-full px-6 py-4 lg:hidden text-left border-none focus:outline-none group"
@@ -15,7 +15,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
         </svg>
-        <span class="font-medium text-sm tracking-wide">検索・ソート</span>
+        <span class="font-medium text-sm tracking-wide">絞り込み条件</span>
 
         <span v-if="searchQuery" class="flex relative w-2.5 h-2.5">
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -36,7 +36,7 @@
       <div class="space-y-6 lg:space-y-4">
         <!-- Desktop Header -->
         <div class="hidden lg:flex items-center">
-          <h3 class="text-xl font-bold">検索・ソート</h3>
+          <h3 class="text-xl font-bold">絞り込み条件</h3>
         </div>
         <div class="text-primary font-bold text-lg">
           <template v-if="loading">
@@ -55,7 +55,7 @@
               class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-l-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60"
               type="search" autocomplete="off" id="query" v-model="queryPartial" placeholder="サーバー名で検索" />
             <button type="submit"
-              class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/60 border border-l-0 border-slate-300 dark:border-slate-600">
+              class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 border border-l-0 border-slate-300 dark:border-slate-600 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -77,7 +77,7 @@
               <option value="createdAt">初観測日</option>
             </select>
             <button
-              class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/60 border border-l-0 border-slate-300 dark:border-slate-600"
+              class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 border border-l-0 border-slate-300 dark:border-slate-600 transition-colors"
               @click="switchOrder">
               <svg v-if="orderValue === 'desc'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
@@ -164,6 +164,18 @@
               リスト
             </label>
           </div>
+        </div>
+
+        <div class="lg:hidden pt-4">
+          <button @click="applyQuery"
+            class="w-full py-2 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 border-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            検索
+          </button>
         </div>
       </div>
     </div>
