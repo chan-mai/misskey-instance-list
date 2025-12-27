@@ -93,13 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import { useFormat } from '~/composables/useFormat'
+import { useFormat } from '~/composables/useFormat';
 
 const props = defineProps<{
   instance: Instance;
 }>();
 
-const { formatNumber } = useFormat()
+const { formatNumber } = useFormat();
 
 const fetchedIcon = ref<string | null>(null);
 const fetchedBanner = ref<string | null>(null);
