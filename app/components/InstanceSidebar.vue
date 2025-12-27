@@ -487,9 +487,7 @@ watch([() => props.minUsers, () => props.maxUsers], ([min, max]) => {
   } else if (min === 5001 && max === null) {
     userCountPreset.value = 'large';
   } else {
-    // If exact match failed, assume custom unless it was just set by preset logical
-    // This is simple enough for now
-    // userCountPreset.value = 'custom'; 
+    userCountPreset.value = 'custom';
   }
 }, { immediate: true });
 
