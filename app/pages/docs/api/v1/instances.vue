@@ -61,14 +61,14 @@
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">open_registrations</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">boolean</td>
-                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">false</td>
-                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">登録開放中のみ取得する場合は <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">true</code> を指定</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">— (省略時は全件)</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">true を指定すると開放中のインスタンスのみ、false を指定すると閉鎖中のインスタンスのみ、省略すると全てを返す</td>
               </tr>
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">email_required</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">boolean</td>
-                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">false</td>
-                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">メールアドレス不要のみ取得する場合は <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">false</code> を指定</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">— (省略時は全件)</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">true を指定するとメール必須のインスタンスのみ、false を指定するとメール不要のインスタンスのみ、省略すると全てを返す</td>
               </tr>
               <tr>
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">min_users</td>
