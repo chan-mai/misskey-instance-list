@@ -52,6 +52,8 @@ export type InstanceMinAggregateOutputType = {
   icon_url: string | null
   suspension_state: $Enums.SuspensionState | null
   recommendation_score: number | null
+  open_registrations: boolean | null
+  email_required: boolean | null
   repository_url: string | null
   language: string | null
 }
@@ -70,6 +72,8 @@ export type InstanceMaxAggregateOutputType = {
   icon_url: string | null
   suspension_state: $Enums.SuspensionState | null
   recommendation_score: number | null
+  open_registrations: boolean | null
+  email_required: boolean | null
   repository_url: string | null
   language: string | null
 }
@@ -88,6 +92,8 @@ export type InstanceCountAggregateOutputType = {
   icon_url: number
   suspension_state: number
   recommendation_score: number
+  open_registrations: number
+  email_required: number
   repository_url: number
   language: number
   _all: number
@@ -120,6 +126,8 @@ export type InstanceMinAggregateInputType = {
   icon_url?: true
   suspension_state?: true
   recommendation_score?: true
+  open_registrations?: true
+  email_required?: true
   repository_url?: true
   language?: true
 }
@@ -138,6 +146,8 @@ export type InstanceMaxAggregateInputType = {
   icon_url?: true
   suspension_state?: true
   recommendation_score?: true
+  open_registrations?: true
+  email_required?: true
   repository_url?: true
   language?: true
 }
@@ -156,6 +166,8 @@ export type InstanceCountAggregateInputType = {
   icon_url?: true
   suspension_state?: true
   recommendation_score?: true
+  open_registrations?: true
+  email_required?: true
   repository_url?: true
   language?: true
   _all?: true
@@ -261,6 +273,8 @@ export type InstanceGroupByOutputType = {
   icon_url: string | null
   suspension_state: $Enums.SuspensionState
   recommendation_score: number | null
+  open_registrations: boolean | null
+  email_required: boolean | null
   repository_url: string | null
   language: string | null
   _count: InstanceCountAggregateOutputType | null
@@ -302,6 +316,8 @@ export type InstanceWhereInput = {
   icon_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
+  open_registrations?: Prisma.BoolNullableFilter<"Instance"> | boolean | null
+  email_required?: Prisma.BoolNullableFilter<"Instance"> | boolean | null
   repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   language?: Prisma.StringNullableFilter<"Instance"> | string | null
   repository?: Prisma.XOR<Prisma.RepositoryNullableScalarRelationFilter, Prisma.RepositoryWhereInput> | null
@@ -321,6 +337,8 @@ export type InstanceOrderByWithRelationInput = {
   icon_url?: Prisma.SortOrderInput | Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrderInput | Prisma.SortOrder
+  open_registrations?: Prisma.SortOrderInput | Prisma.SortOrder
+  email_required?: Prisma.SortOrderInput | Prisma.SortOrder
   repository_url?: Prisma.SortOrderInput | Prisma.SortOrder
   language?: Prisma.SortOrderInput | Prisma.SortOrder
   repository?: Prisma.RepositoryOrderByWithRelationInput
@@ -343,6 +361,8 @@ export type InstanceWhereUniqueInput = Prisma.AtLeast<{
   icon_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
+  open_registrations?: Prisma.BoolNullableFilter<"Instance"> | boolean | null
+  email_required?: Prisma.BoolNullableFilter<"Instance"> | boolean | null
   repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   language?: Prisma.StringNullableFilter<"Instance"> | string | null
   repository?: Prisma.XOR<Prisma.RepositoryNullableScalarRelationFilter, Prisma.RepositoryWhereInput> | null
@@ -362,6 +382,8 @@ export type InstanceOrderByWithAggregationInput = {
   icon_url?: Prisma.SortOrderInput | Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrderInput | Prisma.SortOrder
+  open_registrations?: Prisma.SortOrderInput | Prisma.SortOrder
+  email_required?: Prisma.SortOrderInput | Prisma.SortOrder
   repository_url?: Prisma.SortOrderInput | Prisma.SortOrder
   language?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.InstanceCountOrderByAggregateInput
@@ -388,6 +410,8 @@ export type InstanceScalarWhereWithAggregatesInput = {
   icon_url?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateWithAggregatesFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableWithAggregatesFilter<"Instance"> | number | null
+  open_registrations?: Prisma.BoolNullableWithAggregatesFilter<"Instance"> | boolean | null
+  email_required?: Prisma.BoolNullableWithAggregatesFilter<"Instance"> | boolean | null
   repository_url?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
   language?: Prisma.StringNullableWithAggregatesFilter<"Instance"> | string | null
 }
@@ -406,6 +430,8 @@ export type InstanceCreateInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  open_registrations?: boolean | null
+  email_required?: boolean | null
   language?: string | null
   repository?: Prisma.RepositoryCreateNestedOneWithoutInstancesInput
 }
@@ -424,6 +450,8 @@ export type InstanceUncheckedCreateInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  open_registrations?: boolean | null
+  email_required?: boolean | null
   repository_url?: string | null
   language?: string | null
 }
@@ -442,6 +470,8 @@ export type InstanceUpdateInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   repository?: Prisma.RepositoryUpdateOneWithoutInstancesNestedInput
 }
@@ -460,6 +490,8 @@ export type InstanceUncheckedUpdateInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -478,6 +510,8 @@ export type InstanceCreateManyInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  open_registrations?: boolean | null
+  email_required?: boolean | null
   repository_url?: string | null
   language?: string | null
 }
@@ -496,6 +530,8 @@ export type InstanceUpdateManyMutationInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -513,6 +549,8 @@ export type InstanceUncheckedUpdateManyInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   repository_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -531,6 +569,8 @@ export type InstanceCountOrderByAggregateInput = {
   icon_url?: Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrder
+  open_registrations?: Prisma.SortOrder
+  email_required?: Prisma.SortOrder
   repository_url?: Prisma.SortOrder
   language?: Prisma.SortOrder
 }
@@ -555,6 +595,8 @@ export type InstanceMaxOrderByAggregateInput = {
   icon_url?: Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrder
+  open_registrations?: Prisma.SortOrder
+  email_required?: Prisma.SortOrder
   repository_url?: Prisma.SortOrder
   language?: Prisma.SortOrder
 }
@@ -573,6 +615,8 @@ export type InstanceMinOrderByAggregateInput = {
   icon_url?: Prisma.SortOrder
   suspension_state?: Prisma.SortOrder
   recommendation_score?: Prisma.SortOrder
+  open_registrations?: Prisma.SortOrder
+  email_required?: Prisma.SortOrder
   repository_url?: Prisma.SortOrder
   language?: Prisma.SortOrder
 }
@@ -633,6 +677,10 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
+}
+
 export type InstanceCreateNestedManyWithoutRepositoryInput = {
   create?: Prisma.XOR<Prisma.InstanceCreateWithoutRepositoryInput, Prisma.InstanceUncheckedCreateWithoutRepositoryInput> | Prisma.InstanceCreateWithoutRepositoryInput[] | Prisma.InstanceUncheckedCreateWithoutRepositoryInput[]
   connectOrCreate?: Prisma.InstanceCreateOrConnectWithoutRepositoryInput | Prisma.InstanceCreateOrConnectWithoutRepositoryInput[]
@@ -689,6 +737,8 @@ export type InstanceCreateWithoutRepositoryInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  open_registrations?: boolean | null
+  email_required?: boolean | null
   language?: string | null
 }
 
@@ -706,6 +756,8 @@ export type InstanceUncheckedCreateWithoutRepositoryInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  open_registrations?: boolean | null
+  email_required?: boolean | null
   language?: string | null
 }
 
@@ -752,6 +804,8 @@ export type InstanceScalarWhereInput = {
   icon_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   suspension_state?: Prisma.EnumSuspensionStateFilter<"Instance"> | $Enums.SuspensionState
   recommendation_score?: Prisma.FloatNullableFilter<"Instance"> | number | null
+  open_registrations?: Prisma.BoolNullableFilter<"Instance"> | boolean | null
+  email_required?: Prisma.BoolNullableFilter<"Instance"> | boolean | null
   repository_url?: Prisma.StringNullableFilter<"Instance"> | string | null
   language?: Prisma.StringNullableFilter<"Instance"> | string | null
 }
@@ -770,6 +824,8 @@ export type InstanceCreateManyRepositoryInput = {
   icon_url?: string | null
   suspension_state?: $Enums.SuspensionState
   recommendation_score?: number | null
+  open_registrations?: boolean | null
+  email_required?: boolean | null
   language?: string | null
 }
 
@@ -787,6 +843,8 @@ export type InstanceUpdateWithoutRepositoryInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -804,6 +862,8 @@ export type InstanceUncheckedUpdateWithoutRepositoryInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -821,6 +881,8 @@ export type InstanceUncheckedUpdateManyWithoutRepositoryInput = {
   icon_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   suspension_state?: Prisma.EnumSuspensionStateFieldUpdateOperationsInput | $Enums.SuspensionState
   recommendation_score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  open_registrations?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  email_required?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -840,6 +902,8 @@ export type InstanceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  open_registrations?: boolean
+  email_required?: boolean
   repository_url?: boolean
   language?: boolean
   repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
@@ -859,6 +923,8 @@ export type InstanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  open_registrations?: boolean
+  email_required?: boolean
   repository_url?: boolean
   language?: boolean
   repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
@@ -878,6 +944,8 @@ export type InstanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  open_registrations?: boolean
+  email_required?: boolean
   repository_url?: boolean
   language?: boolean
   repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
@@ -897,11 +965,13 @@ export type InstanceSelectScalar = {
   icon_url?: boolean
   suspension_state?: boolean
   recommendation_score?: boolean
+  open_registrations?: boolean
+  email_required?: boolean
   repository_url?: boolean
   language?: boolean
 }
 
-export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "created_at" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state" | "recommendation_score" | "repository_url" | "language", ExtArgs["result"]["instance"]>
+export type InstanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "node_name" | "users_count" | "notes_count" | "version" | "is_alive" | "created_at" | "last_updated" | "last_check_at" | "banner_url" | "icon_url" | "suspension_state" | "recommendation_score" | "open_registrations" | "email_required" | "repository_url" | "language", ExtArgs["result"]["instance"]>
 export type InstanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   repository?: boolean | Prisma.Instance$repositoryArgs<ExtArgs>
 }
@@ -931,6 +1001,8 @@ export type $InstancePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     icon_url: string | null
     suspension_state: $Enums.SuspensionState
     recommendation_score: number | null
+    open_registrations: boolean | null
+    email_required: boolean | null
     repository_url: string | null
     language: string | null
   }, ExtArgs["result"]["instance"]>
@@ -1370,6 +1442,8 @@ export interface InstanceFieldRefs {
   readonly icon_url: Prisma.FieldRef<"Instance", 'String'>
   readonly suspension_state: Prisma.FieldRef<"Instance", 'SuspensionState'>
   readonly recommendation_score: Prisma.FieldRef<"Instance", 'Float'>
+  readonly open_registrations: Prisma.FieldRef<"Instance", 'Boolean'>
+  readonly email_required: Prisma.FieldRef<"Instance", 'Boolean'>
   readonly repository_url: Prisma.FieldRef<"Instance", 'String'>
   readonly language: Prisma.FieldRef<"Instance", 'String'>
 }

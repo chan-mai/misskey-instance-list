@@ -10,6 +10,10 @@ type Mq1MisskeyInstanceListStorage = {
   f_orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
   f_order: 'asc' | 'desc';
   v_view: 'grid' | 'list';
+  f_openRegistrations?: boolean | null;
+  f_emailRequired?: boolean | null;
+  f_minUsers?: number | null;
+  f_maxUsers?: number | null;
 };
 
 let savedSettings: Mq1MisskeyInstanceListStorage | null = null;
@@ -23,6 +27,10 @@ const f_language = ref<string>('');
 const f_orderBy = ref<Mq1MisskeyInstanceListStorage['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
 const f_order = ref<Mq1MisskeyInstanceListStorage['f_order']>(savedSettings?.f_order ?? 'desc');
 const v_view = ref<Mq1MisskeyInstanceListStorage['v_view']>(savedSettings?.v_view ?? 'grid');
+const f_openRegistrations = ref<boolean | null>(savedSettings?.f_openRegistrations ?? null);
+const f_emailRequired = ref<boolean | null>(savedSettings?.f_emailRequired ?? null);
+const f_minUsers = ref<number | null>(savedSettings?.f_minUsers ?? null);
+const f_maxUsers = ref<number | null>(savedSettings?.f_maxUsers ?? null);
 
 
 const PAGE_SIZE = 30;
@@ -34,11 +42,15 @@ const hasMore = computed(() => offset.value + instances.value.length < total.val
 const initialLoading = ref(true);
 const errorMessage = ref<string | null>(null);
 
-watch([f_orderBy, f_order, v_view], (to) => {
+watch([f_orderBy, f_order, v_view, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], (to) => {
   const newSettings: Mq1MisskeyInstanceListStorage = {
-    f_orderBy: to[0],
-    f_order: to[1],
-    v_view: to[2],
+    f_orderBy: to[0] as Mq1MisskeyInstanceListStorage['f_orderBy'],
+    f_order: to[1] as Mq1MisskeyInstanceListStorage['f_order'],
+    v_view: to[2] as Mq1MisskeyInstanceListStorage['v_view'],
+    f_openRegistrations: to[3] as boolean | null,
+    f_emailRequired: to[4] as boolean | null,
+    f_minUsers: to[5] as number | null,
+    f_maxUsers: to[6] as number | null,
   };
   if (import.meta.client) {
     window.localStorage.setItem('miHub_server_finder', JSON.stringify(newSettings));
@@ -75,7 +87,11 @@ async function fetchInstances(reset = false) {
       offset: currentOffset.toString(),
       ...(f_query.value && { search: f_query.value }),
       ...(f_repository.value && { repository: f_repository.value }),
-      ...(f_language.value && { language: f_language.value })
+      ...(f_language.value && { language: f_language.value }),
+      ...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
+      ...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
+      ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
+      ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
     });
     
     const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`);
@@ -96,7 +112,7 @@ async function fetchInstances(reset = false) {
   }
 }
 
-watch([f_orderBy, f_order], () => {
+watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], () => {
   fetchInstances(true);
 });
 
@@ -164,6 +180,10 @@ useHead({
           v-model:order-by="f_orderBy"
           v-model:order="f_order"
           v-model:view="v_view"
+          v-model:open-registrations="f_openRegistrations"
+          v-model:email-required="f_emailRequired"
+          v-model:min-users="f_minUsers"
+          v-model:max-users="f_maxUsers"
           @search="(q) => { f_query = q; fetchInstances(true); }"
           @update:repository-filter="(r) => { f_repository = r; fetchInstances(true); }"
           @update:language-filter="(l) => { f_language = l; fetchInstances(true); }"

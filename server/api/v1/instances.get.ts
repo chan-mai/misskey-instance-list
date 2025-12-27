@@ -11,6 +11,10 @@ import { prisma } from '~~/server/utils/prisma';
  * - search: 検索クエリ (オプション)
  * - language: 言語コード (ISO 639-1) (オプション)
  * - repository: リポジトリURL (オプション)
+ * - open_registrations: 登録開放状況 (true/false) (オプション)
+ * - email_required: メールアドレス必須 (true/false) (オプション)
+ * - min_users: 最小ユーザー数 (オプション)
+ * - max_users: 最大ユーザー数 (オプション)
  *
  * レスポンス:
  * - items: インスタンス配列
@@ -84,6 +88,9 @@ export default defineCachedEventHandler(async(event) => {
     }>;
     repository_url?: string | { contains: string; mode: 'insensitive' };
     language?: string;
+    open_registrations?: boolean;
+    email_required?: boolean;
+    users_count?: { gte?: number; lte?: number };
   }
 
   const where: WhereCondition = {
@@ -115,6 +122,35 @@ export default defineCachedEventHandler(async(event) => {
     where.language = language;
   }
 
+  // 登録開放状況フィルタ
+  const openRegistrations = query.open_registrations as string | undefined;
+  if (openRegistrations === 'true') {
+    where.open_registrations = true;
+  } else if (openRegistrations === 'false') {
+    where.open_registrations = false;
+  }
+
+  // メールアドレス必須フィルタ
+  const emailRequired = query.email_required as string | undefined;
+  if (emailRequired === 'true') {
+    where.email_required = true;
+  } else if (emailRequired === 'false') {
+    where.email_required = false;
+  }
+
+  // ユーザー数フィルタ
+  const minUsers = parseInt(query.min_users as string);
+  const maxUsers = parseInt(query.max_users as string);
+  if (!isNaN(minUsers) || !isNaN(maxUsers)) {
+    where.users_count = {};
+    if (!isNaN(minUsers) && minUsers >= 0) {
+      where.users_count.gte = minUsers;
+    }
+    if (!isNaN(maxUsers) && maxUsers >= 0) {
+      where.users_count.lte = maxUsers;
+    }
+  }
+
   // 総件数を取得
   const total = await prisma.instance.count({ where });
 
@@ -143,6 +179,10 @@ export default defineCachedEventHandler(async(event) => {
     recommendation_score: i.recommendation_score ?? null,
     repository_url: i.repository_url,
     language: i.language ?? null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    open_registrations: (i as any).open_registrations ?? null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    email_required: (i as any).email_required ?? null,
   }));
 
   return {
