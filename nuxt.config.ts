@@ -9,8 +9,8 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode'],
   colorMode: {
     classSuffix: '',
-    preference: 'system',
-    fallback: 'light',
+    preference: 'dark',
+    fallback: 'dark',
   },
   app: {
     head: {
@@ -49,7 +49,8 @@ export default defineNuxtConfig({
           colors: {
             primary: '#fc9fa8',
             accent: '#f57aa5',
-            back: '#f5f3f3',
+            back: '#ffffff',
+            'back-dark': '#0a0a0a',
           },
         },
       },
