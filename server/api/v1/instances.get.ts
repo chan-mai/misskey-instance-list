@@ -10,8 +10,6 @@ import { prisma } from '~~/server/utils/prisma';
  * - offset: オフセット (デフォルト: 0)
  * - search: 検索クエリ (オプション)
  * - language: 言語コード (ISO 639-1) (オプション)
- * - search: 検索クエリ (オプション)
- * - language: 言語コード (ISO 639-1) (オプション)
  * - repository: リポジトリURL (オプション)
  * - open_registrations: 登録開放状況 (true/false) (オプション)
  * - email_required: メールアドレス必須 (true/false) (オプション)
