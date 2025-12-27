@@ -12,6 +12,8 @@ export interface InstanceInfo {
   nodeinfoRepositoryUrl?: string | null;
   metaRepositoryUrl?: string | null;
   description?: string;
+  openRegistrations?: boolean | null;
+  emailRequired?: boolean | null;
 }
 
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
@@ -138,6 +140,58 @@ export async function getInstanceInfo(
     let repositoryUrl: string | null = null;
     const nodeinfoRepositoryUrl: string | null = metadata.repositoryUrl || null;
     let metaRepositoryUrl: string | null = null;
+    let openRegistrations: boolean | null = null;
+    let emailRequired: boolean | null = null;
+
+    if (typeof ni.openRegistrations === 'boolean') {
+      openRegistrations = ni.openRegistrations;
+    }
+    
+    if (metadata && typeof metadata.emailRequiredForSignup === 'boolean') {
+      emailRequired = metadata.emailRequiredForSignup;
+    }
+
+    // 正確なユーザー数を取得するために /api/stats を取得
+    try {
+        const statsController = new AbortController();
+        const statsTimeoutId = setTimeout(() => statsController.abort(), 5000);
+        const statsRes = await fetch(`https://${host}/api/stats`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...headers },
+            body: JSON.stringify({}),
+            signal: statsController.signal,
+        });
+        clearTimeout(statsTimeoutId);
+
+        if (statsRes.ok) {
+            const stats = (await statsRes.json()) as {
+                usersCount?: number;
+                originalUsersCount?: number;
+                notesCount?: number;
+                originalNotesCount?: number;
+            };
+            
+            // ユーザー数: originalUsersCount (ローカル) > usersCount (連合含む)
+            if (typeof stats.originalUsersCount === 'number') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (users as any).total = stats.originalUsersCount;
+            } else if (typeof stats.usersCount === 'number') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (users as any).total = stats.usersCount;
+            }
+
+            // ノート数: originalNotesCount > notesCount
+            if (typeof stats.originalNotesCount === 'number') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (usage as any).localPosts = stats.originalNotesCount;
+            } else if (typeof stats.notesCount === 'number') {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (usage as any).localPosts = stats.notesCount;
+            }
+        }
+    } catch (e: unknown) {
+        // statsの取得失敗は無視し、nodeinfoの情報を使用する
+    }
 
     // POST /api/metaを試行
     if (
@@ -202,6 +256,13 @@ export async function getInstanceInfo(
                 repositoryUrl = meta.repositoryUrl;
                 metaRepositoryUrl = meta.repositoryUrl;
               }
+
+              if (typeof meta.disableRegistration === 'boolean') {
+                openRegistrations = !meta.disableRegistration;
+              }
+              if (typeof meta.emailRequiredForSignup === 'boolean') {
+                emailRequired = meta.emailRequiredForSignup;
+              }
             } catch {
               console.warn(`Failed to parse api/meta for ${host}: Invalid JSON`);
               // JSONパースエラー時は何もせず続行
@@ -236,6 +297,8 @@ export async function getInstanceInfo(
         nodeinfoRepositoryUrl,
         metaRepositoryUrl,
         description,
+        openRegistrations,
+        emailRequired,
       },
     };
   } catch {
@@ -546,6 +609,8 @@ export async function saveInstance(
             suspension_state: 'none' as SuspensionState,
             language: language,
             repository_url: info.repositoryUrl && repoInfo ? info.repositoryUrl : null,
+            open_registrations: info.openRegistrations,
+            email_required: info.emailRequired,
           },
         });
 

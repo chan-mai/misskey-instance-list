@@ -59,6 +59,30 @@
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">ページネーションのオフセット</td>
               </tr>
               <tr>
+                <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">open_registrations</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">boolean</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">false</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">登録開放中のみ取得する場合は <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">true</code> を指定</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">email_required</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">boolean</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">false</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">メールアドレス不要のみ取得する場合は <code class="bg-slate-100 dark:bg-slate-700 px-1 rounded">false</code> を指定</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">min_users</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">number</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">0</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">最小ユーザー数</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">max_users</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">number</td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">-</td>
+                <td class="py-3 px-4 text-slate-600 dark:text-slate-300">最大ユーザー数</td>
+              </tr>
+              <tr>
                 <td class="py-3 px-4 font-mono text-slate-900 dark:text-white">search</td>
                 <td class="py-3 px-4 text-slate-600 dark:text-slate-300">string</td>
                 <td class="py-3 px-4 text-slate-500 dark:text-slate-400">-</td>
@@ -92,7 +116,9 @@
       "last_check_at": 1704153600000,
       "banner_url": "https://example.com/banner.jpg",
       "icon_url": "https://example.com/icon.png",
-      "language": "ja"
+      "language": "ja",
+      "open_registrations": true,
+      "email_required": false
     }
   ],
   "total": 500,
