@@ -27,6 +27,8 @@ model Instance {
   icon_url         String?
   suspension_state SuspensionState  @default(none)
   recommendation_score Float?
+  open_registrations Boolean?
+  email_required     Boolean?
   repository_url   String?
   language         String?
   repository       Repository?      @relation(fields: [repository_url], references: [url])

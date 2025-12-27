@@ -11,5 +11,7 @@ interface Instance {
   icon_url: string | null;
   banner_url: string | null;
   recommendation_score: number | null;
+  open_registrations?: boolean | null;
+  email_required?: boolean | null;
   language?: string | null;
 }
