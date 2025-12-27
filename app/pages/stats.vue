@@ -51,7 +51,7 @@
           <div class="container mx-auto max-w-screen-lg px-6">
               <div class="flex items-end justify-between mb-24 border-b border-primary/70 pb-6">
                   <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Overview</h2>
-                  <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">01 Overview</span>
+                  <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">概要</span>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
@@ -217,7 +217,7 @@
           <div class="container mx-auto max-w-screen-lg px-6">
               <div class="flex items-end justify-between mb-12 md:mb-24 border-b border-primary/70 pb-6">
                   <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Software</h2>
-                  <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">02 Distribution</span>
+                  <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">ソフトウェア</span>
               </div>
               
               <!-- Header -->
@@ -300,10 +300,8 @@
         <div class="container mx-auto max-w-screen-lg px-6">
             <div class="grid md:grid-cols-2 gap-20">
                 <div>
-                    <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-8">03
-                        Action</span>
                     <h2 class="text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-12 text-slate-900 dark:text-white">
-                        Explore<br>Servers.
+                        Let's find<br>your instance.
                     </h2>
                     <NuxtLink to="/"
                         class="inline-flex items-center gap-2 text-lg font-light text-primary hover:text-primary/70 transition-colors">

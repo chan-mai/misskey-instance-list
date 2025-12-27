@@ -9,13 +9,14 @@
             </div>
 
             <div class="container mx-auto max-w-screen-lg px-6 relative z-10">
-                <p class="text-xs md:text-sm uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 font-medium mb-8">
+                <p
+                    class="text-xs md:text-sm uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400 font-medium">
                     (非公式)Misskeyサーバーリスト
                 </p>
 
                 <h1
                     class="text-5xl md:text-7xl lg:text-8xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-12 leading-tight">
-                    (Unofficial)<br class="md:hidden"> Misskey Server<br class="md:hidden"> List
+                    <span class="text-2xl md:text-5xl font-bold tracking-wider">(Unofficial)</span><br>Misskey <br class="md:hidden">Server List
                 </h1>
 
                 <div class="w-16 md:w-24 h-0.5 bg-slate-900 dark:bg-white mb-12"></div>
@@ -37,25 +38,35 @@
         <section class="py-32 bg-white dark:bg-slate-900">
             <div class="container mx-auto max-w-screen-lg px-6">
                 <div class="flex items-end justify-between mb-24 border-b border-primary/70 pb-6">
-                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Background</h2>
-                    <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">01
-                        Info</span>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Background
+                    </h2>
+                    <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">背景</span>
                 </div>
 
                 <div class="max-w-2xl mx-auto">
-                    <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
+                    <p
+                        class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
                         公式のMisskeyHubに掲載されていたサーバーリストが突如メンテナンス状態となり、長期間にわたって復旧する気配がありませんでした。
                     </p>
 
-                    <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
-                        開発者は「混乱を避けるため」と説明していましたが、おそらく<NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200" to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432" target="_blank">CherryPickの実装変更🔗</NuxtLink>が原因と思われます。
+                    <p
+                        class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
+                        開発者は「混乱を避けるため」と説明していましたが、おそらく<NuxtLink
+                            class="text-primary hover:text-primary/70 transition-colors duration-200"
+                            to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432"
+                            target="_blank">CherryPickの実装変更🔗</NuxtLink>が原因と思われます。
                     </p>
 
-                    <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
-                        CherryPickは、Misskeyの派生プロジェクトの一つですが、現行のCherryPickは、<NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200" to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432#diff-c99e10daaf6c2db57012b73a31a76d7e3bbbf9e2599ed226e2f1651cdff40c20" target="_blank">特定のUAに対し、メタデータで自身をMisskeyのように偽って返す仕組み🔗</NuxtLink>になっています。
+                    <p
+                        class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
+                        CherryPickは、Misskeyの派生プロジェクトの一つですが、現行のCherryPickは、<NuxtLink
+                            class="text-primary hover:text-primary/70 transition-colors duration-200"
+                            to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432#diff-c99e10daaf6c2db57012b73a31a76d7e3bbbf9e2599ed226e2f1651cdff40c20"
+                            target="_blank">特定のUAに対し、メタデータで自身をMisskeyのように偽って返す仕組み🔗</NuxtLink>になっています。
                     </p>
 
-                    <p class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
+                    <p
+                        class="text-sm md:text-base text-slate-600 dark:text-slate-300 leading-[2.2] whitespace-pre-line">
                         このリストでは、CherryPickのようなスプーフィングを自動的に除外し、純粋なMisskeyサーバーのみを掲載しています。
                     </p>
                 </div>
@@ -66,9 +77,9 @@
         <section class="py-32 bg-back dark:bg-[#0b1220]">
             <div class="container mx-auto max-w-screen-lg px-6">
                 <div class="flex items-end justify-between mb-24 border-b border-primary/70 pb-6">
-                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Features</h2>
-                    <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">02
-                        Info</span>
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Features
+                    </h2>
+                    <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary">特徴</span>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-8">
@@ -98,54 +109,82 @@
         </section>
 
         <!-- Contact / Footer -->
-        <section class="py-32 bg-white dark:bg-slate-900">
-            <div class="container mx-auto max-w-screen-lg px-6">
-                <div class="grid md:grid-cols-2 gap-20">
-                    <div>
-                        <span class="block text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-8">03
-                            Contact</span>
-                        <h2 class="text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-12 text-slate-900 dark:text-white">
-                            Let's find<br>your instance.
-                        </h2>
-                        <NuxtLink to="/"
-                            class="inline-flex items-center gap-2 text-lg font-light text-primary hover:text-primary/70 transition-colors">
-                            サーバー一覧を見る
-                            <span class="text-xs">→</span>
-                        </NuxtLink>
-                    </div>
+        <section class="relative py-32 bg-white dark:bg-slate-900 overflow-hidden">
+            <div ref="illustrationRef"
+                class="absolute top-1/2 -right-[20%] md:-right-[10%] w-[120vw] h-[120vw] md:w-[60vw] md:h-[60vw] -translate-y-1/2 transition-all duration-1000 ease-out transform rounded-full border border-slate-100 dark:border-slate-700/50 pointer-events-none"
+                :class="isIllustrationVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'">
+                <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] rounded-full overflow-hidden"
+                    style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 24px 24px;">
+                </div>
 
-                    <div class="flex flex-col justify-end">
-                        <ul class="space-y-6">
-                            <li class="border-b border-slate-200 dark:border-slate-700 pb-4">
-                                <NuxtLink to="https://mq1.dev/about" target="_blank" rel="noopener noreferrer"
-                                    class="flex items-center justify-between text-lg md:text-xl font-light hover:pl-4 transition-all group text-slate-700 dark:text-slate-200">
-                                    <span class="group-hover:text-primary transition-colors">Developer</span>
-                                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">OPEN
-                                        ↗</span>
-                                </NuxtLink>
-                            </li>
-                            <li class="border-b border-slate-200 dark:border-slate-700 pb-4">
-                                <NuxtLink to="https://github.com/chan-mai/misskey-instance-list" target="_blank" rel="noopener noreferrer"
-                                    class="flex items-center justify-between text-lg md:text-xl font-light hover:pl-4 transition-all group text-slate-700 dark:text-slate-200">
-                                    <span class="group-hover:text-primary transition-colors">GitHub</span>
-                                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">OPEN
-                                        ↗</span>
-                                </NuxtLink>
-                            </li>
-                        </ul>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="relative w-full h-full">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <div
+                                class="w-6 h-6 bg-primary rounded-full shadow-lg shadow-primary/50 animate-pulse">
+                            </div>
+                            <div
+                                class="absolute inset-0 w-6 h-6 bg-primary rounded-full animate-ping opacity-20">
+                            </div>
+                        </div>
+                        <div class="absolute top-1/2 left-1/2 w-[70%] h-[70%] border border-slate-200 dark:border-slate-600 rounded-full"
+                            style="animation: orbit-outer 20s linear infinite;">
+                            <div
+                                class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-slate-400 rounded-full">
+                            </div>
+                            <div
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-300 rounded-full">
+                            </div>
+                        </div>
+                        <div class="absolute top-1/2 left-1/2 w-[45%] h-[45%] border border-slate-200 dark:border-slate-600 rounded-full"
+                            style="animation: orbit-inner 15s linear infinite;">
+                            <div
+                                class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-400 rounded-full">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="container mx-auto max-w-screen-lg px-6 relative z-10">
+                <div class="grid md:grid-cols-2 gap-20">
+                    <div class="flex flex-col justify-center h-full">
+                        <h2
+                            class="text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-12 text-slate-900 dark:text-white">
+                            Let's find<br>your instance.
+                        </h2>
+                        <div class="mb-12">
+                            <NuxtLink to="/"
+                                class="inline-flex items-center gap-2 text-lg font-light text-primary hover:text-primary/70 transition-colors">
+                                サーバー一覧を見る
+                                <span class="text-xs">→</span>
+                            </NuxtLink>
+                        </div>
+                    </div>
+                    <!-- Spacer -->
+                    <div class="hidden md:block"></div>
+                </div>
+            </div>
         </section>
-
-
-
-
-
     </div>
 </template>
 
 <script setup lang="ts">
+const illustrationRef = ref<HTMLElement | null>(null);
+const isIllustrationVisible = ref(false);
+
+onMounted(() => {
+    if (illustrationRef.value) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                isIllustrationVisible.value = true;
+                observer.disconnect();
+            }
+        }, { threshold: 0.2 });
+        observer.observe(illustrationRef.value);
+    }
+});
+
 useHead({
     title: 'About - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
     meta: [
@@ -159,3 +198,24 @@ useHead({
     ]
 });
 </script>
+<style>
+@keyframes orbit-outer {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes orbit-inner {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(-360deg);
+    }
+}
+</style>
