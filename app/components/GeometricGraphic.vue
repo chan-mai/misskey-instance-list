@@ -65,6 +65,9 @@ const init = () => {
       for (let l = k + 1; l < neighbors.length; l++) {
         const n1 = neighbors[k];
         const n2 = neighbors[l];
+        
+        if (n1 === undefined || n2 === undefined) continue;
+
         const p1 = pts[n1];
         const p2 = pts[n2];
         if (!p1 || !p2) continue;
@@ -165,7 +168,7 @@ onUnmounted(() => {
         <template v-for="(face, i) in faces" :key="`f-${i}`">
           <polygon
             v-if="projectedPoints[face.p1] && projectedPoints[face.p2] && projectedPoints[face.p3]"
-            :points="`${projectedPoints[face.p1].x},${projectedPoints[face.p1].y} ${projectedPoints[face.p2].x},${projectedPoints[face.p2].y} ${projectedPoints[face.p3].x},${projectedPoints[face.p3].y}`"
+            :points="`${projectedPoints[face.p1]!.x},${projectedPoints[face.p1]!.y} ${projectedPoints[face.p2]!.x},${projectedPoints[face.p2]!.y} ${projectedPoints[face.p3]!.x},${projectedPoints[face.p3]!.y}`"
             class="fill-primary transition-colors duration-1000"
             :fill-opacity="face.opacity"
             stroke="none"
@@ -176,8 +179,8 @@ onUnmounted(() => {
         <template v-for="(edge, i) in edges" :key="`e-${i}`">
           <line
             v-if="projectedPoints[edge.p1] && projectedPoints[edge.p2]"
-            :x1="projectedPoints[edge.p1].x" :y1="projectedPoints[edge.p1].y"
-            :x2="projectedPoints[edge.p2].x" :y2="projectedPoints[edge.p2].y"
+            :x1="projectedPoints[edge.p1]!.x" :y1="projectedPoints[edge.p1]!.y"
+            :x2="projectedPoints[edge.p2]!.x" :y2="projectedPoints[edge.p2]!.y"
             class="stroke-primary"
             stroke-width="0.5"
             :stroke-opacity="edge.opacity * 0.4"
