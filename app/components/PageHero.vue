@@ -2,6 +2,9 @@
   <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
     <!-- Background -->
     <div class="absolute inset-0 bg-neutral-100 dark:bg-black">
+      <!-- Geometric Graphic -->
+      <GeometricGraphic />
+      
       <!-- Gradient accent -->
       <div class="absolute inset-0 opacity-20">
         <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/30 to-transparent"></div>

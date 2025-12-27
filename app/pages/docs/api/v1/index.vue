@@ -4,7 +4,7 @@
     <PageHero
       label="Developer Resources"
       title="API v1"
-      description="(Unofficial) Misskey Server List API v1のドキュメントです。サーバー情報、統計データへのアクセスを提供します。"
+      description="(Unofficial) Misskey Server List API v1 Documentation"
       :show-scroll="true"
     />
 

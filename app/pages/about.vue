@@ -4,7 +4,7 @@
     <PageHero
       label="(Unofficial) Misskey Server List"
       title="About"
-      description="MisskeyHubのサーバーリストがメンテナンス中のため、非公式のサーバーリストを作成しました。"
+      description="このサイトについて"
       :show-scroll="true"
     />
 
@@ -110,7 +110,7 @@
           </div>
 
           <!-- Stats Grid -->
-          <div class="hidden md:visible lg:w-1/2 w-full max-w-lg">
+          <div class="hidden lg:block lg:w-1/2 w-full  max-w-lg">
             <div class="grid grid-cols-2 gap-6">
               <div class="bg-white dark:bg-neutral-900 p-8 rounded-2xl shadow-sm">
                 <p class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">{{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }}</p>

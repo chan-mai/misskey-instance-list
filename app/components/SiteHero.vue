@@ -15,6 +15,8 @@
       <div
         class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:64px_64px]">
       </div>
+
+      <GeometricGraphic />
     </div>
 
     <!-- Content -->
@@ -50,23 +52,23 @@
         <!-- Stats grid -->
         <div class="mt-12 lg:mt-0 w-full">
           <div
-            class="grid grid-cols-2 gap-px bg-neutral-200 dark:bg-white/10 max-w-lg mx-auto lg:ml-auto lg:mr-0 border border-neutral-200 dark:border-white/10">
-            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+            class="grid grid-cols-2 max-w-lg mx-auto lg:ml-auto lg:mr-0">
+            <div class="p-6 sm:p-8 text-center border-r-2 border-b-2 border-neutral-300 dark:border-white/30">
               <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.counts?.active ?
                 formatNumber(stats.counts.active) : '-' }}</p>
               <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Active</p>
             </div>
-            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+            <div class="p-6 sm:p-8 text-center border-b-2 border-neutral-300 dark:border-white/30">
               <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.counts?.known ?
                 formatNumber(stats.counts.known) : '-' }}</p>
               <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Known</p>
             </div>
-            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+            <div class="p-6 sm:p-8 text-center border-r-2 border-neutral-300 dark:border-white/30">
               <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.repositories?.length
                 || '-' }}</p>
               <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Software</p>
             </div>
-            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+            <div class="p-6 sm:p-8 text-center">
               <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.languages?.length ||
                 '-' }}</p>
               <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Languages</p>
