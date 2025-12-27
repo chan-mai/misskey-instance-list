@@ -91,7 +91,6 @@
         </div>
 
         <div class="bg-neutral-100 dark:bg-neutral-900 p-8">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">Production</p>
           <code class="text-xl lg:text-2xl font-mono text-primary">https://servers.misskey.ink/api/v1</code>
         </div>
 
