@@ -1,6 +1,29 @@
-/* フォント設定 */
+/* Base font settings */
 * {
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "ヒラギノ角ゴ ProN W3", "Yu Gothic Medium", 游ゴシック体, 游ゴシック, "Yu Gothic", メイリオ, Meiryo, "ＭＳ Ｐゴシック", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
 }
+
+/* Solid design base */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Heading typography */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+/* Link transitions */
+a {
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Selection colors */
+::selection {
+  background-color: rgba(252, 159, 168, 0.3);
+}
+

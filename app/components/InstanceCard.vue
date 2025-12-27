@@ -1,17 +1,13 @@
 <template>
-
-  <!-- グリッド表示 (variant='default') -->
+  <!-- Chronicle.city style card -->
   <NuxtLink
-    v-if="view === 'grid'"
     :to="`https://${instance.id}`"
     target="_blank"
     rel="noopener noreferrer"
-    class="group flex h-full flex-col rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
   >
-    <!-- 画像エリア -->
-    <div class="relative aspect-video w-full bg-gray-100 dark:bg-slate-700 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
-      
+    <!-- Image area with overlay -->
+    <div class="relative aspect-[4/3] w-full overflow-hidden">
       <img 
         v-if="fetchedBanner" 
         loading="lazy" 
@@ -19,201 +15,91 @@
         :alt="instance.node_name"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
-      <div v-else class="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30">
-        <!-- No Image-->
-        <div class="absolute inset-0 flex flex-col items-center justify-center text-accent/80 dark:text-white/50">
-          <svg xmlns="http://www.w3.org/2000/svg" class="size-8 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+      <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
+        <div class="text-neutral-600 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <span class="text-xs font-bold">No Image</span>
         </div>
       </div>
 
-      <!-- アイコンバッジ -->
-      <div class="absolute bottom-3 mx-3 flex items-center gap-2 rounded bg-white/90 dark:bg-slate-800/90 px-2 py-1 backdrop-blur border border-primary/50">
-        <img 
-          v-if="fetchedIcon" 
-          :src="fetchedIcon" 
-          class="h-5 w-5 rounded"
-        />
-        <div 
-          v-else 
-          class="h-5 w-5 rounded bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-xs font-bold"
-        >
-          {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+      <!-- Content overlay -->
+      <div class="absolute inset-0 p-4 flex flex-col justify-end">
+        <!-- Icon and name -->
+        <div class="flex items-center gap-2.5 mb-2">
+          <img 
+            v-if="fetchedIcon" 
+            :src="fetchedIcon" 
+            class="w-8 h-8 bg-white/10 backdrop-blur-sm rounded-sm shadow-sm"
+            alt=""
+          />
+          <div 
+            v-else 
+            class="w-8 h-8 bg-primary flex items-center justify-center text-white text-sm font-bold rounded-sm shadow-sm"
+          >
+            {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base font-bold text-white truncate group-hover:text-primary transition-colors drop-shadow-md">
+              {{ instance.node_name || instance.id }}
+            </h3>
+            <p class="text-[10px] text-white/70 font-mono drop-shadow-sm">v{{ instance.version }}</p>
+          </div>
         </div>
-        <span class="font-mono text-xs text-gray-500 dark:text-slate-400 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
-      </div>
-    </div>
 
-    <!-- コンテンツエリア -->
-    <div class="flex flex-1 flex-col p-4 md:p-5">
-      <!-- タイトル -->
-      <h3 class="mb-3 text-lg transition-colors group-hover:text-primary leading-[1.5] line-clamp-1">
-        {{ instance.node_name || instance.id }}
-      </h3>
+        <!-- Description -->
+        <p class="text-xs text-white/80 line-clamp-2 mb-3 drop-shadow-sm">
+          <span v-if="loadingDescription" class="text-white/50">Loading...</span>
+          <span v-else>{{ description || instance.id }}</span>
+        </p>
 
-      <!-- サマリー -->
-      <p class="mb-4 flex-1 text-sm leading-relaxed text-gray-500 dark:text-slate-400 line-clamp-3">
-        <span v-if="loadingDescription" class="text-gray-400 dark:text-slate-500">読み込み中...</span>
-        <span v-else>{{ description || instance.id }}</span>
-      </p>
-
-      <!-- 統計情報 -->
-      <div class="mb-3 flex flex-wrap gap-2 overflow-visible">
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/30">
-          Users: {{ formatNumber(instance.users_count) }}
-        </span>
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/30">
-          Notes: {{ formatNumber(instance.notes_count) }}
-        </span>
-        <span 
-          class="text-[10px] px-2 py-0.5 rounded-full border"
-          :class="instance.is_alive ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'"
-        >
-          Status: {{ instance.is_alive ? 'Online' : 'Offline' }}
-        </span>
-        <span 
-          v-if="instance.language"
-          class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700 inline-flex items-center gap-1 relative group/lang"
-        >
-          {{ getLanguageName(instance.language) }}
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-[10px] text-white bg-gray-800 dark:bg-slate-600 rounded shadow-lg whitespace-nowrap opacity-0 group-hover/lang:opacity-100 transition-opacity pointer-events-none z-50">
-            ※ 自動検出のため、実際の主要言語と異なる場合があります
+        <!-- Stats row -->
+        <div class="flex items-center gap-3 text-[10px] text-white/60 font-medium drop-shadow-sm">
+          <span class="flex items-center gap-1" title="Users">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+            </svg>
+            {{ formatNumber(instance.users_count) }}
           </span>
-        </span>
+          <span class="flex items-center gap-1" title="Notes">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            </svg>
+            {{ formatNumber(instance.notes_count) }}
+          </span>
+          <span 
+            class="flex items-center gap-1"
+            :class="instance.is_alive ? 'text-green-400' : 'text-red-400'"
+            :title="instance.is_alive ? 'Online' : 'Offline'"
+          >
+            <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-400' : 'bg-red-400'"></span>
+            {{ instance.is_alive ? 'Online' : 'Offline' }}
+          </span>
+        </div>
       </div>
 
-      <!-- 続きを読む -->
-      <div class="mt-auto flex items-center justify-between border-t border-gray-100 dark:border-slate-700 pt-4">
-        <span class="text-xs text-gray-400 dark:text-slate-500 transition-colors group-hover:text-primary">サーバーを見る</span>
-        <div class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 dark:bg-slate-700 text-gray-600 dark:text-slate-300 transition-colors group-hover:bg-primary group-hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
+      <!-- Hover arrow indicator -->
+      <div class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
       </div>
     </div>
   </NuxtLink>
-
-  <!-- リスト表示 -->
-  <div v-else-if="view === 'list'" class="relative">
-    <NuxtLink
-      :to="`https://${instance.id}`" 
-      target="_blank"
-      rel="noopener noreferrer"
-      class="slide-hover block p-4 rounded-lg"
-    >
-      <div class="flex flex-col md:flex-row gap-4 h-full">
-        <!-- 画像コンテナ -->
-        <div class="md:w-1/3 w-full md:flex-shrink-0 md:min-w-[200px]">
-          <div class="relative w-full overflow-hidden rounded-lg aspect-video">
-            <img 
-              v-if="fetchedBanner" 
-              loading="lazy" 
-              :src="fetchedBanner" 
-              :alt="instance.node_name"
-              class="object-cover transition-transform duration-300 hover:scale-105 rounded-lg w-full h-full"
-            />
-            <div 
-              v-else 
-              class="w-full h-full bg-gradient-to-br from-primary/30 to-accent/30 rounded-lg flex items-center justify-center"
-            >
-              <!-- No Image-->
-              <div class="absolute inset-0 flex flex-col items-center justify-center text-accent/80 dark:text-white/50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="size-8 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span class="text-xs font-bold">No Image</span>
-              </div>
-            </div>
-            <!-- バージョンバッジ -->
-            <div class="absolute top-2 right-2 rounded bg-white/90 dark:bg-slate-800/90 px-1.5 py-0.5 backdrop-blur border border-gray-200 dark:border-slate-600">
-              <span class="font-mono text-[10px] text-gray-600 dark:text-slate-400 line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">v{{ instance.version }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- テキストコンテンツ -->
-        <div class="w-full flex flex-col justify-between h-full md:flex-1 md:min-w-0">
-          <div>
-            <div class="flex items-center gap-2 mb-2">
-              <img 
-                v-if="fetchedIcon" 
-                :src="fetchedIcon" 
-                class="h-6 w-6 rounded flex-shrink-0"
-              />
-              <div 
-                v-else 
-                class="h-6 w-6 rounded bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-              >
-                {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
-              </div>
-              <h3 class="text-lg font-medium text-gray-800 dark:text-slate-100 whitespace-nowrap overflow-hidden text-ellipsis">
-                {{ instance.node_name || instance.id }}
-              </h3>
-            </div>
-            <p class="text-gray-600 dark:text-slate-400 text-sm mb-2 overflow-hidden line-clamp-2">
-              <span v-if="loadingDescription" class="text-gray-400 dark:text-slate-500">読み込み中...</span>
-              <span v-else>{{ description || instance.id }}</span>
-            </p>
-
-            <div class="flex flex-wrap gap-2 mt-4 overflow-visible">
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/30">
-                Users: {{ formatNumber(instance.users_count) }}
-              </span>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/30">
-                Notes: {{ formatNumber(instance.notes_count) }}
-              </span>
-              <span 
-                class="text-[10px] px-2 py-0.5 rounded-full border"
-                :class="instance.is_alive ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'"
-              >
-                Status: {{ instance.is_alive ? 'Online' : 'Offline' }}
-              </span>
-              <span 
-                v-if="instance.language"
-                class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700 inline-flex items-center gap-1 relative group/lang"
-              >
-                {{ getLanguageName(instance.language) }}
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-[10px] text-white bg-gray-800 dark:bg-slate-600 rounded shadow-lg whitespace-nowrap opacity-0 group-hover/lang:opacity-100 transition-opacity pointer-events-none z-50">
-                  ※ 自動検出のため、実際の主要言語と異なる場合があります
-                </span>
-              </span>
-            </div>
-          </div>
-
-          <div class="w-full flex justify-end pt-4">
-            <span class="text-accent text-sm inline-flex items-center gap-1">
-              サーバーを見る
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </span>
-          </div>
-        </div>
-      </div>
-    </NuxtLink>
-  </div>
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-  instance: Instance;
-  view?: 'grid' | 'list';
-}>(), {
-  view: 'grid',
-});
+import { useFormat } from '~/composables/useFormat'
 
-const { instance } = toRefs(props);
+const props = defineProps<{
+  instance: Instance;
+}>();
+
+const { formatNumber } = useFormat()
 
 const fetchedIcon = ref<string | null>(null);
 const fetchedBanner = ref<string | null>(null);
@@ -261,17 +147,6 @@ async function updateImages() {
 // 説明文の状態
 const description = ref<string>('');
 const loadingDescription = ref(true);
-
-/**
- * 数値をフォーマット
- */
-function formatNumber(num: number | undefined | null): string {
-  if (!num) return '0';
-  if (num >= 100000) {
-    return new Intl.NumberFormat('ja-JP', { notation: 'compact', maximumFractionDigits: 1 }).format(num);
-  }
-  return new Intl.NumberFormat('ja-JP').format(num);
-}
 
 /**
  * HTMLタグを除去
@@ -327,14 +202,13 @@ async function updateDescription() {
 }
 
 // インスタンス変更時に実行
-watch(instance, () => {
+watch(() => props.instance, () => {
   updateImages();
   updateDescription();
 }, { immediate: true });
 
 function getLanguageName(code: string) {
   try {
-    // detectLanguage now returns ISO 639-1 directly
     const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(code);
     if (name && name !== code) {
       return name;
@@ -345,36 +219,3 @@ function getLanguageName(code: string) {
   return code;
 }
 </script>
-
-<style scoped>
-/* スライドホバーエフェクト */
-.slide-hover {
-  position: relative;
-  overflow: hidden;
-}
-
-.slide-hover::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: white;
-  transform: translateX(-100%);
-  opacity: 0;
-  z-index: 0;
-  border-radius: 0.5rem;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.slide-hover:hover::before {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.slide-hover > * {
-  position: relative;
-  z-index: 1;
-}
-</style>

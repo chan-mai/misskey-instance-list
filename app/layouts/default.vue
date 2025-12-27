@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full bg-back text-slate-600 dark:bg-[#0b1220] dark:text-slate-200">
+  <div class="min-h-screen w-full bg-neutral-50 text-neutral-800 dark:bg-black dark:text-neutral-100">
     <SiteHeader />
     <main>
       <slot />

@@ -1,101 +1,79 @@
 <template>
-  <section class="relative overflow-hidden py-20 lg:py-28">
-    <!-- 背景グラデーション -->
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-white to-accent/10 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900"></div>
-    
-    <!-- 装飾パターン -->
-    <div class="absolute inset-0 opacity-30">
-      <!-- 背景のオーロラエフェクトを削除し、よりクリーンな印象に -->
+  <section class="relative min-h-[80vh] lg:min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-neutral-100 dark:bg-black">
+      <!-- Animated gradient background -->
+      <div class="absolute inset-0 opacity-30 dark:opacity-50">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent animate-pulse-slow"></div>
+        <div class="absolute inset-0 bg-gradient-to-tl from-accent/10 via-transparent to-transparent animate-pulse-slow animation-delay-1000"></div>
+      </div>
+      <!-- Grid pattern overlay -->
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:64px_64px]"></div>
     </div>
 
-    <div class="relative container mx-auto max-w-screen-xl px-6">
-      <div class="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
-        <!-- テキスト部分 -->
-        <div class="text-center lg:text-left max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium mb-8">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            {{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }} servers available
-          </div>
-          
-          <h1 class="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-8 leading-tight tracking-tight">
-            Find Your Perfect
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-              Misskey Server
-            </span>
+    <!-- Content -->
+    <div class="relative z-10 container mx-auto max-w-screen-xl px-6 py-20">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <!-- Text Content -->
+        <div class="text-center lg:text-left">
+          <!-- Title -->
+          <h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-neutral-900 dark:text-white mb-8 leading-none tracking-tight">
+            <span class="block">Find Your</span>
+            <span class="block mt-2 text-primary">Misskey Server</span>
           </h1>
           
-          <p class="text-lg lg:text-xl text-slate-600 dark:text-slate-300 mb-10 leading-relaxed">
-            Misskeyの世界を探索しよう。様々なサーバーから、あなたに合ったコミュニティを見つけてみませんか。
+          <!-- Description -->
+          <p class="text-lg sm:text-xl text-neutral-600 dark:text-white/60 mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            あなたにぴったりなMisskeyサーバーを見つけよう。
           </p>
           
-          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <NuxtLink
-              to="#instances" 
-              class="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-primary text-white font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-            >
-              Find Servers
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </NuxtLink>
-          </div>
+          <!-- CTA -->
+          <NuxtLink
+            to="#servers" 
+            class="inline-flex items-center justify-center gap-3 px-10 py-5 bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium tracking-widest uppercase hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white transition-colors duration-300"
+          >
+            サーバーを見つける
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </NuxtLink>
         </div>
-        
-        <!-- 統計カード -->
-        <div class="relative">
-          <!-- ドット装飾 -->
-          <div class="absolute -top-4 -left-4 w-24 h-24">
-            <svg viewBox="0 0 100 100" class="w-full h-full text-primary/30">
-              <pattern id="hero-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="4" cy="4" r="2" fill="currentColor"/>
-              </pattern>
-              <rect width="100" height="100" fill="url(#hero-dots)"/>
-            </svg>
-          </div>
-          <div class="absolute -bottom-4 -right-4 w-24 h-24">
-            <svg viewBox="0 0 100 100" class="w-full h-full text-accent/30">
-              <pattern id="hero-dots2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="4" cy="4" r="2" fill="currentColor"/>
-              </pattern>
-              <rect width="100" height="100" fill="url(#hero-dots2)"/>
-            </svg>
-          </div>
-          
-          <!-- カード本体 -->
-          <div class="relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl rounded-lg p-8 min-w-[280px] border border-slate-200 dark:border-slate-700">
-            <div class="flex flex-col gap-8">
-              <!-- Active Instances -->
-              <div class="text-center">
-                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-gradient-to-br from-primary to-accent text-white mb-4 shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                 </div>
-                 <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-2">Active Servers </p>
-                 <p class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                    {{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }}
-                 </p>
-              </div>
 
-              <!-- Known Instances -->
-              <div class="text-center pt-8 border-t border-slate-200 dark:border-slate-700">
-                  <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-2">Total Known</p>
-                  <p class="text-xl font-bold text-slate-700 dark:text-slate-200">
-                    {{ stats?.counts?.known ? formatNumber(stats.counts.known) : '-' }}
-                  </p>
-              </div>
+        <!-- Stats grid -->
+        <div class="mt-12 lg:mt-0 w-full">
+          <div class="grid grid-cols-2 gap-px bg-neutral-200 dark:bg-white/10 max-w-lg mx-auto lg:ml-auto lg:mr-0 border border-neutral-200 dark:border-white/10">
+            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.counts?.active ? formatNumber(stats.counts.active) : '-' }}</p>
+              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Active</p>
+            </div>
+            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.counts?.known ? formatNumber(stats.counts.known) : '-' }}</p>
+              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Known</p>
+            </div>
+            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.repositories?.length || '-' }}</p>
+              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Software</p>
+            </div>
+            <div class="bg-white dark:bg-black p-6 sm:p-8 text-center">
+              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.languages?.length || '-' }}</p>
+              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Languages</p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400 dark:text-white/40">
+      <span class="text-xs tracking-widest uppercase">Scroll</span>
+      <div class="w-px h-12 bg-gradient-to-b from-neutral-400 dark:from-white/40 to-transparent animate-bounce"></div>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import { useFormat } from '~/composables/useFormat';
+
 defineProps<{
   stats?: {
     counts: {
@@ -107,10 +85,25 @@ defineProps<{
       name: string | null;
       count: number;
     }>;
+    languages?: Array<{
+      code: string;
+      count: number;
+    }>;
   };
 }>();
 
-const formatNumber = (value: number | undefined) => {
-  return value ? new Intl.NumberFormat('ja-JP').format(value) : '-';
-};
+const { formatNumber } = useFormat();
 </script>
+
+<style scoped>
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+</style>
