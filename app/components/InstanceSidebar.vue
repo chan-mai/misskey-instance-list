@@ -181,7 +181,7 @@
               <div class="flex w-full isolate">
                 <button
                   type="button"
-                  class="flex-1 px-3 py-2 text-xs font-medium border transition-colors first:rounded-l-lg last:rounded-r-lg -ml-px first:ml-0 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  class="flex-1 px-3 py-2 text-xs font-medium border transition-colors flex items-center justify-center first:rounded-l-lg last:rounded-r-lg -ml-px first:ml-0 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/40"
                   :class="emailRequiredValue === null 
                     ? 'bg-primary/10 text-primary border-primary/50' 
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700'"
@@ -222,7 +222,7 @@
               <div class="flex w-full isolate">
                 <button
                   type="button"
-                  class="flex-1 w-0 px-3 text-xs font-medium border-t border-x transition-colors flex items-center justify-center first:rounded-tl-lg last:rounded-tr-lg -ml-px first:ml-0 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/40 relative"
+                  class="flex-1 w-0 px-3 text-xs font-medium border-t border-x transition-colors flex items-center justify-center first:rounded-tl-lg -ml-px first:ml-0 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/40 relative"
                   :class="userCountPreset === 'all'
                     ? 'bg-primary/10 text-primary border-primary/50 border-b-0 z-10 pt-2 pb-[calc(0.5rem+1px)]' 
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 border-b border-b-primary/50 py-2 hover:bg-slate-50 dark:hover:bg-slate-700'"
@@ -252,7 +252,7 @@
                 </button>
                 <button
                   type="button"
-                  class="flex-1 w-0 px-3 text-xs font-medium border-t border-x transition-colors flex items-center justify-center first:rounded-l-lg last:rounded-tr-lg -ml-px focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/40 relative"
+                  class="flex-1 w-0 px-3 text-xs font-medium border-t border-x transition-colors flex items-center justify-center last:rounded-tr-lg -ml-px focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/40 relative"
                   :class="userCountPreset === 'large'
                     ? 'bg-primary/10 text-primary border-primary/50 border-b-0 z-10 pt-2 pb-[calc(0.5rem+1px)]' 
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 border-b border-b-primary/50 py-2 hover:bg-slate-50 dark:hover:bg-slate-700'"
