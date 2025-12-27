@@ -474,7 +474,7 @@ function checkCustomPreset() {
 }
 
 // Watch props to update preset if values change externally or on load
-watch([() => props.minUsers, () => props.maxUsers], ([min, max], [oldMin, oldMax]) => {
+watch([() => props.minUsers, () => props.maxUsers], ([min, max]) => {
   // Prevent infinite loop or overriding manual selection logic if values match presets
   if (min === null && max === null) {
     userCountPreset.value = 'all';
