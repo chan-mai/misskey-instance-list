@@ -428,12 +428,12 @@ const emailRequiredValue = computed({
 
 const minUsersValue = computed({
   get: () => props.minUsers,
-  set: (val) => emit('update:minUsers', val)
+  set: (val: number | string | null) => emit('update:minUsers', val === '' ? null : val as number | null)
 });
 
 const maxUsersValue = computed({
   get: () => props.maxUsers,
-  set: (val) => emit('update:maxUsers', val)
+  set: (val: number | string | null) => emit('update:maxUsers', val === '' ? null : val as number | null)
 });
 
 type UserPreset = 'all' | 'small' | 'medium' | 'large' | 'custom';
