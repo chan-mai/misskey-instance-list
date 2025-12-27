@@ -176,7 +176,7 @@ const isIllustrationVisible = ref(false);
 onMounted(() => {
     if (illustrationRef.value) {
         const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
+            if (entries[0] && entries[0].isIntersecting) {
                 isIllustrationVisible.value = true;
                 observer.disconnect();
             }
