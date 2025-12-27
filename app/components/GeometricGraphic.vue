@@ -45,10 +45,14 @@ const init = () => {
   for (let i = 0; i < count; i++) {
     const neighbors: number[] = [];
     for (let j = i + 1; j < count; j++) {
+      const p1 = pts[i];
+      const p2 = pts[j];
+      if (!p1 || !p2) continue;
+
       const d = Math.sqrt(
-        (pts[i].x - pts[j].x) ** 2 +
-        (pts[i].y - pts[j].y) ** 2 +
-        (pts[i].z - pts[j].z) ** 2
+        (p1.x - p2.x) ** 2 +
+        (p1.y - p2.y) ** 2 +
+        (p1.z - p2.z) ** 2
       );
       if (d < connectionDistance) {
         es.push({ p1: i, p2: j, opacity: Math.max(0.1, 1 - d / connectionDistance) });
@@ -61,11 +65,15 @@ const init = () => {
       for (let l = k + 1; l < neighbors.length; l++) {
         const n1 = neighbors[k];
         const n2 = neighbors[l];
+        const p1 = pts[n1];
+        const p2 = pts[n2];
+        if (!p1 || !p2) continue;
+
         // Check if n1 and n2 are connected
         const d = Math.sqrt(
-          (pts[n1].x - pts[n2].x) ** 2 +
-          (pts[n1].y - pts[n2].y) ** 2 +
-          (pts[n1].z - pts[n2].z) ** 2
+          (p1.x - p2.x) ** 2 +
+          (p1.y - p2.y) ** 2 +
+          (p1.z - p2.z) ** 2
         );
         if (d < connectionDistance) {
            // Found a triangle (i, n1, n2)
@@ -125,9 +133,14 @@ const animate = () => {
 
   // Sort faces by Z depth (Painters algorithm)
   faces.value.forEach(f => {
-    f.z = (rotatedPoints[f.p1].z + rotatedPoints[f.p2].z + rotatedPoints[f.p3].z) / 3;
+    const p1 = rotatedPoints[f.p1];
+    const p2 = rotatedPoints[f.p2];
+    const p3 = rotatedPoints[f.p3];
+    if (p1 && p2 && p3) {
+      f.z = (p1.z + p2.z + p3.z) / 3;
+    }
   });
-  faces.value.sort((a, b) => b.z - a.z);
+  faces.value.sort((a, b) => (b.z || 0) - (a.z || 0));
 
   animationId = requestAnimationFrame(animate);
 };
@@ -149,21 +162,27 @@ onUnmounted(() => {
       <svg class="w-full h-full" :viewBox="`0 0 ${width} ${height}`" preserveAspectRatio="xMidYMid meet">
         
         <!-- Faces (Triangles) -->
-        <polygon v-for="(face, i) in faces" :key="`f-${i}`"
-          :points="`${projectedPoints[face.p1].x},${projectedPoints[face.p1].y} ${projectedPoints[face.p2].x},${projectedPoints[face.p2].y} ${projectedPoints[face.p3].x},${projectedPoints[face.p3].y}`"
-          class="fill-primary transition-colors duration-1000"
-          :fill-opacity="face.opacity"
-          stroke="none"
-        />
+        <template v-for="(face, i) in faces" :key="`f-${i}`">
+          <polygon
+            v-if="projectedPoints[face.p1] && projectedPoints[face.p2] && projectedPoints[face.p3]"
+            :points="`${projectedPoints[face.p1].x},${projectedPoints[face.p1].y} ${projectedPoints[face.p2].x},${projectedPoints[face.p2].y} ${projectedPoints[face.p3].x},${projectedPoints[face.p3].y}`"
+            class="fill-primary transition-colors duration-1000"
+            :fill-opacity="face.opacity"
+            stroke="none"
+          />
+        </template>
 
         <!-- Edges (Lines) -->
-        <line v-for="(edge, i) in edges" :key="`e-${i}`"
-          :x1="projectedPoints[edge.p1].x" :y1="projectedPoints[edge.p1].y"
-          :x2="projectedPoints[edge.p2].x" :y2="projectedPoints[edge.p2].y"
-          class="stroke-primary"
-          stroke-width="0.5"
-          :stroke-opacity="edge.opacity * 0.4"
-        />
+        <template v-for="(edge, i) in edges" :key="`e-${i}`">
+          <line
+            v-if="projectedPoints[edge.p1] && projectedPoints[edge.p2]"
+            :x1="projectedPoints[edge.p1].x" :y1="projectedPoints[edge.p1].y"
+            :x2="projectedPoints[edge.p2].x" :y2="projectedPoints[edge.p2].y"
+            class="stroke-primary"
+            stroke-width="0.5"
+            :stroke-opacity="edge.opacity * 0.4"
+          />
+        </template>
 
         <!-- Nodes (Points) -->
         <circle v-for="(p, i) in projectedPoints" :key="`p-${i}`"

@@ -91,7 +91,7 @@
         <div class="flex flex-col lg:flex-row items-center justify-between gap-16">
           <!-- Text Content -->
           <div class="lg:w-1/2 text-center lg:text-left">
-            <h2 class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-6">
+            <h2 class="text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-6">
               Let's find your server.
             </h2>
             <p class="text-lg text-neutral-600 dark:text-white/60 mb-10 max-w-xl mx-auto lg:mx-0">

@@ -50,7 +50,7 @@
         </div>
 
         <!-- Stats grid -->
-        <div class="mt-12 lg:mt-0 w-full">
+        <div class="hidden lg:block mt-12 lg:mt-0 w-full">
           <div
             class="grid grid-cols-2 max-w-lg mx-auto lg:ml-auto lg:mr-0">
             <div class="p-6 sm:p-8 text-center border-r-2 border-b-2 border-neutral-300 dark:border-white/30">

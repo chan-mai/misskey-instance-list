@@ -22,7 +22,7 @@
         </p>
         
         <!-- Title -->
-        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-bold text-neutral-900 dark:text-white mb-8 leading-tight tracking-tight">
+        <h1 class="text-6xl sm:text-5xl lg:text-7xl font-bold text-neutral-900 dark:text-white mb-8 leading-tight tracking-tight">
           <slot name="title">{{ title }}</slot>
         </h1>
         
