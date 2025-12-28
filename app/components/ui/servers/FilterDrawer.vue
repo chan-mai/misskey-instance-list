@@ -50,12 +50,16 @@
             </label>
             <div class="flex gap-2">
               <div class="relative flex-1">
-                <select v-model="orderByValue"
+                <select v-model="localOrderBy"
                   class="w-full px-3 py-2 bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 appearance-none text-xs">
-                  <option value="recommendedScore">おすすめ順</option>
-                  <option value="usersCount">ユーザー数順</option>
-                  <option value="notesCount">ノート数順</option>
-                  <option value="createdAt">登録日順</option>
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                    value="recommendedScore">おすすめ順</option>
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="usersCount">
+                    ユーザー数順</option>
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="notesCount">ノート数順
+                  </option>
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="createdAt">登録日順
+                  </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-neutral-400">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
@@ -64,9 +68,9 @@
                   </svg>
                 </div>
               </div>
-              <button @click="toggleOrder" :title="order === 'desc' ? '降順' : '昇順'"
+              <button @click="toggleOrder" :title="localOrder === 'desc' ? '降順' : '昇順'"
                 class="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors">
-                <svg v-if="order === 'desc'" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                <svg v-if="localOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
                   viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -81,7 +85,7 @@
           <div>
             <label
               class="block text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-1">ステータス</label>
-            <BaseSegmentedControl v-model="openRegistrationsValue" :options="registrationOptions" />
+            <BaseSegmentedControl v-model="localOpenRegistrations" :options="registrationOptions" />
           </div>
 
           <div>
@@ -162,7 +166,30 @@
             <div>
               <label
                 class="block text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-1">メールアドレス</label>
-              <BaseSegmentedControl v-model="emailRequiredValue" :options="emailOptions" />
+              <BaseSegmentedControl v-model="localEmailRequired" :options="emailOptions" />
+            </div>
+            <div>
+              <label
+                class="block text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-1">
+                ソフトウェア (Repository)
+              </label>
+              <div class="relative">
+                <select v-model="localRepository"
+                  class="w-full px-3 py-2 bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 appearance-none text-xs">
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="">すべてのソフトウェア
+                  </option>
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                    v-for="repo in repositories" :key="repo.url" :value="repo.url">
+                    {{ (repo.name || 'Unknown').toUpperCase() }}
+                  </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-neutral-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
             <div>
               <label
@@ -170,10 +197,11 @@
                 言語
               </label>
               <div class="relative">
-                <select v-model="languageValue"
+                <select v-model="localLanguage"
                   class="w-full px-3 py-2 bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 appearance-none text-xs">
-                  <option value="">すべての言語</option>
-                  <option v-for="lang in languages" :key="lang.code" :value="lang.code">
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="">すべての言語</option>
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                    v-for="lang in languages" :key="lang.code" :value="lang.code">
                     {{ getLanguageName(lang.code) }}
                   </option>
                 </select>
@@ -187,6 +215,7 @@
               <p class="mt-2 text-xs text-neutral-500">* 自動検出された言語</p>
             </div>
           </div>
+
         </div>
 
         <div class="sticky bottom-0 p-6 bg-neutral-50 dark:bg-neutral-900">
@@ -227,6 +256,8 @@ const props = defineProps<{
   order: SortOrder;
   languageFilter: string;
   languages?: { code: string; count: number }[];
+  repositories?: { url: string; name: string; count?: number }[];
+  repositoryFilter: string;
   openRegistrations?: boolean | null;
   emailRequired?: boolean | null;
   minUsers?: number | null;
@@ -239,6 +270,7 @@ const emit = defineEmits<{
   'update:orderBy': [value: SortField];
   'update:order': [value: SortOrder];
   'update:languageFilter': [value: string];
+  'update:repositoryFilter': [value: string];
   'update:openRegistrations': [value: boolean | null];
   'update:emailRequired': [value: boolean | null];
   'update:minUsers': [value: number | null];
@@ -277,35 +309,67 @@ onUnmounted(() => {
   document.body.style.overflow = '';
 });
 
-const orderByValue = computed({
-  get: () => props.orderBy,
-  set: (val) => emit('update:orderBy', val)
-});
+const localOrderBy = ref(props.orderBy);
+const localOrder = ref(props.order);
+const localLanguage = ref(props.languageFilter);
+const localRepository = ref(props.repositoryFilter);
+const localOpenRegistrations = ref(props.openRegistrations ?? null);
+const localEmailRequired = ref(props.emailRequired ?? null);
+const localMinUsers = ref(props.minUsers ?? null);
+const localMaxUsers = ref(props.maxUsers ?? null);
 
-const languageValue = computed({
-  get: () => props.languageFilter,
-  set: (val) => emit('update:languageFilter', val)
-});
+// Sync props to local refs
+watch(() => props.orderBy, (val) => localOrderBy.value = val);
+watch(() => props.order, (val) => localOrder.value = val);
+watch(() => props.languageFilter, (val) => localLanguage.value = val);
+watch(() => props.repositoryFilter, (val) => localRepository.value = val);
+watch(() => props.openRegistrations, (val) => localOpenRegistrations.value = val ?? null);
+watch(() => props.emailRequired, (val) => localEmailRequired.value = val ?? null);
+watch(() => props.minUsers, (val) => localMinUsers.value = val ?? null);
+watch(() => props.maxUsers, (val) => localMaxUsers.value = val ?? null);
 
-const openRegistrationsValue = computed({
-  get: () => props.openRegistrations ?? null,
-  set: (val) => emit('update:openRegistrations', val)
-});
+// Sync local refs to emits
+watch(localOrderBy, (val) => emit('update:orderBy', val));
+// Note: order is toggled via button method, but if we had a select...
+// For order toggle button, we can just emit directly or update local ref?
+// Existing toggleOrder() emits directly. Let's keep it consistent or simple.
+// Actually proper local ref pattern implies we update local, then emit.
+// But toggleOrder uses button click.
 
-const emailRequiredValue = computed({
-  get: () => props.emailRequired ?? null,
-  set: (val) => emit('update:emailRequired', val)
+watch(localLanguage, (val) => {
+  if (val !== props.languageFilter) emit('update:languageFilter', val);
 });
+watch(localRepository, (val) => {
+  if (val !== props.repositoryFilter) emit('update:repositoryFilter', val);
+});
+watch(localOpenRegistrations, (val) => {
+  if (val !== (props.openRegistrations ?? null)) emit('update:openRegistrations', val);
+});
+watch(localEmailRequired, (val) => {
+  if (val !== (props.emailRequired ?? null)) emit('update:emailRequired', val);
+});
+// Min/Max users handled via preset or direct input, which should bind to localMinUsers refs
 
 const minUsersValue = computed({
-  get: () => props.minUsers ?? null,
-  set: (val: number | string | null) => emit('update:minUsers', val === '' ? null : val as number | null)
+  get: () => localMinUsers.value,
+  set: (val: number | string | null) => {
+    const v = val === '' ? null : val as number | null;
+    localMinUsers.value = v;
+    emit('update:minUsers', v);
+  }
+});
+const maxUsersValue = computed({
+  get: () => localMaxUsers.value,
+  set: (val: number | string | null) => {
+    const v = val === '' ? null : val as number | null;
+    localMaxUsers.value = v;
+    emit('update:maxUsers', v);
+  }
 });
 
-const maxUsersValue = computed({
-  get: () => props.maxUsers ?? null,
-  set: (val: number | string | null) => emit('update:maxUsers', val === '' ? null : val as number | null)
-});
+// Computed wrappers for v-model binding if we want to keep template simple or bind directly to local refs
+// We will replace usage in template to point to the local refs.
+
 
 type UserPreset = 'all' | 'small' | 'medium' | 'large' | 'custom';
 const userCountPreset = ref<UserPreset>('all');
@@ -361,7 +425,7 @@ watch([() => props.minUsers, () => props.maxUsers], ([min, max]) => {
 }, { immediate: true });
 
 function toggleOrder() {
-  emit('update:order', props.order === 'asc' ? 'desc' : 'asc');
+  localOrder.value = localOrder.value === 'asc' ? 'desc' : 'asc';
 }
 
 function applySearch() {

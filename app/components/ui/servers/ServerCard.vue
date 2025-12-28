@@ -1,7 +1,10 @@
 <template>
   <NuxtLink :to="`https://${instance.id}`" target="_blank" rel="noopener noreferrer"
-    class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.01] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none">
-    <div class="relative aspect-[4/3] w-full overflow-hidden">
+    class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.005] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+    :class="view === 'list' ? 'flex flex-row h-32' : ''">
+
+    <div class="relative overflow-hidden"
+      :class="view === 'list' ? 'aspect-square h-full w-auto flex-shrink-0' : 'aspect-[4/3] w-full'">
       <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
@@ -15,8 +18,13 @@
           </svg>
         </div>
       </div>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-      <div class="absolute inset-0 p-4 flex flex-col justify-end">
+      <div v-if="view !== 'list'" class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+      </div>
+    </div>
+
+    <div
+      :class="view === 'list' ? 'flex-1 p-4 flex flex-col justify-between' : 'absolute inset-0 p-4 flex flex-col justify-end'">
+      <div>
         <div class="flex items-center gap-2.5 mb-2">
           <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt="" />
           <div v-else
@@ -24,49 +32,55 @@
             {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
-            <h3
-              class="text-base font-bold text-white truncate group-hover:text-primary transition-colors drop-shadow-md">
+            <h3 class="text-base font-bold truncate transition-colors drop-shadow-md"
+              :class="view === 'list' ? 'text-neutral-900 dark:text-white group-hover:text-primary' : 'text-white group-hover:text-primary'">
               {{ instance.node_name || instance.id }}
             </h3>
-            <p class="text-[10px] text-white/70 font-mono drop-shadow-sm">v{{ instance.version }}</p>
+            <p class="text-[10px] font-mono drop-shadow-sm"
+              :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/70'">
+              v{{ instance.version }}
+            </p>
           </div>
         </div>
-        <p class="text-xs text-white/80 line-clamp-2 mb-3 drop-shadow-sm">
-          <span v-if="loadingDescription" class="text-white/50">Loading...</span>
+        <p class="text-xs line-clamp-2 mb-3 drop-shadow-sm"
+          :class="view === 'list' ? 'text-neutral-600 dark:text-neutral-300' : 'text-white/80'">
+          <span v-if="loadingDescription" class="opacity-50">Loading...</span>
           <span v-else>{{ description || instance.id }}</span>
         </p>
-        <div class="flex items-center gap-3 text-[10px] text-white/60 font-medium drop-shadow-sm">
-          <span class="flex items-center gap-1" title="Users">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
-            {{ formatNumber(instance.users_count) }}
-          </span>
-          <span class="flex items-center gap-1" title="Notes">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-            </svg>
-            {{ formatNumber(instance.notes_count) }}
-          </span>
-          <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-400' : 'text-red-400'"
-            :title="instance.is_alive ? 'Online' : 'Offline'">
-            <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-400' : 'bg-red-400'"></span>
-            {{ instance.is_alive ? 'Online' : 'Offline' }}
-          </span>
-        </div>
       </div>
-      <div
-        class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
+
+      <div class="flex items-center gap-3 text-[10px] font-medium drop-shadow-sm"
+        :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/60'">
+        <span class="flex items-center gap-1" title="Users">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+          </svg>
+          {{ formatNumber(instance.users_count) }}
+        </span>
+        <span class="flex items-center gap-1" title="Notes">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          </svg>
+          {{ formatNumber(instance.notes_count) }}
+        </span>
+        <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
+          :title="instance.is_alive ? 'Online' : 'Offline'">
+          <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-500' : 'bg-red-500'"></span>
+          {{ instance.is_alive ? 'Online' : 'Offline' }}
+        </span>
       </div>
+    </div>
+    <div
+      class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
     </div>
   </NuxtLink>
 </template>
@@ -74,6 +88,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   instance: Instance;
+  view?: 'grid' | 'list';
 }>();
 
 const formatNumber = (num: number | undefined | null) => {
