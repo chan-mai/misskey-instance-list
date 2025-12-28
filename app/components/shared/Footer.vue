@@ -3,7 +3,7 @@
     <div class="container mx-auto max-w-screen-xl px-6">
       <div class="flex flex-col lg:flex-row justify-between gap-12 pb-16">
         <div class="max-w-md">
-          <NuxtLink to="/" class="inline-flex items-center gap-3 mb-6">
+          <NuxtLink to="/#" class="inline-flex items-center gap-3 mb-6">
             <img src="/ogp.png" class="w-10 h-10">
             <span class="text-xl font-bold tracking-wide">(Unofficial) Misskey Server List</span>
           </NuxtLink>
@@ -17,7 +17,7 @@
           <div>
             <h4 class="text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">Navigation</h4>
             <nav class="flex flex-col gap-3">
-              <NuxtLink to="/"
+              <NuxtLink to="/#"
                 class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 Home</NuxtLink>
               <NuxtLink to="/servers"

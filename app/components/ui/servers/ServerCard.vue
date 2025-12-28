@@ -109,7 +109,7 @@ function getProxiedUrl(url: string): string {
 async function resolveUrl(url: string | null | undefined): Promise<string | null> {
   if (!url) return null;
 
-  // get
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s
@@ -125,11 +125,11 @@ async function resolveUrl(url: string | null | undefined): Promise<string | null
       return url;
     }
   } catch (error) {
-    // use proxy
+
     console.debug(`Direct fetch failed for ${url}, falling back to proxy:`, error);
   }
 
-  // 200 or error -> use proxy
+
   return getProxiedUrl(url);
 }
 
@@ -144,7 +144,7 @@ async function updateImages() {
 const description = ref<string>('');
 const loadingDescription = ref(true);
 
-// rm html tags
+
 function stripTags(str: string): string {
   if (!import.meta.client) {
     return str;
@@ -153,7 +153,7 @@ function stripTags(str: string): string {
   return doc.body.textContent || '';
 }
 
-//update description
+
 async function updateDescription() {
   if (!props.instance) {
     description.value = '';
@@ -193,7 +193,7 @@ async function updateDescription() {
   }
 }
 
-// run on instance change
+
 watch(() => props.instance, () => {
   updateImages();
   updateDescription();

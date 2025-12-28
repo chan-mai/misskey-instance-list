@@ -12,15 +12,10 @@ if (import.meta.client) {
 const f_query = ref<string>('');
 const f_repository = ref<string>('');
 const f_language = ref<string>('');
-// User requested filters to reset on access, so we use default values instead of savedSettings for filters.
-// We might want to keep view preference persistent? User specifically said "FILTER".
-// For now, I'll reset everything as requested or imply "Settings" are reset.
-// Let's reset filters but keep view if savedSettings exists?
-// "FILTERは/serversにアクセスするたびにリセットして" -> Explicitly filters.
-// I will use defaults for f_* refs.
+
 const f_orderBy = ref<FilterSettings['f_orderBy']>('recommendedScore');
 const f_order = ref<FilterSettings['f_order']>('desc');
-const v_view = ref<FilterSettings['v_view']>('grid'); // Reset to grid on load as requested
+const v_view = ref<FilterSettings['v_view']>('grid');
 const f_openRegistrations = ref<boolean | null>(null);
 const f_emailRequired = ref<boolean | null>(null);
 const f_minUsers = ref<number | null>(null);
@@ -62,8 +57,7 @@ const sortApiValue = computed(() => {
 });
 
 
-// Use a ref to track the timeout ID for debouncing
-// const debounceTimeout = ref<NodeJS.Timeout | null>(null); // Removed debounce
+
 const abortController = ref<AbortController | null>(null);
 
 async function fetchInstances(reset = false) {
@@ -76,13 +70,7 @@ async function fetchInstances(reset = false) {
   // Create new controller
   abortController.value = new AbortController();
 
-  if (isLoading.value && !reset) {
-    // If loading and not a reset (e.g. scroll), we might want to wait or debounce more?
-    // But for filters, we should probably just proceed with new controller.
-    // However, existing logic had isLoading check.
-    // We'll trust AbortController to handle network cancel, but we need to reset isLoading if we abort?
-    // Actually, if we abort, the previous request throws AbortError.
-  }
+
 
   isLoading.value = true;
   errorMessage.value = null;
@@ -126,14 +114,7 @@ async function fetchInstances(reset = false) {
     }
     errorMessage.value = e instanceof Error ? e.message : 'Failed to load instances';
   } finally {
-    // Only set loading false if this is the current controller (not aborted/replaced)
-    // Actually, if we aborted, the new request will set isLoading=true anyway.
-    // But we should ensure we don't turn off loading for a NEW request.
-    // Checks if signal is aborted?
-    // Using a simple check:
-    if (abortController.value?.signal.aborted) {
-      // Do nothing, new request took over
-    } else {
+    if (!abortController.value?.signal.aborted) {
       isLoading.value = false;
       initialLoading.value = false;
       abortController.value = null;
@@ -181,18 +162,17 @@ useHead({
   ]
 });
 
-// --- Restored UI Logic ---
+
 const isFilterDrawerOpen = ref(false);
 
-// Removed softwareTabs computed property as it is no longer used for tabs
-// but we still need repositories for the dropdown
+
 const repositories = computed(() => {
   const repos = stats.value?.repositories?.map(repo => ({
     name: repo.name || 'Unknown',
     url: repo.url,
     count: repo.count
   })) ?? [];
-  console.log('Repositories count:', repos.length);
+
   return repos;
 });
 
@@ -205,7 +185,7 @@ const activeFiltersCount = computed(() => {
   if (f_emailRequired.value !== null) count++;
   if (f_minUsers.value !== null) count++;
   if (f_maxUsers.value !== null) count++;
-  if (f_repository.value) count++; // Count repository filter
+  if (f_repository.value) count++;
   return count;
 });
 
@@ -271,7 +251,6 @@ function handleOrderChange(val: any) {
       <div class="container mx-auto max-w-screen-xl px-4 lg:px-6">
         <!-- Results info -->
         <div class="flex items-center justify-between mb-6">
-          <!-- Removed count from here as it is now in FilterTabs -->
         </div>
 
         <!-- Grid/List Container -->

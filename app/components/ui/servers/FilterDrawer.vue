@@ -318,7 +318,7 @@ const localEmailRequired = ref(props.emailRequired ?? null);
 const localMinUsers = ref(props.minUsers ?? null);
 const localMaxUsers = ref(props.maxUsers ?? null);
 
-// Sync props to local refs
+
 watch(() => props.orderBy, (val) => localOrderBy.value = val);
 watch(() => props.order, (val) => localOrder.value = val);
 watch(() => props.languageFilter, (val) => localLanguage.value = val);
@@ -328,7 +328,7 @@ watch(() => props.emailRequired, (val) => localEmailRequired.value = val ?? null
 watch(() => props.minUsers, (val) => localMinUsers.value = val ?? null);
 watch(() => props.maxUsers, (val) => localMaxUsers.value = val ?? null);
 
-// Sync local refs to emits
+
 watch(localOrderBy, (val) => emit('update:orderBy', val));
 watch(localOrder, (val) => emit('update:order', val));
 
@@ -344,7 +344,7 @@ watch(localOpenRegistrations, (val) => {
 watch(localEmailRequired, (val) => {
   if (val !== (props.emailRequired ?? null)) emit('update:emailRequired', val);
 });
-// Min/Max users handled via preset or direct input, which should bind to localMinUsers refs
+
 
 const minUsersValue = computed({
   get: () => localMinUsers.value,
@@ -363,8 +363,7 @@ const maxUsersValue = computed({
   }
 });
 
-// Computed wrappers for v-model binding if we want to keep template simple or bind directly to local refs
-// We will replace usage in template to point to the local refs.
+
 
 
 type UserPreset = 'all' | 'small' | 'medium' | 'large' | 'custom';
