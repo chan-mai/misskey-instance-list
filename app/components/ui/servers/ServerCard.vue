@@ -32,7 +32,7 @@
             </h3>
             <p class="text-[10px] font-mono"
               :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/70'">
-              v{{ instance.version }}
+              {{ instance.id }} (v{{ instance.version }})
             </p>
           </div>
         </div>
