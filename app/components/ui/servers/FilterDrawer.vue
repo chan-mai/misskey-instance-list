@@ -330,11 +330,7 @@ watch(() => props.maxUsers, (val) => localMaxUsers.value = val ?? null);
 
 // Sync local refs to emits
 watch(localOrderBy, (val) => emit('update:orderBy', val));
-// Note: order is toggled via button method, but if we had a select...
-// For order toggle button, we can just emit directly or update local ref?
-// Existing toggleOrder() emits directly. Let's keep it consistent or simple.
-// Actually proper local ref pattern implies we update local, then emit.
-// But toggleOrder uses button click.
+watch(localOrder, (val) => emit('update:order', val));
 
 watch(localLanguage, (val) => {
   if (val !== props.languageFilter) emit('update:languageFilter', val);
