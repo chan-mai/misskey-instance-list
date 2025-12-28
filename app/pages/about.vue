@@ -137,9 +137,14 @@
 </template>
 
 <script setup lang="ts">
-import { useFormat } from '~/composables/useFormat';
+const formatNumber = (num: number | undefined | null) => {
+  if (num == null) return '-';
+  if (num >= 100000) {
+    return new Intl.NumberFormat('ja-JP', { notation: 'compact', maximumFractionDigits: 1 }).format(num);
+  }
+  return new Intl.NumberFormat('ja-JP').format(num);
+};
 
-const { formatNumber } = useFormat();
 const { data: stats } = await useFetch('/api/v1/stats');
 
 useHead({

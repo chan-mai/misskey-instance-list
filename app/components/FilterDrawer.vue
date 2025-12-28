@@ -144,7 +144,6 @@
 
 <script setup lang="ts">
 import type { SortField, SortOrder } from '~/types/filters';
-import { useFormat } from '~/composables/useFormat';
 
 const props = defineProps<{
   isOpen: boolean;
@@ -165,7 +164,17 @@ const emit = defineEmits<{
   'reset': [];
 }>();
 
-const { getLanguageName } = useFormat();
+const getLanguageName = (code: string) => {
+  try {
+    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(code);
+    if (name && name !== code) {
+      return name;
+    }
+  } catch {
+    // ignore
+  }
+  return code;
+};
 
 const localQuery = ref(props.searchQuery);
 
