@@ -107,13 +107,7 @@
                       class="font-bold text-base lg:text-lg text-neutral-900 dark:text-white group-hover:text-primary transition-colors truncate">
                       {{ repo.name || repo.url }}
                     </h3>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                      class="h-3.5 w-3.5 text-neutral-400 group-hover:text-primary transition-colors shrink-0"
-                      viewBox="0 0 20 20" fill="currentColor">
-                      <path
-                        d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                    </svg>
+                    <Icon name="lucide:external-link" class="h-3.5 w-3.5 text-neutral-400 group-hover:text-primary transition-colors shrink-0" />
                   </div>
                   <p v-if="repo.description" class="text-xs text-neutral-500 line-clamp-1">
                     {{ repo.description }}
@@ -150,10 +144,7 @@
             <button @click="loadMoreSoftware"
               class="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs tracking-widest uppercase font-medium hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-colors">
               Load More
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
+              <Icon name="lucide:chevron-down" class="h-3.5 w-3.5" />
             </button>
           </div>
         </div>

@@ -9,13 +9,7 @@
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
         <div class="text-neutral-600 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
+          <Icon name="lucide:image" class="w-12 h-12 mx-auto mb-2" />
         </div>
       </div>
       <div v-if="view !== 'list'" class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
@@ -52,27 +46,15 @@
       <div class="flex items-center gap-3 text-[10px] font-medium"
         :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/60'">
         <span class="flex items-center gap-1" title="Users">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
+          <Icon name="lucide:users" class="w-3.5 h-3.5" />
           {{ formatNumber(instance.users_count) }}
         </span>
         <span class="flex items-center gap-1" title="Notes">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-          </svg>
+          <Icon name="lucide:file-text" class="w-3.5 h-3.5" />
           {{ formatNumber(instance.notes_count) }}
         </span>
         <span v-if="instance.language" class="flex items-center gap-1" title="Language">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <Icon name="lucide:globe" class="w-3.5 h-3.5" />
           {{ getLanguageName(instance.language) }}
         </span>
         <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
@@ -84,11 +66,7 @@
     </div>
     <div
       class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-      </svg>
+      <Icon name="lucide:external-link" class="w-4 h-4 text-white" />
     </div>
   </NuxtLink>
 </template>

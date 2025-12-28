@@ -1,6 +1,6 @@
 <template>
   <div ref="rootEl" class="relative inline-flex items-center">
-      <button type="button" class="group h-9 w-9 inline-flex items-center justify-center transition-colors duration-200
+      <button type="button" class="group h-9 w-9 border-none inline-flex items-center justify-center transition-colors duration-200
         bg-neutral-100 text-neutral-600
         hover:bg-neutral-200 hover:text-neutral-900
         dark:bg-neutral-800 dark:text-neutral-400
@@ -8,20 +8,9 @@
         focus:outline-none" :aria-label="`Theme: ${currentLabel}`" :aria-expanded="isOpen" @click.stop="toggle">
 
       <ClientOnly>
-        <svg v-if="preference === 'light'" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-        </svg>
-        <svg v-else-if="preference === 'dark'" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-          stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-        </svg>
-        <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M3 4.5A1.5 1.5 0 014.5 3h15A1.5 1.5 0 0121 4.5v9A1.5 1.5 0 0119.5 15h-15A1.5 1.5 0 013 13.5v-9z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 19h19" />
-        </svg>
+        <Icon v-if="preference === 'light'" name="lucide:sun" class="h-4 w-4" />
+        <Icon v-else-if="preference === 'dark'" name="lucide:moon" class="h-4 w-4" />
+        <Icon v-else name="lucide:monitor" class="h-4 w-4" />
         <template #fallback>
           <div class="h-4 w-4" />
         </template>
@@ -43,20 +32,9 @@
               : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white cursor-pointer'"
             @click="select(option.value)">
 
-            <svg v-if="option.value === 'light'" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
-            </svg>
-            <svg v-else-if="option.value === 'dark'" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-            </svg>
-            <svg v-else class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M3 4.5A1.5 1.5 0 014.5 3h15A1.5 1.5 0 0121 4.5v9A1.5 1.5 0 0119.5 15h-15A1.5 1.5 0 013 13.5v-9z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 19h19" />
-            </svg>
+            <Icon v-if="option.value === 'light'" name="lucide:sun" class="h-4 w-4 shrink-0" />
+            <Icon v-else-if="option.value === 'dark'" name="lucide:moon" class="h-4 w-4 shrink-0" />
+            <Icon v-else name="lucide:monitor" class="h-4 w-4 shrink-0" />
 
             <span>{{ option.label }}</span>
           </button>

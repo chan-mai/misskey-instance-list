@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon'],
   components: [
     { path: '~/components', pathPrefix: false },
   ],

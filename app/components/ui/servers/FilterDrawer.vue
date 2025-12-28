@@ -11,10 +11,7 @@
         <div class="sticky top-0 flex items-center justify-between px-6 py-4 bg-neutral-50 dark:bg-neutral-900">
           <h2 class="text-lg font-medium text-neutral-900 dark:text-white tracking-wide">FILTERS</h2>
           <BaseButton variant="icon" @click="emit('close')">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <Icon name="lucide:x" class="w-6 h-6" />
           </BaseButton>
         </div>
 
@@ -34,11 +31,7 @@
               <BaseInput type="search" v-model="localQuery" placeholder="サーバー名..." class="flex-1" size="sm" />
               <button @click="applySearch"
                 class="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <Icon name="lucide:search" class="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -48,7 +41,7 @@
               class="block text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-1">
               並び替え
             </label>
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2">
               <div class="relative flex-1">
                 <select v-model="localOrderBy"
                   class="w-full px-3 py-2 bg-transparent border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 appearance-none text-xs">
@@ -62,22 +55,13 @@
                   </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-neutral-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <Icon name="lucide:chevron-down" class="w-4 h-4" />
                 </div>
               </div>
               <button @click="toggleOrder" :title="localOrder === 'desc' ? '降順' : '昇順'"
-                class="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors">
-                <svg v-if="localOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                </svg>
+                class="flex items-center justify-center px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors">
+                <Icon v-if="localOrder === 'desc'" name="lucide:chevron-down" class="w-4 h-4" />
+                <Icon v-else name="lucide:chevron-up" class="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -136,10 +120,7 @@
               <details class="group">
                 <summary
                   class="text-xs text-neutral-500 cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-300 transition-colors flex items-center gap-1 select-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-open:rotate-90"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
+                  <Icon name="lucide:chevron-right" class="h-4 w-4 transition-transform group-open:rotate-90" />
                   カスタム範囲
                 </summary>
                 <div class="mt-2 pl-2">
@@ -155,10 +136,8 @@
 
           <button type="button" @click="showDetails = !showDetails"
             class="flex items-center justify-center gap-2 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors border-none w-full py-2 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200"
-              :class="showDetails ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
+            <Icon name="lucide:chevron-down" class="h-4 w-4 transition-transform duration-200"
+              :class="showDetails ? 'rotate-180' : ''" />
             {{ showDetails ? '詳細検索' : '詳細検索' }}
           </button>
 
@@ -184,10 +163,7 @@
                   </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-neutral-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <Icon name="lucide:chevron-down" class="w-4 h-4" />
                 </div>
               </div>
             </div>
@@ -206,10 +182,7 @@
                   </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-neutral-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <Icon name="lucide:chevron-down" class="w-4 h-4" />
                 </div>
               </div>
               <p class="mt-2 text-xs text-neutral-500">* 自動検出された言語</p>

@@ -22,13 +22,7 @@
                 class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
               <code
                 class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/instances</code>
-              <svg xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                  clip-rule="evenodd" />
-              </svg>
+              <Icon name="lucide:chevron-right" class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
             </div>
             <p class="text-neutral-500 text-sm">Misskeyサーバーの一覧を取得します。検索、ソート、ページネーションに対応。</p>
           </NuxtLink>

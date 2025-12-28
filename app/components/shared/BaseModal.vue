@@ -8,14 +8,10 @@
         <h3 class="text-lg font-bold text-neutral-900 dark:text-white">
           <slot name="title">Modal Title</slot>
         </h3>
-        <button @click="close"
-          class="p-2 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 transition-colors focus:outline-none"
+        <button type="button" @click="close"
+          class="p-2 aspect-square flex items-center justify-center text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 transition-colors focus:outline-none"
           aria-label="Close">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd" />
-          </svg>
+          <Icon name="lucide:x" class="h-5 w-5" />
         </button>
       </div>
 
