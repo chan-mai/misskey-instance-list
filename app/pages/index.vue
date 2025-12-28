@@ -1,63 +1,72 @@
 <script setup lang="ts">
-import type { SortField, SortOrder, FilterSettings } from '~/types/filters';
-import type { InstancesResponse } from '~/types/api';
-import { PAGE_SIZE, STORAGE_KEY, SORT_API_MAP } from '~/utils/constants';
+interface InstancesResponse {
+  items: Instance[];
+  total: number;
+  limit: number;
+  offset: number;
+}
 
-// --- useFormat Logic ---
-const formatNumber = (num: number | undefined | null) => {
-  if (num == null) return '-';
-  if (num >= 100000) {
-    return new Intl.NumberFormat('ja-JP', { notation: 'compact', maximumFractionDigits: 1 }).format(num);
-  }
-  return new Intl.NumberFormat('ja-JP').format(num);
+type Mq1MisskeyInstanceListStorage = {
+  f_orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
+  f_order: 'asc' | 'desc';
+  v_view: 'grid' | 'list';
+  f_openRegistrations?: boolean | null;
+  f_emailRequired?: boolean | null;
+  f_minUsers?: number | null;
+  f_maxUsers?: number | null;
 };
 
-// --- useInstances Logic ---
-// Saved settings
-const savedSettings = import.meta.client 
-  ? JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null') as Partial<FilterSettings> | null
-  : null;
+let savedSettings: Mq1MisskeyInstanceListStorage | null = null;
+if (import.meta.client) {
+  savedSettings = JSON.parse(window.localStorage.getItem('miHub_server_finder') ?? 'null') as Mq1MisskeyInstanceListStorage | null;
+}
 
-// State
+const f_query = ref<string>('');
+const f_repository = ref<string>('');
+const f_language = ref<string>('');
+const f_orderBy = ref<Mq1MisskeyInstanceListStorage['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
+const f_order = ref<Mq1MisskeyInstanceListStorage['f_order']>(savedSettings?.f_order ?? 'desc');
+const v_view = ref<Mq1MisskeyInstanceListStorage['v_view']>(savedSettings?.v_view ?? 'grid');
+const f_openRegistrations = ref<boolean | null>(savedSettings?.f_openRegistrations ?? null);
+const f_emailRequired = ref<boolean | null>(savedSettings?.f_emailRequired ?? null);
+const f_minUsers = ref<number | null>(savedSettings?.f_minUsers ?? null);
+const f_maxUsers = ref<number | null>(savedSettings?.f_maxUsers ?? null);
+
+
+const PAGE_SIZE = 30;
 const instances = ref<Instance[]>([]);
 const total = ref(0);
 const offset = ref(0);
 const isLoading = ref(false);
+const hasMore = computed(() => offset.value + instances.value.length < total.value);
 const initialLoading = ref(true);
 const errorMessage = ref<string | null>(null);
 
-// Filter state
-const filters = reactive<FilterSettings>({
-  query: '',
-  repository: '',
-  language: '',
-  orderBy: (savedSettings?.orderBy as SortField) ?? 'recommendedScore',
-  order: (savedSettings?.order as SortOrder) ?? 'desc'
-});
-
-// Computed
-const hasMore = computed(() => offset.value + instances.value.length < total.value);
-const sortApiValue = computed(() => SORT_API_MAP[filters.orderBy] ?? 'users');
-
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (filters.query) count++;
-  if (filters.language) count++;
-  if (filters.orderBy !== 'recommendedScore') count++;
-  return count;
-});
-
-// Persist settings
-watch(
-  () => [filters.orderBy, filters.order],
-  ([orderBy, order]) => {
-    if (import.meta.client) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ orderBy, order }));
-    }
+watch([f_orderBy, f_order, v_view, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], (to) => {
+  const newSettings: Mq1MisskeyInstanceListStorage = {
+    f_orderBy: to[0] as Mq1MisskeyInstanceListStorage['f_orderBy'],
+    f_order: to[1] as Mq1MisskeyInstanceListStorage['f_order'],
+    v_view: to[2] as Mq1MisskeyInstanceListStorage['v_view'],
+    f_openRegistrations: to[3] as boolean | null,
+    f_emailRequired: to[4] as boolean | null,
+    f_minUsers: to[5] as number | null,
+    f_maxUsers: to[6] as number | null,
+  };
+  if (import.meta.client) {
+    window.localStorage.setItem('miHub_server_finder', JSON.stringify(newSettings));
   }
-);
+});
 
-// API
+const sortApiValue = computed(() => {
+  switch (f_orderBy.value) {
+    case 'recommendedScore': return 'recommended';
+    case 'notesCount': return 'notes';
+    case 'usersCount': return 'users';
+    case 'createdAt': return 'createdAt';
+    default: return 'users';
+  }
+});
+
 async function fetchInstances(reset = false) {
   if (isLoading.value) return;
   
@@ -73,14 +82,17 @@ async function fetchInstances(reset = false) {
     const currentOffset = reset ? 0 : offset.value;
     const params = new URLSearchParams({
       sort: sortApiValue.value,
-      order: filters.order,
+      order: f_order.value,
       limit: PAGE_SIZE.toString(),
       offset: currentOffset.toString(),
+      ...(f_query.value && { search: f_query.value }),
+      ...(f_repository.value && { repository: f_repository.value }),
+      ...(f_language.value && { language: f_language.value }),
+      ...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
+      ...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
+      ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
+      ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
     });
-    
-    if (filters.query) params.set('search', filters.query);
-    if (filters.repository) params.set('repository', filters.repository);
-    if (filters.language) params.set('language', filters.language);
     
     const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`);
     
@@ -88,7 +100,7 @@ async function fetchInstances(reset = false) {
       instances.value = response.items;
       offset.value = response.limit;
     } else {
-      instances.value.push(...response.items);
+      instances.value = [...instances.value, ...response.items];
       offset.value = currentOffset + response.limit;
     }
     total.value = response.total;
@@ -100,91 +112,37 @@ async function fetchInstances(reset = false) {
   }
 }
 
-// Watchers
-watch(() => [filters.orderBy, filters.order], () => fetchInstances(true));
+watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], () => {
+  fetchInstances(true);
+});
+
+const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 const { data: stats } = await useFetch('/api/v1/stats');
 
-// UI state
-const isFilterDrawerOpen = ref(false);
-const loadMoreTrigger = ref<HTMLElement | null>(null);
-
-// Software tabs
-const softwareTabs = computed(() => {
-  const tabs: { label: string; value: string }[] = [];
-  const repos = stats.value?.repositories?.slice(0, 5) ?? [];
-  repos.forEach(repo => {
-    tabs.push({
-      label: (repo.name || 'Unknown').toUpperCase(),
-      value: repo.url
-    });
-  });
-  return tabs;
-});
-
-// Lifecycle
-onMounted(() => fetchInstances(true));
-
-// --- useInfiniteScroll Logic ---
-let observer: IntersectionObserver | null = null;
-
-const cleanupObserver = () => {
-  if (observer) {
-    observer.disconnect();
-    observer = null;
-  }
-};
-
 onMounted(() => {
-  if (!import.meta.client) return;
-
-  watch(
-    loadMoreTrigger,
-    (el) => {
-      cleanupObserver();
-      if (!el) return;
-
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry?.isIntersecting && hasMore.value && !isLoading.value) {
-            fetchInstances(false);
-          }
-        },
-        { rootMargin: '200px' }
-      );
-      observer.observe(el);
-    },
-    { immediate: true }
-  );
+  fetchInstances(true);
 });
 
-onUnmounted(cleanupObserver);
+watch(loadMoreTrigger, (el) => {
+  if (import.meta.client && el) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]!.isIntersecting && hasMore.value && !isLoading.value) {
+          fetchInstances(false);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(el);
+    onUnmounted(() => observer.disconnect());
+  }
+});
 
-// Event handlers
-function handleSearch(query: string) {
-  filters.query = query;
-  fetchInstances(true);
-}
 
-function handleRepoChange(repo: string) {
-  filters.repository = repo;
-  fetchInstances(true);
-}
-
-function handleLanguageChange(lang: string) {
-  filters.language = lang;
-  fetchInstances(true);
-}
-
-function handleReset() {
-  Object.assign(filters, {
-    query: '',
-    language: '',
-    orderBy: 'recommendedScore',
-    order: 'desc'
-  });
-  fetchInstances(true);
-}
+const formatNumber = (num: number) => {
+  return new Intl.NumberFormat('ja-JP').format(num);
+};
 
 useHead({
   title: '(Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
@@ -198,6 +156,62 @@ useHead({
     { name: 'twitter:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
   ]
 });
+
+// --- Restored UI Logic ---
+
+const isFilterDrawerOpen = ref(false);
+
+const softwareTabs = computed(() => {
+  const tabs: { label: string; value: string }[] = [];
+  const repos = stats.value?.repositories?.slice(0, 5) ?? [];
+  repos.forEach(repo => {
+    tabs.push({
+      label: (repo.name || 'Unknown').toUpperCase(),
+      value: repo.url
+    });
+  });
+  return tabs;
+});
+
+const activeFiltersCount = computed(() => {
+  let count = 0;
+  if (f_query.value) count++;
+  if (f_language.value) count++;
+  if (f_orderBy.value !== 'recommendedScore') count++;
+  if (f_openRegistrations.value !== null) count++;
+  if (f_emailRequired.value !== null) count++;
+  if (f_minUsers.value !== null) count++;
+  if (f_maxUsers.value !== null) count++;
+  return count;
+});
+
+function handleSearch(query: string) {
+  f_query.value = query;
+  fetchInstances(true);
+}
+
+function handleRepoChange(repo: string) {
+  f_repository.value = repo;
+  fetchInstances(true);
+}
+
+function handleLanguageChange(lang: string) {
+  f_language.value = lang;
+  fetchInstances(true);
+}
+
+function handleReset() {
+  f_query.value = '';
+  f_language.value = '';
+  f_orderBy.value = 'recommendedScore';
+  f_order.value = 'desc';
+  f_repository.value = '';
+  f_openRegistrations.value = null;
+  f_emailRequired.value = null;
+  f_minUsers.value = null;
+  f_maxUsers.value = null;
+  fetchInstances(true);
+}
 </script>
 
 <template>
