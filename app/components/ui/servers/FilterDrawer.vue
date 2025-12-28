@@ -58,7 +58,7 @@
                     ユーザー数順</option>
                   <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="notesCount">ノート数順
                   </option>
-                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="createdAt">登録日順
+                  <option class="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white" value="createdAt">初観測日順
                   </option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-neutral-400">
