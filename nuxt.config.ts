@@ -5,12 +5,15 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-  css: ['kiso.css', '~/assets/css/fonts.css'],
+  css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
   modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode'],
+  components: [
+    { path: '~/components', pathPrefix: false },
+  ],
   colorMode: {
     classSuffix: '',
     preference: 'system',
-    fallback: 'light',
+    fallback: 'dark',
   },
   app: {
     head: {
@@ -49,7 +52,8 @@ export default defineNuxtConfig({
           colors: {
             primary: '#fc9fa8',
             accent: '#f57aa5',
-            back: '#f5f3f3',
+            back: '#ffffff',
+            'back-dark': '#0a0a0a',
           },
         },
       },
@@ -64,7 +68,7 @@ export default defineNuxtConfig({
     experimental: { tasks: true },
     prerender: {
       routes: [
-        '/about',
+        '/',
         '/docs/api/v1',
         '/docs/api/v1/instances',
         '/docs/api/v1/deny_instances',

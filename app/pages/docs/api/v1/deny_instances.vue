@@ -1,24 +1,16 @@
 <template>
-  <div class="min-h-screen bg-back dark:bg-[#0b1220]">
-    <div class="container mx-auto max-w-screen-lg px-6 py-16">
-      <div class="mb-8">
-        <NuxtLink to="/docs/api/v1" class="text-primary hover:underline text-sm">&larr; API Documentation</NuxtLink>
-      </div>
-      
-      <!-- Header -->
-      <div class="flex items-center gap-3 mb-4">
-        <span class="px-3 py-1 rounded text-sm font-mono font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">GET</span>
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-white font-mono">/api/v1/deny_instances</h1>
-      </div>
-      <p class="text-slate-600 dark:text-slate-300 mb-8">
-        拒否リスト (Denylist)に登録されているサーバーの一覧を取得します。
-        これらのサーバーはリストから除外されています。
-      </p>
+  <div class="bg-neutral-50 dark:bg-black">
+    <!-- Hero -->
+    <DocApiHero method="GET" endpoint="/api/v1/deny_instances"
+      description="拒否リスト (Denylist)に登録されているサーバーの一覧を取得します。これらのサーバーはリストから除外されています。" />
 
-      <!-- Response -->
-      <section class="mb-12">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Response</h2>
-        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>[
+    <!-- Response -->
+    <section class="py-24 bg-neutral-50 dark:bg-black">
+      <div class="container mx-auto max-w-screen-xl px-6">
+        <SectionHeader number="01" title="Response" />
+
+        <pre
+          class="bg-neutral-900 dark:bg-neutral-900 text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed"><code>[
   {
     "domain": "example1.com",
     "reason": "Spam"
@@ -28,26 +20,49 @@
     "reason": null
   }
 ]</code></pre>
-      </section>
+      </div>
+    </section>
 
-      <!-- Response Fields -->
-      <section class="mb-12">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Response Body</h2>
-        <p class="text-slate-600 dark:text-slate-300 mb-4">
+    <!-- Response Fields -->
+    <section class="py-24 bg-neutral-50 dark:bg-neutral-950">
+      <div class="container mx-auto max-w-screen-xl px-6">
+        <SectionHeader number="02" title="Response Body" />
+
+        <p class="text-neutral-600 dark:text-neutral-300 mb-8">
           以下のプロパティを持つオブジェクトの配列を返します。
         </p>
-        <ul class="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 ml-4">
-          <li><code>domain</code> (string): ホスト名</li>
-          <li><code>reason</code> (string | null): 拒否理由 (設定されている場合)</li>
-        </ul>
-      </section>
 
-      <!-- Example -->
-      <section class="mb-12">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Example</h2>
-        <pre class="bg-slate-800 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm"><code>curl "https://servers.misskey.ink/api/v1/deny_instances"</code></pre>
-      </section>
-    </div>
+        <div class="grid gap-px bg-neutral-200 dark:bg-neutral-800">
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono">domain</code>
+            <div>
+              <span class="text-xs text-neutral-400">string</span>
+              <p class="text-neutral-600 dark:text-neutral-300 mt-1">ホスト名</p>
+            </div>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono">reason</code>
+            <div>
+              <span class="text-xs text-neutral-400">string | null</span>
+              <p class="text-neutral-600 dark:text-neutral-300 mt-1">拒否理由 (設定されている場合)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example -->
+    <section class="py-24 bg-back dark:bg-back-dark">
+      <div class="container mx-auto max-w-screen-xl px-6">
+        <SectionHeader number="03" title="Example" />
+
+        <div class="bg-back-dark p-6 lg:p-8">
+          <p class="text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">cURL</p>
+          <pre
+            class="text-primary font-mono text-sm overflow-x-auto"><code>curl "https://servers.misskey.ink/api/v1/deny_instances"</code></pre>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
