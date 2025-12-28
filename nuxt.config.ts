@@ -5,8 +5,11 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-  css: ['kiso.css', '~/assets/css/fonts.css'],
+  css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
   modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode'],
+  components: [
+    { path: '~/components', pathPrefix: false },
+  ],
   colorMode: {
     classSuffix: '',
     preference: 'dark',

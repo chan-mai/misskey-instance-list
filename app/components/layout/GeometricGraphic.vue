@@ -11,7 +11,7 @@ const height = 800;
 const count = 50;
 const connectionDistance = 180;
 
-// State
+// States
 const points = ref<Point3D[]>([]);
 const projectedPoints = ref<Point2D[]>([]);
 const edges = ref<Edge[]>([]);
@@ -21,14 +21,13 @@ let animationId: number;
 let angleX = 0;
 let angleY = 0;
 
-// Initialize Geometry
+// Init
 const init = () => {
   const pts: Point3D[] = [];
-  // Generate points in a spherical volume with variation
   for (let i = 0; i < count; i++) {
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos((Math.random() * 2) - 1);
-    const r = 200 + Math.random() * 150; // Radius variation for "shattered" look
+    const r = 200 + Math.random() * 150;
     
     pts.push({
       x: r * Math.sin(phi) * Math.cos(theta),
@@ -38,7 +37,6 @@ const init = () => {
   }
   points.value = pts;
 
-  // Pre-calculate topology (edges and faces)
   const es: Edge[] = [];
   const fs: Face[] = [];
   
@@ -59,8 +57,7 @@ const init = () => {
         neighbors.push(j);
       }
     }
-    
-    // Form triangles from neighbors (Plexus effect)
+
     for (let k = 0; k < neighbors.length; k++) {
       for (let l = k + 1; l < neighbors.length; l++) {
         const n1 = neighbors[k];
@@ -72,15 +69,12 @@ const init = () => {
         const p2 = pts[n2];
         if (!p1 || !p2) continue;
 
-        // Check if n1 and n2 are connected
         const d = Math.sqrt(
           (p1.x - p2.x) ** 2 +
           (p1.y - p2.y) ** 2 +
           (p1.z - p2.z) ** 2
         );
         if (d < connectionDistance) {
-           // Found a triangle (i, n1, n2)
-           // Randomly decide to fill it to create "shards"
            if (Math.random() > 0.3) {
              fs.push({ 
                p1: i, p2: n1, p3: n2, 
@@ -104,7 +98,7 @@ const animate = () => {
   const cy = height / 2;
   const fov = 600;
   
-  // Project Points
+  // Points
   const p2d: Point2D[] = [];
   const rotatedPoints: Point3D[] = [];
 
@@ -134,7 +128,7 @@ const animate = () => {
   
   projectedPoints.value = p2d;
 
-  // Sort faces by Z depth (Painters algorithm)
+  // Faces
   faces.value.forEach(f => {
     const p1 = rotatedPoints[f.p1];
     const p2 = rotatedPoints[f.p2];
@@ -160,11 +154,9 @@ onUnmounted(() => {
 
 <template>
   <div class="absolute inset-0 pointer-events-none overflow-hidden select-none">
-    <!-- Plexus Container -->
     <div class="absolute top-1/2 right-[-50%] md:right-[-300px] -translate-y-1/2 w-[180%] h-[180%] md:w-[1300px] md:h-[1300px] opacity-60 dark:opacity-80">
       <svg class="w-full h-full" :viewBox="`0 0 ${width} ${height}`" preserveAspectRatio="xMidYMid meet">
-        
-        <!-- Faces (Triangles) -->
+
         <template v-for="(face, i) in faces" :key="`f-${i}`">
           <polygon
             v-if="projectedPoints[face.p1] && projectedPoints[face.p2] && projectedPoints[face.p3]"
@@ -175,7 +167,6 @@ onUnmounted(() => {
           />
         </template>
 
-        <!-- Edges (Lines) -->
         <template v-for="(edge, i) in edges" :key="`e-${i}`">
           <line
             v-if="projectedPoints[edge.p1] && projectedPoints[edge.p2]"
@@ -187,7 +178,6 @@ onUnmounted(() => {
           />
         </template>
 
-        <!-- Nodes (Points) -->
         <circle v-for="(p, i) in projectedPoints" :key="`p-${i}`"
           :cx="p.x" :cy="p.y" :r="p.r"
           class="fill-primary"
@@ -196,13 +186,12 @@ onUnmounted(() => {
       </svg>
     </div>
     
-    <!-- Background Glow -->
+    <!-- Glow -->
     <div class="absolute inset-0 bg-gradient-radial from-primary/5 to-transparent opacity-50 pointer-events-none"></div>
   </div>
 </template>
 
 <style scoped>
-/* Optional: Add a subtle pulse to the whole container */
 @keyframes breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }

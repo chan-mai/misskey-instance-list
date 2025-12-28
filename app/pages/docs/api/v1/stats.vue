@@ -1,33 +1,12 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <section class="min-h-[50vh] relative flex items-center bg-neutral-100 dark:bg-black">
-      <div class="container mx-auto max-w-screen-xl px-6 py-24">
-        <NuxtLink to="/docs/api/v1" class="inline-flex items-center gap-2 text-neutral-500 dark:text-neutral-400 hover:text-primary text-sm mb-8 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          API Documentation
-        </NuxtLink>
-        
-        <div class="flex items-center gap-4 mb-6">
-          <span class="px-4 py-2 text-sm font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
-          <h1 class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white font-mono">/api/v1/stats</h1>
-        </div>
-        <p class="text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          インスタンス全体の統計情報と、使用されているリポジトリのランキングを取得します。
-        </p>
-      </div>
-    </section>
+    <ApiDocHero method="GET" endpoint="/api/v1/stats" description="インスタンス全体の統計情報と、使用されているリポジトリのランキングを取得します。" />
 
     <!-- Parameters -->
     <section class="py-24 bg-neutral-50 dark:bg-black">
       <div class="container mx-auto max-w-screen-xl px-6">
-        <div class="mb-16">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">01</p>
-          <h2 class="text-3xl font-bold text-neutral-900 dark:text-white mb-6">Query Parameters</h2>
-          <div class="w-16 h-px bg-primary"></div>
-        </div>
+        <SectionHeader number="01" title="Query Parameters" />
 
         <p class="text-neutral-500">なし</p>
       </div>
@@ -36,13 +15,10 @@
     <!-- Response -->
     <section class="py-24 bg-neutral-50 dark:bg-black">
       <div class="container mx-auto max-w-screen-xl px-6">
-        <div class="mb-16">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">02</p>
-          <h2 class="text-3xl font-bold text-neutral-900 dark:text-white mb-6">Response</h2>
-          <div class="w-16 h-px bg-primary"></div>
-        </div>
+        <SectionHeader number="02" title="Response" />
 
-        <pre class="bg-neutral-900 dark:bg-neutral-900 text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed mb-12"><code>{
+        <pre
+          class="bg-neutral-900 dark:bg-neutral-900 text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed mb-12"><code>{
   "counts": {
     "known": 1500,
     "active": 800,
@@ -107,15 +83,12 @@
     <!-- Example -->
     <section class="py-24 bg-back dark:bg-back-dark">
       <div class="container mx-auto max-w-screen-xl px-6">
-        <div class="mb-16">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">03</p>
-          <h2 class="text-3xl font-bold text-neutral-900 dark:text-white mb-6">Example</h2>
-          <div class="w-16 h-px bg-primary"></div>
-        </div>
+        <SectionHeader number="03" title="Example" />
 
         <div class="bg-back-dark p-6 lg:p-8">
           <p class="text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">cURL</p>
-          <pre class="text-primary font-mono text-sm overflow-x-auto"><code>curl "https://servers.misskey.ink/api/v1/stats"</code></pre>
+          <pre
+            class="text-primary font-mono text-sm overflow-x-auto"><code>curl "https://servers.misskey.ink/api/v1/stats"</code></pre>
         </div>
       </div>
     </section>

@@ -1,32 +1,20 @@
 <script setup lang="ts">
-interface InstancesResponse {
-  items: Instance[];
-  total: number;
-  limit: number;
-  offset: number;
-}
+import type { InstancesResponse } from '~/types/api';
+import type { FilterSettings } from '~/types/storage';
+import { STORAGE_KEY } from '~/types/storage';
+import { formatNumber } from '~/utils/format';
 
-type Mq1MisskeyInstanceListStorage = {
-  f_orderBy: 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
-  f_order: 'asc' | 'desc';
-  v_view: 'grid' | 'list';
-  f_openRegistrations?: boolean | null;
-  f_emailRequired?: boolean | null;
-  f_minUsers?: number | null;
-  f_maxUsers?: number | null;
-};
-
-let savedSettings: Mq1MisskeyInstanceListStorage | null = null;
+let savedSettings: FilterSettings | null = null;
 if (import.meta.client) {
-  savedSettings = JSON.parse(window.localStorage.getItem('miHub_server_finder') ?? 'null') as Mq1MisskeyInstanceListStorage | null;
+  savedSettings = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null') as FilterSettings | null;
 }
 
 const f_query = ref<string>('');
 const f_repository = ref<string>('');
 const f_language = ref<string>('');
-const f_orderBy = ref<Mq1MisskeyInstanceListStorage['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
-const f_order = ref<Mq1MisskeyInstanceListStorage['f_order']>(savedSettings?.f_order ?? 'desc');
-const v_view = ref<Mq1MisskeyInstanceListStorage['v_view']>(savedSettings?.v_view ?? 'grid');
+const f_orderBy = ref<FilterSettings['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
+const f_order = ref<FilterSettings['f_order']>(savedSettings?.f_order ?? 'desc');
+const v_view = ref<FilterSettings['v_view']>(savedSettings?.v_view ?? 'grid');
 const f_openRegistrations = ref<boolean | null>(savedSettings?.f_openRegistrations ?? null);
 const f_emailRequired = ref<boolean | null>(savedSettings?.f_emailRequired ?? null);
 const f_minUsers = ref<number | null>(savedSettings?.f_minUsers ?? null);
@@ -43,17 +31,17 @@ const initialLoading = ref(true);
 const errorMessage = ref<string | null>(null);
 
 watch([f_orderBy, f_order, v_view, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], (to) => {
-  const newSettings: Mq1MisskeyInstanceListStorage = {
-    f_orderBy: to[0] as Mq1MisskeyInstanceListStorage['f_orderBy'],
-    f_order: to[1] as Mq1MisskeyInstanceListStorage['f_order'],
-    v_view: to[2] as Mq1MisskeyInstanceListStorage['v_view'],
+  const newSettings: FilterSettings = {
+    f_orderBy: to[0] as FilterSettings['f_orderBy'],
+    f_order: to[1] as FilterSettings['f_order'],
+    v_view: to[2] as FilterSettings['v_view'],
     f_openRegistrations: to[3] as boolean | null,
     f_emailRequired: to[4] as boolean | null,
     f_minUsers: to[5] as number | null,
     f_maxUsers: to[6] as number | null,
   };
   if (import.meta.client) {
-    window.localStorage.setItem('miHub_server_finder', JSON.stringify(newSettings));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
   }
 });
 
@@ -69,15 +57,15 @@ const sortApiValue = computed(() => {
 
 async function fetchInstances(reset = false) {
   if (isLoading.value) return;
-  
+
   isLoading.value = true;
   errorMessage.value = null;
-  
+
   if (reset) {
     initialLoading.value = true;
     instances.value = [];
   }
-  
+
   try {
     const currentOffset = reset ? 0 : offset.value;
     const params = new URLSearchParams({
@@ -93,9 +81,9 @@ async function fetchInstances(reset = false) {
       ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
       ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
     });
-    
+
     const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`);
-    
+
     if (reset) {
       instances.value = response.items;
       offset.value = response.limit;
@@ -138,11 +126,6 @@ watch(loadMoreTrigger, (el) => {
     onUnmounted(() => observer.disconnect());
   }
 });
-
-
-const formatNumber = (num: number) => {
-  return new Intl.NumberFormat('ja-JP').format(num);
-};
 
 useHead({
   title: '(Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
@@ -220,32 +203,19 @@ function handleReset() {
     <SiteHero :stats="stats" />
 
     <!-- Filter Tabs -->
-    <FilterTabs
-      id="servers"
-      v-model="filters.repository"
-      :tabs="softwareTabs"
-      :active-filters-count="activeFiltersCount"
-      :total-count="formatNumber(total)"
-      @update:model-value="handleRepoChange"
-      @open-filters="isFilterDrawerOpen = true"
-    />
+    <FilterTabs id="servers" v-model="f_repository" :tabs="softwareTabs" :active-filters-count="activeFiltersCount"
+      :total-count="formatNumber(total)" @update:model-value="handleRepoChange"
+      @open-filters="isFilterDrawerOpen = true" />
 
     <!-- Filter Drawer -->
-    <FilterDrawer
-      :is-open="isFilterDrawerOpen"
-      :total-count="formatNumber(total)"
-      :search-query="filters.query"
-      :order-by="filters.orderBy"
-      :order="filters.order"
-      :language-filter="filters.language"
-      :languages="stats?.languages"
-      @close="isFilterDrawerOpen = false"
-      @search="handleSearch"
-      @update:order-by="(v) => filters.orderBy = v"
-      @update:order="(v) => filters.order = v"
-      @update:language-filter="handleLanguageChange"
-      @reset="handleReset"
-    />
+    <FilterDrawer :is-open="isFilterDrawerOpen" :total-count="formatNumber(total)" :search-query="f_query"
+      :order-by="f_orderBy" :order="f_order" :language-filter="f_language" :languages="stats?.languages"
+      :open-registrations="f_openRegistrations" :email-required="f_emailRequired" :min-users="f_minUsers"
+      :max-users="f_maxUsers" @close="isFilterDrawerOpen = false" @search="handleSearch"
+      @update:order-by="(v) => f_orderBy = v" @update:order="(v) => f_order = v"
+      @update:language-filter="handleLanguageChange" @update:open-registrations="(v) => f_openRegistrations = v"
+      @update:email-required="(v) => f_emailRequired = v" @update:min-users="(v) => f_minUsers = v"
+      @update:max-users="(v) => f_maxUsers = v" @reset="handleReset" />
 
     <!-- Server Grid -->
     <section class="py-8 lg:py-12 bg-neutral-50 dark:bg-black min-h-screen">
@@ -258,44 +228,29 @@ function handleReset() {
         <!-- Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 lg:gap-4">
           <!-- Server cards -->
-          <InstanceCard 
-            v-if="instances.length > 0" 
-            v-for="instance in instances" 
-            :key="instance.id"
-            :instance="instance"
-          />
-          
+          <ServerCard v-if="instances.length > 0" v-for="instance in instances" :key="instance.id"
+            :instance="instance" />
+
           <!-- Empty state -->
-          <StateEmpty
-            v-else-if="!initialLoading"
-            :message="filters.query ? `&quot;${filters.query}&quot; に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした'"
-            sub-message="検索条件を変更してみてください"
-          >
+          <StateEmpty v-else-if="!initialLoading"
+            :message="f_query ? `&quot;${f_query}&quot; に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした'"
+            sub-message="検索条件を変更してみてください">
             <template #action>
-              <button 
-                v-if="filters.query || filters.repository || filters.language"
-                @click="handleReset"
-                class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto"
-              >
+              <button v-if="f_query || f_repository || f_language" @click="handleReset"
+                class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto">
                 Reset Filters
               </button>
             </template>
           </StateEmpty>
-          
+
           <!-- Loading state -->
-          <StateLoading
-            v-else
-            message="Loading servers"
-          />
+          <StateLoading v-else message="Loading servers" />
         </div>
-        
+
         <!-- Infinite scroll trigger -->
-        <div 
-          v-if="!initialLoading && instances.length > 0"
-          ref="loadMoreTrigger" 
-          class="py-12 flex justify-center"
-        >
-          <div v-if="isLoading" class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
+        <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center">
+          <div v-if="isLoading"
+            class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
           <p v-else-if="!hasMore" class="text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
             — All {{ formatNumber(total) }} servers —
           </p>

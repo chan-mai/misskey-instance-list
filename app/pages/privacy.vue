@@ -1,18 +1,14 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <PageHero
-      label="(Unofficial) Misskey Server List"
-      title="Privacy Policy"
-      description="本サイトにおける個人情報の取り扱い方針について"
-      :show-scroll="true"
-    />
+    <PageHero label="(Unofficial) Misskey Server List" title="Privacy Policy" description="本サイトにおける個人情報の取り扱い方針について"
+      :show-scroll="true" />
 
     <!-- Content Section -->
     <section class="py-24 bg-white dark:bg-neutral-900">
       <div class="container mx-auto max-w-screen-lg px-6">
         <div class="space-y-12">
-          
+
           <!-- 基本方針 -->
           <div class="grid lg:grid-cols-3 gap-8">
             <div>
@@ -44,7 +40,8 @@
             </div>
             <div class="lg:col-span-2">
               <p class="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                本サイトは、ユーザーが利用している情報端末に関する情報や Cookie (ユーザーが利用している情報端末とウェブサイトとの間で、利用者を識別するためにやり取りされる情報のこと)を自動的に収集します。これには第三者が収集するものを含みますが、個人を特定できる情報は含まれておりません。第三者が収集するものにつきましては本プライバシーポリシー内の「アクセス解析ツールについて」をご覧ください。
+                本サイトは、ユーザーが利用している情報端末に関する情報や Cookie
+                (ユーザーが利用している情報端末とウェブサイトとの間で、利用者を識別するためにやり取りされる情報のこと)を自動的に収集します。これには第三者が収集するものを含みますが、個人を特定できる情報は含まれておりません。第三者が収集するものにつきましては本プライバシーポリシー内の「アクセス解析ツールについて」をご覧ください。
               </p>
             </div>
           </div>
@@ -98,9 +95,11 @@
               </p>
               <p class="text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 この機能はCookieを無効にすることで収集を拒否することが出来ますので、お使いのブラウザの設定をご確認ください。この規約に関しての詳細は
-                <NuxtLink to="https://marketingplatform.google.com/about/analytics/terms/jp/" target="_blank" class="text-primary hover:text-primary/70 transition-colors">Google アナリティクス利用規約</NuxtLink>
+                <NuxtLink to="https://marketingplatform.google.com/about/analytics/terms/jp/" target="_blank"
+                  class="text-primary hover:text-primary/70 transition-colors">Google アナリティクス利用規約</NuxtLink>
                 や
-                <NuxtLink to="https://policies.google.com/technologies/ads?hl=ja" target="_blank" class="text-primary hover:text-primary/70 transition-colors">Google ポリシーと規約</NuxtLink>
+                <NuxtLink to="https://policies.google.com/technologies/ads?hl=ja" target="_blank"
+                  class="text-primary hover:text-primary/70 transition-colors">Google ポリシーと規約</NuxtLink>
                 をご覧ください。
               </p>
             </div>

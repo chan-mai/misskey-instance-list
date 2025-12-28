@@ -1,8 +1,6 @@
 <template>
   <section class="relative min-h-[80vh] lg:min-h-screen flex items-center justify-center overflow-hidden">
-    <!-- Background -->
     <div class="absolute inset-0 bg-neutral-100 dark:bg-black">
-      <!-- Animated gradient background -->
       <div class="absolute inset-0 opacity-30 dark:opacity-50">
         <div
           class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent animate-pulse-slow">
@@ -11,7 +9,7 @@
           class="absolute inset-0 bg-gradient-to-tl from-accent/10 via-transparent to-transparent animate-pulse-slow animation-delay-1000">
         </div>
       </div>
-      <!-- Grid pattern overlay -->
+      <!-- Grid  -->
       <div
         class="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.03)_1px,transparent_1px)] bg-[size:64px_64px]">
       </div>
@@ -19,26 +17,19 @@
       <GeometricGraphic />
     </div>
 
-    <!-- Content -->
     <div class="relative z-10 container mx-auto max-w-screen-xl px-6 py-20">
       <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <!-- Text Content -->
         <div class="text-center lg:text-left">
-          <!-- Title -->
           <h1
-            class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-neutral-900 dark:text-white mb-8 leading-none tracking-tight"
-          >
+            class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-neutral-900 dark:text-white mb-8 leading-none tracking-tight">
             <span class="block">Find Your</span>
             <span class="block mt-2 text-primary">Misskey Server</span>
           </h1>
-
-          <!-- Description -->
           <p
             class="text-lg sm:text-xl text-neutral-600 dark:text-white/60 mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
             あなたにぴったりなMisskeyサーバーを見つけよう。
           </p>
 
-          <!-- CTA -->
           <NuxtLink to="#servers"
             class="inline-flex items-center justify-center gap-3 px-10 py-5 bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium tracking-widest uppercase hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white transition-colors duration-300">
             サーバーを見つける
@@ -49,10 +40,9 @@
           </NuxtLink>
         </div>
 
-        <!-- Stats grid -->
+        <!-- Stats -->
         <div class="hidden lg:block mt-12 lg:mt-0 w-full">
-          <div
-            class="grid grid-cols-2 max-w-lg mx-auto lg:ml-auto lg:mr-0">
+          <div class="grid grid-cols-2 max-w-lg mx-auto lg:ml-auto lg:mr-0">
             <div class="p-6 sm:p-8 text-center border-r-2 border-b-2 border-neutral-300 dark:border-white/30">
               <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.counts?.active ?
                 formatNumber(stats.counts.active) : '-' }}</p>
@@ -78,7 +68,7 @@
       </div>
     </div>
 
-    <!-- Scroll indicator -->
+    <!-- Scroll Poyon Poyon -->
     <div
       class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400 dark:text-white/40">
       <span class="text-xs tracking-widest uppercase">Scroll</span>
