@@ -244,7 +244,7 @@ const registrationOptions = [
 
 const emailOptions = [
   { label: 'すべて', value: null },
-  { label: '任意', value: false },
+  { label: '不要', value: false },
   { label: '必須', value: true }
 ];
 

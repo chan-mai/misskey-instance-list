@@ -22,6 +22,7 @@ export interface Instance {
   last_updated: string | null;
   last_check_at: string | null;
   recommendation_score: number;
+  language: string | null;
 }
 
 export interface InstancesResponse {
