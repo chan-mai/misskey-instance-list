@@ -1,16 +1,16 @@
-<script setup lang="ts">
-export interface Option {
+<script setup lang="ts" generic="T">
+export interface Option<T> {
   label: string;
-  value: any;
+  value: T;
 }
 
 defineProps<{
-  modelValue: any;
-  options: Option[];
+  modelValue: T;
+  options: Option<T>[];
 }>();
 
 defineEmits<{
-  (e: 'update:modelValue', value: any): void;
+  (e: 'update:modelValue', value: T): void;
 }>();
 </script>
 

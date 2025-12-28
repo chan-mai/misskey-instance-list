@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ModalItem } from '~/types/api';
+import type { ModalItem, Instance } from '~/types/api';
 import { formatNumber } from '~/utils/format';
 
 interface Props {
@@ -49,7 +49,7 @@ const isOpen = computed({
                 <li v-for="item in items" :key="item.domain" class="py-4">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-neutral-900 dark:text-white font-mono select-all">{{ item.domain
-                            }}</span>
+                        }}</span>
                         <span v-if="item.reason"
                             class="text-xs text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-2 py-1">{{
                                 item.reason }}</span>

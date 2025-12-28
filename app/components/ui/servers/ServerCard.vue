@@ -5,7 +5,7 @@
 
     <div class="relative overflow-hidden"
       :class="view === 'list' ? 'aspect-square h-full w-auto flex-shrink-0' : 'aspect-[4/3] w-full'">
-      <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name"
+      <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name || ''"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
         <div class="text-neutral-600 text-center">
@@ -86,6 +86,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Instance } from '~/types/api';
+
 const props = defineProps<{
   instance: Instance;
   view?: 'grid' | 'list';
@@ -199,15 +201,5 @@ watch(() => props.instance, () => {
   updateDescription();
 }, { immediate: true });
 
-function getLanguageName(code: string) {
-  try {
-    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(code);
-    if (name && name !== code) {
-      return name;
-    }
-  } catch {
-    // ignore
-  }
-  return code;
-}
+
 </script>

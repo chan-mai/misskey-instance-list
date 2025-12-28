@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { InstancesResponse } from '~/types/api';
+import type { InstancesResponse, Instance } from '~/types/api';
 import type { FilterSettings } from '~/types/storage';
 import { STORAGE_KEY } from '~/types/storage';
 import { formatNumber } from '~/utils/format';
@@ -13,13 +13,13 @@ const f_query = ref<string>('');
 const f_repository = ref<string>('');
 const f_language = ref<string>('');
 
-const f_orderBy = ref<FilterSettings['f_orderBy']>('recommendedScore');
-const f_order = ref<FilterSettings['f_order']>('desc');
-const v_view = ref<FilterSettings['v_view']>('grid');
-const f_openRegistrations = ref<boolean | null>(null);
-const f_emailRequired = ref<boolean | null>(null);
-const f_minUsers = ref<number | null>(null);
-const f_maxUsers = ref<number | null>(null);
+const f_orderBy = ref<FilterSettings['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
+const f_order = ref<FilterSettings['f_order']>(savedSettings?.f_order ?? 'desc');
+const v_view = ref<FilterSettings['v_view']>(savedSettings?.v_view ?? 'grid');
+const f_openRegistrations = ref<boolean | null>(savedSettings?.f_openRegistrations ?? null);
+const f_emailRequired = ref<boolean | null>(savedSettings?.f_emailRequired ?? null);
+const f_minUsers = ref<number | null>(savedSettings?.f_minUsers ?? null);
+const f_maxUsers = ref<number | null>(savedSettings?.f_maxUsers ?? null);
 
 
 const PAGE_SIZE = 30;

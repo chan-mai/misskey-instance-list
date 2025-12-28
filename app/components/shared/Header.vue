@@ -89,19 +89,19 @@
 const scrolled = ref(false);
 const mobileMenuOpen = ref(false);
 
+const handleScroll = () => {
+  scrolled.value = window.scrollY > 20;
+  if (window.scrollY > 20) {
+    mobileMenuOpen.value = false;
+  }
+};
+
 onMounted(() => {
-  const handleScroll = () => {
-    scrolled.value = window.scrollY > 20;
-    if (window.scrollY > 20) {
-      mobileMenuOpen.value = false;
-    }
-  };
-
   window.addEventListener('scroll', handleScroll, { passive: true });
+});
 
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
-  });
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 

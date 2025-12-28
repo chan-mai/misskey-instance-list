@@ -12,4 +12,6 @@ export interface FilterSettings {
   f_maxUsers?: number | null;
 }
 
-export const STORAGE_KEY = 'miHub_server_finder';
+import { STORAGE_KEY } from '~/utils/constants';
+
+export { STORAGE_KEY };

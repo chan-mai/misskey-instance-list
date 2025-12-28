@@ -56,11 +56,7 @@
 </template>
 
 <script setup lang="ts">
-interface Tab {
-  label: string;
-  value: string;
-  count?: number;
-}
+
 
 defineProps<{
   activeFiltersCount?: number;

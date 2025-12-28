@@ -172,7 +172,7 @@
 
 <script setup lang="ts">
 import { formatNumber, calculateShare } from '~/utils/format';
-import type { ModalItem } from '~/types/api';
+import type { ModalItem, Instance } from '~/types/api';
 
 const { data: stats, pending, error } = await useFetch('/api/v1/stats', {
   lazy: true
