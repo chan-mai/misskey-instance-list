@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <ApiDocHero method="GET" endpoint="/api/v1/instances" description="Misskeyサーバーの一覧を取得します。検索、ソート、ページネーションに対応しています。" />
+    <DocApiHero method="GET" endpoint="/api/v1/instances" description="Misskeyサーバーの一覧を取得します。検索、ソート、ページネーションに対応しています。" />
 
     <!-- Parameters -->
     <section class="py-24 bg-neutral-50 dark:bg-black">

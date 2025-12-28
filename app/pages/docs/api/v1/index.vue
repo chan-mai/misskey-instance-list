@@ -1,8 +1,8 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <PageHero label="Developer Resources" title="API v1"
-      description="(Unofficial) Misskey Server List API v1 Documentation" :show-scroll="true" />
+    <Hero label="Developer Resources" title="API v1" description="(Unofficial) Misskey Server List API v1 Documentation"
+      :show-scroll="true" />
 
     <!-- Endpoints Section -->
     <section class="py-24 bg-neutral-50 dark:bg-black">

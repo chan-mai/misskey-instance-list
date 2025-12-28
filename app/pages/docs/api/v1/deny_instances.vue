@@ -1,18 +1,16 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <ApiDocHero
-      method="GET"
-      endpoint="/api/v1/deny_instances"
-      description="拒否リスト (Denylist)に登録されているサーバーの一覧を取得します。これらのサーバーはリストから除外されています。"
-    />
+    <DocApiHero method="GET" endpoint="/api/v1/deny_instances"
+      description="拒否リスト (Denylist)に登録されているサーバーの一覧を取得します。これらのサーバーはリストから除外されています。" />
 
     <!-- Response -->
     <section class="py-24 bg-neutral-50 dark:bg-black">
       <div class="container mx-auto max-w-screen-xl px-6">
         <SectionHeader number="01" title="Response" />
 
-        <pre class="bg-neutral-900 dark:bg-neutral-900 text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed"><code>[
+        <pre
+          class="bg-neutral-900 dark:bg-neutral-900 text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed"><code>[
   {
     "domain": "example1.com",
     "reason": "Spam"
@@ -60,7 +58,8 @@
 
         <div class="bg-back-dark p-6 lg:p-8">
           <p class="text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">cURL</p>
-          <pre class="text-primary font-mono text-sm overflow-x-auto"><code>curl "https://servers.misskey.ink/api/v1/deny_instances"</code></pre>
+          <pre
+            class="text-primary font-mono text-sm overflow-x-auto"><code>curl "https://servers.misskey.ink/api/v1/deny_instances"</code></pre>
         </div>
       </div>
     </section>

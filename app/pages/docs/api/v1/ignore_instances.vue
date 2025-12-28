@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <ApiDocHero method="GET" endpoint="/api/v1/ignore_instances"
+    <DocApiHero method="GET" endpoint="/api/v1/ignore_instances"
       description="無視リストに登録されているサーバーの一覧を取得します。これらのサーバーはクロール対象から除外されています。" />
 
     <!-- Response -->

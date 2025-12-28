@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <PageHero label="Network Statistics" title="Stats" description="Misskeyネットワークの統計情報" :show-scroll="true" />
+    <Hero label="Network Statistics" title="Stats" description="Misskeyネットワークの統計情報" :show-scroll="true" />
 
     <div v-if="pending" class="py-32 text-center bg-neutral-50 dark:bg-black">
       <div

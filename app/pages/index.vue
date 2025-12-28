@@ -200,7 +200,7 @@ function handleReset() {
 <template>
   <div>
     <!-- Fullscreen Hero -->
-    <SiteHero :stats="stats" />
+    <IndexHero :stats="stats" />
 
     <!-- Filter Tabs -->
     <FilterTabs id="servers" v-model="f_repository" :tabs="softwareTabs" :active-filters-count="activeFiltersCount"

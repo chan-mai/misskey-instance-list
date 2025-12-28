@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <ApiDocHero method="GET" endpoint="/api/v1/stats" description="インスタンス全体の統計情報と、使用されているリポジトリのランキングを取得します。" />
+    <DocApiHero method="GET" endpoint="/api/v1/stats" description="インスタンス全体の統計情報と、使用されているリポジトリのランキングを取得します。" />
 
     <!-- Parameters -->
     <section class="py-24 bg-neutral-50 dark:bg-black">

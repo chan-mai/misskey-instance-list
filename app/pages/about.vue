@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <PageHero label="(Unofficial) Misskey Server List" title="About" description="このサイトについて" :show-scroll="true" />
+    <Hero label="(Unofficial) Misskey Server List" title="About" description="このサイトについて" :show-scroll="true" />
 
     <!-- Background Section -->
     <section class="py-24 bg-white dark:bg-neutral-900">

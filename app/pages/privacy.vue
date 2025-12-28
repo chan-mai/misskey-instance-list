@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
-    <PageHero label="(Unofficial) Misskey Server List" title="Privacy Policy" description="本サイトにおける個人情報の取り扱い方針について"
+    <Hero label="(Unofficial) Misskey Server List" title="Privacy Policy" description="本サイトにおける個人情報の取り扱い方針について"
       :show-scroll="true" />
 
     <!-- Content Section -->
