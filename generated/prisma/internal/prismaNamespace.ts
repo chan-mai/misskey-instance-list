@@ -754,6 +754,8 @@ export const InstanceScalarFieldEnum = {
   icon_url: 'icon_url',
   suspension_state: 'suspension_state',
   recommendation_score: 'recommendation_score',
+  open_registrations: 'open_registrations',
+  email_required: 'email_required',
   repository_url: 'repository_url',
   language: 'language'
 } as const
