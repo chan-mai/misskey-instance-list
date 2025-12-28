@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { ModalItem, Instance } from '~/types/api';
-import { formatNumber } from '~/utils/format';
+const { formatNumber } = useFormat();
 
 interface Props {
     modelValue: boolean;
     title: string;
     type: 'active' | 'denied' | 'ignored';
     loading: boolean;
-    items: ModalItem[];
+    items: (DenyInstance | IgnoreInstance)[];
     instances: Instance[];
     hasMore: boolean;
     loadingMore: boolean;

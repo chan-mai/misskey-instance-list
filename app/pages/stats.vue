@@ -166,8 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatNumber, calculateShare } from '~/utils/format';
-import type { ModalItem, Instance } from '~/types/api';
+const { formatNumber, calculateShare } = useFormat();
 
 const { data: stats, pending, error } = await useFetch('/api/v1/stats', {
   lazy: true
@@ -205,7 +204,7 @@ const modalTitle = ref('');
 const modalType = ref<'active' | 'denied' | 'ignored'>('active');
 const loadingModal = ref(false);
 const loadingMore = ref(false);
-const modalItems = ref<ModalItem[]>([]);
+const modalItems = ref<(DenyInstance | IgnoreInstance)[]>([]);
 const modalInstances = ref<Instance[]>([]);
 const modalOffset = ref(0);
 const modalTotal = ref(0);
@@ -233,12 +232,12 @@ async function openModal(type: 'active' | 'denied' | 'ignored') {
         break;
       case 'denied':
         modalTitle.value = 'Denied Domains';
-        const deniedRes = await $fetch<ModalItem[]>('/api/v1/deny_instances');
+        const deniedRes = await $fetch<DenyInstance[]>('/api/v1/deny_instances');
         modalItems.value = deniedRes;
         break;
       case 'ignored':
         modalTitle.value = 'Ignored Domains';
-        const ignoredRes = await $fetch<ModalItem[]>('/api/v1/ignore_instances');
+        const ignoredRes = await $fetch<IgnoreInstance[]>('/api/v1/ignore_instances');
         modalItems.value = ignoredRes;
         break;
     }

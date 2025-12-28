@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { InstancesResponse, Instance } from '~/types/api';
-import type { FilterSettings } from '~/types/storage';
-import { STORAGE_KEY } from '~/types/storage';
-import { formatNumber } from '~/utils/format';
+import { STORAGE_KEY } from '~/utils/constants';
+
+const { formatNumber } = useFormat();
 
 let savedSettings: FilterSettings | null = null;
 if (import.meta.client) {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { StatsResponse } from '~/types/api';
-import { formatNumber } from '~/utils/format';
+const { formatNumber } = useFormat();
 
 interface Props {
     stats?: StatsResponse | null;

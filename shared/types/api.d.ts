@@ -1,4 +1,4 @@
-export interface Instance {
+interface Instance {
   id: string;
   host: string;
   name: string | null;
@@ -14,25 +14,24 @@ export interface Instance {
   notes_count: number;
   is_alive: boolean;
   is_verified: boolean;
-  registration_open: boolean;
-  email_required: boolean;
+  open_registrations: boolean | null;
+  email_required: boolean | null;
   description: string | null;
-  created_at: string;
-  updated_at: string;
-  last_updated: string | null;
-  last_check_at: string | null;
-  recommendation_score: number;
+  created_at: number | null;
+  last_updated: number | null;
+  last_check_at: number | null;
+  recommendation_score: number | null;
   language: string | null;
 }
 
-export interface InstancesResponse {
+interface InstancesResponse {
   items: Instance[];
   total: number;
   limit: number;
   offset: number;
 }
 
-export interface StatsResponse {
+interface StatsResponse {
   counts: {
     known: number;
     active: number;
@@ -51,7 +50,12 @@ export interface StatsResponse {
   }[];
 }
 
-export interface ModalItem {
+interface DenyInstance {
+  domain: string;
+  reason: string | null;
+}
+
+interface IgnoreInstance {
   domain: string;
   reason: string | null;
 }

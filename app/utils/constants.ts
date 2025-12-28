@@ -1,5 +1,3 @@
-import type { SortField } from '~/types/filters';
-
 export const PAGE_SIZE = 30;
 export const STORAGE_KEY = 'miHub_server_finder';
 

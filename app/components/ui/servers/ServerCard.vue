@@ -94,8 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Instance } from '~/types/api';
-import { formatNumber, getLanguageName } from '~/utils/format';
+const { formatNumber, getLanguageName } = useFormat();
 
 const props = defineProps<{
   instance: Instance;

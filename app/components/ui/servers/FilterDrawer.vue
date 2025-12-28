@@ -234,8 +234,6 @@
 </template>
 
 <script setup lang="ts">
-import type { SortField, SortOrder } from '~/types/filters';
-
 const registrationOptions = [
   { label: 'すべて', value: null },
   { label: '開放中', value: true },
@@ -278,17 +276,7 @@ const emit = defineEmits<{
   'reset': [];
 }>();
 
-const getLanguageName = (code: string) => {
-  try {
-    const name = new Intl.DisplayNames(['ja'], { type: 'language' }).of(code);
-    if (name && name !== code) {
-      return name;
-    }
-  } catch {
-    // ignore
-  }
-  return code;
-};
+const { getLanguageName } = useFormat();
 
 const localQuery = ref(props.searchQuery);
 const showDetails = ref(false);
@@ -399,10 +387,6 @@ function setUserCountPreset(preset: UserPreset) {
       emit('update:maxUsers', null);
       break;
   }
-}
-
-function checkCustomPreset() {
-  userCountPreset.value = 'custom';
 }
 
 watch([() => props.minUsers, () => props.maxUsers], ([min, max]) => {
