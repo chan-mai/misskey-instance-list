@@ -3,12 +3,7 @@
     <!-- Hero -->
     <Hero label="Network Statistics" title="Stats" description="Misskeyネットワークの統計情報" :show-scroll="true" />
 
-    <div v-if="pending" class="py-32 text-center bg-neutral-50 dark:bg-black">
-      <div
-        class="w-10 h-10 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin mx-auto mb-6">
-      </div>
-      <p class="text-neutral-400 text-xs tracking-widest uppercase">Loading statistics</p>
-    </div>
+    <StateLoading v-if="pending" message="Loading statistics" class="py-32" />
 
     <div v-else-if="error" class="py-32 text-center bg-neutral-50 dark:bg-black">
       <div class="inline-block bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-8">

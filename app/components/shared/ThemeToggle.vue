@@ -9,12 +9,12 @@
 
       <svg v-if="current === 'light'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
       </svg>
       <svg v-else-if="current === 'dark'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M12 4.5V3m0 18v-1.5M5.636 5.636 4.5 4.5m14.864 0-1.136 1.136M4.5 12H3m18 0h-1.5M5.636 18.364 4.5 19.5m14.864 0-1.136-1.136M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
       </svg>
       <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round"

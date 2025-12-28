@@ -24,6 +24,16 @@ const isOpen = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 });
+
+const expandedItems = ref<Set<string>>(new Set());
+
+function toggleReason(domain: string) {
+    if (expandedItems.value.has(domain)) {
+        expandedItems.value.delete(domain);
+    } else {
+        expandedItems.value.add(domain);
+    }
+}
 </script>
 
 <template>
@@ -39,7 +49,8 @@ const isOpen = computed({
         </template>
 
         <div v-if="loading" class="py-12 flex justify-center">
-            <div class="w-8 h-8 border-2 border-neutral-300 dark:border-neutral-600 border-t-primary animate-spin">
+            <div
+                class="w-8 h-8 border-2 border-neutral-300 dark:border-neutral-600 border-t-primary animate-spin rounded-full">
             </div>
         </div>
 
@@ -47,12 +58,34 @@ const isOpen = computed({
             <ul v-if="type === 'denied' || type === 'ignored'"
                 class="divide-y divide-neutral-200 dark:divide-neutral-800">
                 <li v-for="item in items" :key="item.domain" class="py-4">
-                    <div class="flex items-center justify-between">
+                    <div class="relative flex items-center justify-between min-h-[52px]">
                         <span class="text-sm text-neutral-900 dark:text-white font-mono select-all">{{ item.domain
                         }}</span>
-                        <span v-if="item.reason"
-                            class="text-xs text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-2 py-1">{{
-                                item.reason }}</span>
+                        <div v-if="item.reason">
+                            <span
+                                class="hidden sm:inline text-xs text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 max-w-xs truncate block"
+                                :title="item.reason">
+                                {{ item.reason }}
+                            </span>
+                            <button v-if="!expandedItems.has(item.domain)"
+                                class="sm:hidden text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-normal hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                                @click="toggleReason(item.domain)">
+                                REASON
+                            </button>
+                        </div>
+
+                        <!-- Mobile Expanded Reason Overlay -->
+                        <div v-if="expandedItems.has(item.domain)"
+                            class="absolute inset-0 z-10 flex items-center justify-between px-2 bg-white dark:bg-neutral-900 sm:hidden border border-neutral-200 dark:border-neutral-800 shadow-sm">
+                            <span class="text-xs text-neutral-600 dark:text-neutral-300 break-all mr-2 flex-1">
+                                {{ item.reason }}
+                            </span>
+                            <button
+                                class="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-normal hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors whitespace-nowrap"
+                                @click="toggleReason(item.domain)">
+                                閉じる
+                            </button>
+                        </div>
                     </div>
                 </li>
             </ul>
@@ -72,7 +105,11 @@ const isOpen = computed({
                         <div class="flex items-center gap-2">
                             <h4
                                 class="font-bold text-neutral-900 dark:text-white truncate group-hover:text-primary transition-colors">
-                                {{ instance.node_name || instance.id }}</h4>
+                                <span class="sm:hidden">{{ (instance.node_name || instance.id).length > 15 ?
+                                    (instance.node_name
+                                        || instance.id).slice(0, 15) + '...' : (instance.node_name || instance.id) }}</span>
+                                <span class="hidden sm:inline">{{ instance.node_name || instance.id }}</span>
+                            </h4>
                             <span v-if="!instance.is_alive"
                                 class="px-2 py-0.5 text-[10px] bg-red-500/10 text-red-500 border border-red-500/20">Offline</span>
                         </div>
@@ -101,4 +138,6 @@ const isOpen = computed({
             </div>
         </div>
     </BaseModal>
+
+
 </template>

@@ -4,7 +4,7 @@
     :class="view === 'list' ? 'flex flex-row h-32' : ''">
 
     <div class="relative overflow-hidden"
-      :class="view === 'list' ? 'aspect-square h-full w-auto flex-shrink-0' : 'aspect-[4/3] w-full'">
+      :class="view === 'list' ? 'aspect-square h-full w-24 sm:w-auto flex-shrink-0' : 'aspect-[4/3] w-full'">
       <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name || ''"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
@@ -32,30 +32,30 @@
             {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
-            <h3 class="text-base font-bold truncate transition-colors drop-shadow-md"
+            <h3 class="text-base font-bold truncate transition-colors"
               :class="view === 'list' ? 'text-neutral-900 dark:text-white group-hover:text-primary' : 'text-white group-hover:text-primary'">
               {{ instance.node_name || instance.id }}
             </h3>
-            <p class="text-[10px] font-mono drop-shadow-sm"
+            <p class="text-[10px] font-mono"
               :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/70'">
               v{{ instance.version }}
             </p>
           </div>
         </div>
-        <p class="text-xs line-clamp-2 mb-3 drop-shadow-sm"
+        <p class="text-xs line-clamp-2 mb-3"
           :class="view === 'list' ? 'text-neutral-600 dark:text-neutral-300' : 'text-white/80'">
           <span v-if="loadingDescription" class="opacity-50">Loading...</span>
           <span v-else>{{ description || instance.id }}</span>
         </p>
       </div>
 
-      <div class="flex items-center gap-3 text-[10px] font-medium drop-shadow-sm"
+      <div class="flex items-center gap-3 text-[10px] font-medium"
         :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/60'">
         <span class="flex items-center gap-1" title="Users">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
             stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
           {{ formatNumber(instance.users_count) }}
         </span>
@@ -66,6 +66,14 @@
               d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
           </svg>
           {{ formatNumber(instance.notes_count) }}
+        </span>
+        <span v-if="instance.language" class="flex items-center gap-1" title="Language">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ getLanguageName(instance.language) }}
         </span>
         <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
           :title="instance.is_alive ? 'Online' : 'Offline'">
@@ -87,19 +95,12 @@
 
 <script setup lang="ts">
 import type { Instance } from '~/types/api';
+import { formatNumber, getLanguageName } from '~/utils/format';
 
 const props = defineProps<{
   instance: Instance;
   view?: 'grid' | 'list';
 }>();
-
-const formatNumber = (num: number | undefined | null) => {
-  if (num == null) return '-';
-  if (num >= 100000) {
-    return new Intl.NumberFormat('ja-JP', { notation: 'compact', maximumFractionDigits: 1 }).format(num);
-  }
-  return new Intl.NumberFormat('ja-JP').format(num);
-};
 
 const fetchedIcon = ref<string | null>(null);
 const fetchedBanner = ref<string | null>(null);
