@@ -68,7 +68,7 @@ export default defineNuxtConfig({
     experimental: { tasks: true },
     prerender: {
       routes: [
-        '/about',
+        '/',
         '/docs/api/v1',
         '/docs/api/v1/instances',
         '/docs/api/v1/deny_instances',

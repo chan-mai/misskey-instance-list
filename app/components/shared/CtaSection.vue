@@ -21,7 +21,7 @@ defineProps<Props>();
                         あなたにぴったりのMisskeyサーバーを見つけよう。
                     </p>
 
-                    <NuxtLink to="/"
+                    <NuxtLink to="/servers"
                         class="inline-flex items-center gap-3 px-10 py-5 bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 font-medium tracking-widest uppercase hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white transition-colors duration-300">
                         サーバーを見つける
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"

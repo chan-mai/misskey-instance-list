@@ -19,13 +19,13 @@
             <nav class="flex flex-col gap-3">
               <NuxtLink to="/"
                 class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
+                Home</NuxtLink>
+              <NuxtLink to="/servers"
+                class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 Servers</NuxtLink>
               <NuxtLink to="/stats"
                 class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 Stats</NuxtLink>
-              <NuxtLink to="/about"
-                class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
-                About</NuxtLink>
               <NuxtLink to="/privacy"
                 class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 Privacy</NuxtLink>

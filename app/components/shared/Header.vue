@@ -13,13 +13,13 @@
 
         <!-- Nav (Desktop) -->
         <nav class="hidden md:flex items-center gap-8">
-          <NuxtLink to="/#servers"
+          <NuxtLink to="/"
+            class="text-sm font-medium tracking-wider transition-colors text-neutral-600 dark:text-white/70 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-white/70">
+            HOME
+          </NuxtLink>
+          <NuxtLink to="/servers"
             class="text-sm font-medium tracking-wider transition-colors text-neutral-600 dark:text-white/70 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-white/70">
             SERVERS
-          </NuxtLink>
-          <NuxtLink to="/about"
-            class="text-sm font-medium tracking-wider transition-colors text-neutral-600 dark:text-white/70 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-white/70">
-            ABOUT
           </NuxtLink>
           <NuxtLink to="/stats"
             class="text-sm font-medium tracking-wider transition-colors text-neutral-600 dark:text-white/70 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-white/70">
@@ -60,12 +60,12 @@
           <NuxtLink to="/"
             class="text-sm font-medium tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-neutral-400 py-4 border-b border-neutral-100 dark:border-neutral-800"
             @click="mobileMenuOpen = false">
-            SERVERS
+            HOME
           </NuxtLink>
-          <NuxtLink to="/about"
+          <NuxtLink to="/servers"
             class="text-sm font-medium tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-neutral-400 py-4 border-b border-neutral-100 dark:border-neutral-800"
             @click="mobileMenuOpen = false">
-            ABOUT
+            SERVERS
           </NuxtLink>
           <NuxtLink to="/stats"
             class="text-sm font-medium tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-neutral-400 py-4 border-b border-neutral-100 dark:border-neutral-800"
