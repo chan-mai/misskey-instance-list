@@ -12,6 +12,10 @@ steps:
           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --build-arg DATABASE_URL="$$DATABASE_URL" \
           --build-arg TASK_SECRET="$$TASK_SECRET" \
+          --build-arg GCP_PROJECT_ID="$PROJECT_ID" \
+          --build-arg GCP_REGION="$_REGION" \
+          --build-arg SERVICE_NAME="$_SERVICE_NAME" \
+          --build-arg SERVICE_ACCOUNT_EMAIL="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
           .
     secretEnv: ['DATABASE_URL', 'TASK_SECRET']
 
