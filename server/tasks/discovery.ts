@@ -1,6 +1,11 @@
-import { prisma } from '../utils/prisma';
-import { validateInstance } from '../utils/misskey';
+import { prisma } from '~~/server/utils/prisma';
+import { validateInstance } from '~~/server/utils/misskey';
 
+/**
+ * タスク: discovery
+ * 説明: 既知のインスタンスから新しいMisskeyインスタンスを発見する
+ * 冪等性: 冪等。安全にリトライ可能。存在しないインスタンスのみを追加します。
+ */
 export default defineTask({
   meta: {
     name: 'discovery',

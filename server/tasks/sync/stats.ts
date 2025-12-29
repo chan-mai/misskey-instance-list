@@ -2,6 +2,11 @@ import { prisma } from '../../utils/prisma';
 import { validateInstance, saveInstance, fetchLocalTimeline } from '../../utils/misskey';
 import { detectLanguageFromTexts } from '../../utils/detectLanguage';
 
+/**
+ * タスク: sync:stats
+ * 説明: インスタンスの統計情報（ユーザー数、ノート数など）を同期する
+ * 冪等性: 冪等。安全にリトライ可能。現在のタイムスタンプ/データに基づいて時系列データを更新または追加します。
+ */
 export default defineTask({
   meta: {
     name: 'sync:stats',

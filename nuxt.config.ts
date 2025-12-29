@@ -63,6 +63,11 @@ export default defineNuxtConfig({
     database_url: process.env.DATABASE_URL,
     taskSecret: process.env.TASK_SECRET,
     githubToken: process.env.GITHUB_TOKEN,
+    gcpProjectId: process.env.GCP_PROJECT_ID,
+    gcpRegion: process.env.GCP_REGION || 'asia-northeast1',
+    serviceUrl: process.env.SERVICE_URL,
+    serviceAccountEmail: process.env.SERVICE_ACCOUNT_EMAIL,
+    serviceName: process.env.SERVICE_NAME,
   },
   nitro: {
     experimental: { tasks: true },

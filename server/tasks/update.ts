@@ -2,6 +2,11 @@ import yaml from 'js-yaml';
 import { prisma } from '../utils/prisma';
 import { validateInstance, saveInstance } from '../utils/misskey';
 
+/**
+ * タスク: update
+ * 説明: インスタンス情報（バージョン、名前など）を更新する
+ * 冪等性: 冪等。安全にリトライ可能。取得したデータに基づいて既存のレコードを更新します。
+ */
 export default defineTask({
   meta: {
     name: 'update',

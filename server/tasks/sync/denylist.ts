@@ -1,6 +1,11 @@
 import yaml from 'js-yaml';
 import { prisma } from '../../utils/prisma';
 
+/**
+ * タスク: sync:denylist
+ * 説明: 外部ソースから拒否リストを同期する
+ * 冪等性: 冪等。安全にリトライ可能。外部リストの状態に従ってデータベースを更新します。
+ */
 export default defineTask({
   meta: {
     name: 'sync:denylist',
