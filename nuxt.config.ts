@@ -90,5 +90,10 @@ export default defineNuxtConfig({
   },
   gtag: {
     id: 'G-3VEDN6VL0W'
-  }
+  },
+  vite: {
+    esbuild: {
+      drop: ['console', 'debugger'],
+    },
+  },
 });
