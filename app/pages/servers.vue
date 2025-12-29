@@ -88,6 +88,9 @@ if (initialData.value) {
   total.value = initialData.value.total;
   offset.value = initialData.value.limit; // 初回のlimitがoffsetになる
   initialLoading.value = false;
+} else if (import.meta.client) {
+  // SSRフェッチ失敗時のフォールバック
+  fetchInstances(true);
 }
 
 async function fetchInstances(reset = false) {
@@ -146,7 +149,11 @@ watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_m
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
-const { data: stats } = await useFetch('/api/v1/stats');
+const { data: stats, refresh: refreshStats } = await useFetch('/api/v1/stats');
+if (!stats.value && import.meta.client) {
+  // SSRフェッチ失敗時のフォールバック
+  refreshStats();
+}
 
 // onMounted removed as useFetch handles initial load
 
@@ -253,7 +260,7 @@ useJsonld(() => ({
       '@type': 'Thing',
       name: instance.name || instance.host,
       url: `https://${instance.host}`,
-      description: instance.description || ''
+      ...(instance.description && { description: instance.description })
     }
   }))
 }));
