@@ -43,7 +43,7 @@
       </div>
 
       <div>
-        <p class="text-xs line-clamp-2 mb-3 text-white/80 h-8 overflow-hidden">
+        <p class="text-xs line-clamp-2 mb-3 text-white/80">
           <span v-if="loadingDescription" class="opacity-50">Loading...</span>
           <span v-else>{{ description || instance.id }}</span>
         </p>
