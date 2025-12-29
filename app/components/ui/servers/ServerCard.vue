@@ -1,67 +1,72 @@
 <template>
   <NuxtLink :to="`https://${instance.id}`" target="_blank" rel="noopener noreferrer"
     class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.005] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-    :class="view === 'list' ? 'flex flex-row h-32' : ''">
+    :class="view === 'list' ? 'h-48' : ''">
 
     <div class="relative overflow-hidden"
-      :class="view === 'list' ? 'aspect-square h-full w-24 sm:w-auto flex-shrink-0' : 'aspect-[4/3] w-full'">
-      <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name || ''"
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      :class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[10/12] lg:aspect-[4/3] w-full'">
+      <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner"
+        :alt="instance.node_name || instance.id || 'Server banner'"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        @error="fetchedBanner = null" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
         <div class="text-neutral-600 text-center">
           <Icon name="lucide:image" class="w-12 h-12 mx-auto mb-2" />
         </div>
       </div>
-      <div v-if="view !== 'list'" class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
       </div>
     </div>
 
     <div
-      :class="view === 'list' ? 'flex-1 p-4 flex flex-col justify-between' : 'absolute inset-0 p-4 flex flex-col justify-end'">
+      :class="view === 'list' ? 'absolute inset-0 z-10 p-4 flex flex-col justify-end gap-2' : 'absolute inset-0 p-3 flex flex-col justify-between lg:justify-end gap-2 sm:p-4'">
+
       <div>
-        <div class="flex items-center gap-2.5 mb-2">
-          <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt="" />
+        <div class="flex flex-col items-start gap-2 mb-0">
+          <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt=""
+            @error="fetchedIcon = null" />
           <div v-else
             class="w-8 h-8 bg-primary flex items-center justify-center text-white text-sm font-bold shadow-sm">
             {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
           </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-base font-bold truncate transition-colors"
-              :class="view === 'list' ? 'text-neutral-900 dark:text-white group-hover:text-primary' : 'text-white group-hover:text-primary'">
+          <div class="w-full min-w-0">
+            <h3 class="font-bold truncate transition-colors text-white group-hover:text-primary text-sm sm:text-base">
               {{ instance.node_name || instance.id }}
             </h3>
-            <p class="text-[10px] font-mono"
-              :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/70'">
-              {{ instance.id }} (v{{ instance.version }})
-            </p>
+            <div class="text-[10px] font-mono text-white/70 flex flex-wrap gap-x-1 items-baseline w-full">
+              <span class="truncate max-w-full">{{ instance.id }}</span>
+              <span class="truncate max-w-full opacity-80 decoration-dotted whitespace-nowrap">(v{{ instance.version
+              }})</span>
+            </div>
           </div>
         </div>
-        <p class="text-xs line-clamp-2 mb-3"
-          :class="view === 'list' ? 'text-neutral-600 dark:text-neutral-300' : 'text-white/80'">
+      </div>
+
+      <div>
+        <p class="text-xs line-clamp-2 mb-3 text-white/80">
           <span v-if="loadingDescription" class="opacity-50">Loading...</span>
           <span v-else>{{ description || instance.id }}</span>
         </p>
-      </div>
 
-      <div class="flex items-center gap-3 text-[10px] font-medium"
-        :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/60'">
-        <span class="flex items-center gap-1" title="Users">
-          <Icon name="lucide:users" class="w-3.5 h-3.5" />
-          {{ formatNumber(instance.users_count) }}
-        </span>
-        <span class="flex items-center gap-1" title="Notes">
-          <Icon name="lucide:file-text" class="w-3.5 h-3.5" />
-          {{ formatNumber(instance.notes_count) }}
-        </span>
-        <span v-if="instance.language" class="flex items-center gap-1" title="Language">
-          <Icon name="lucide:globe" class="w-3.5 h-3.5" />
-          {{ getLanguageName(instance.language) }}
-        </span>
-        <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
-          :title="instance.is_alive ? 'Online' : 'Offline'">
-          <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-500' : 'bg-red-500'"></span>
-          {{ instance.is_alive ? 'Online' : 'Offline' }}
-        </span>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium text-white/60">
+          <span class="flex items-center gap-1" title="Users">
+            <Icon name="lucide:users" class="w-3.5 h-3.5" />
+            {{ formatNumber(instance.users_count) }}
+          </span>
+          <span class="flex items-center gap-1" title="Notes">
+            <Icon name="lucide:file-text" class="w-3.5 h-3.5" />
+            {{ formatNumber(instance.notes_count) }}
+          </span>
+          <span v-if="instance.language" class="flex items-center gap-1" title="Language">
+            <Icon name="lucide:globe" class="w-3.5 h-3.5" />
+            {{ getLanguageName(instance.language) }}
+          </span>
+          <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
+            :title="instance.is_alive ? 'Online' : 'Offline'">
+            <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-500' : 'bg-red-500'"></span>
+            {{ instance.is_alive ? 'Online' : 'Offline' }}
+          </span>
+        </div>
       </div>
     </div>
     <div
