@@ -40,7 +40,7 @@ export default defineEventHandler(async(event) => {
     const result = await runTask(taskName);
     
     const duration = Date.now() - startTime;
-    console.log(`[Worker] Task ${taskName} completed successfully in ${duration}ms`, { result });
+    console.log(`[Worker] Task ${taskName} completed successfully in ${duration}ms`);
 
     return {
       success: true,
