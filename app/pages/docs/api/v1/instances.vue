@@ -124,12 +124,44 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'GET /api/v1/instances - API Documentation',
+  title: 'GET /api/v1/instances - (Unofficial) Misskey Server List',
   meta: [
-    { name: 'description', content: 'Misskeyサーバー一覧を取得するAPIのドキュメント。' },
-    { property: 'og:title', content: 'GET /api/v1/instances - API Documentation' },
-    { property: 'og:description', content: 'Misskeyサーバー一覧を取得するAPIのドキュメント。' },
+    { name: 'description', content: 'Misskeyサーバーの一覧を取得します。' },
+    { property: 'og:title', content: 'GET /api/v1/instances - (Unofficial) Misskey Server List' },
+    { property: 'og:description', content: 'Misskeyサーバーの一覧を取得します。' },
     { property: 'og:url', content: 'https://servers.misskey.ink/docs/api/v1/instances' },
+    { name: 'twitter:title', content: 'GET /api/v1/instances - (Unofficial) Misskey Server List' },
+    { name: 'twitter:description', content: 'Misskeyサーバーの一覧を取得します。' },
   ]
 });
+
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'GET /api/v1/instances',
+  description: 'Misskeyサーバーの一覧を取得します。',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://servers.misskey.ink/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'API v1',
+        item: 'https://servers.misskey.ink/docs/api/v1'
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'instances',
+        item: 'https://servers.misskey.ink/docs/api/v1/instances'
+      }
+    ]
+  }
+}));
 </script>

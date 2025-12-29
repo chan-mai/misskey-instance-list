@@ -191,16 +191,11 @@
 
         </div>
 
-        <div class="sticky bottom-0 p-6 bg-neutral-50 dark:bg-neutral-900">
-          <div class="flex gap-3">
-            <BaseButton variant="secondary" @click="resetFilters" class="flex-1">
-              リセット
-            </BaseButton>
-            <BaseButton @click="applyAndClose" class="flex-1">
-              適用
-            </BaseButton>
-          </div>
-        </div>
+    <div class="sticky bottom-0 p-6 bg-neutral-50 dark:bg-neutral-900">
+      <BaseButton variant="secondary" @click="resetFilters" class="w-full">
+        リセット
+      </BaseButton>
+    </div>
       </div>
     </Transition>
   </Teleport>
@@ -387,11 +382,6 @@ function applySearch() {
 function resetFilters() {
   localQuery.value = '';
   emit('reset');
-}
-
-function applyAndClose() {
-  applySearch();
-  emit('close');
 }
 </script>
 

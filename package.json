@@ -32,11 +32,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@nuxtjs/sitemap": "^7.5.0",
     "@types/js-yaml": "^4.0.9",
     "@types/pg": "^8.16.0",
     "eslint": "^9.39.2",
     "eslint-plugin-vue": "^10.6.2",
     "globals": "^16.5.0",
+    "nuxt-jsonld": "^2.2.1",
     "typescript-eslint": "^8.50.0",
     "vue-eslint-parser": "^10.2.0"
   }

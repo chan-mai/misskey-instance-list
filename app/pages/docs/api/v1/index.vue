@@ -22,7 +22,8 @@
                 class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
               <code
                 class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/instances</code>
-              <Icon name="lucide:chevron-right" class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
+              <Icon name="lucide:chevron-right"
+                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
             </div>
             <p class="text-neutral-500 text-sm">Misskeyサーバーの一覧を取得します。検索、ソート、ページネーションに対応。</p>
           </NuxtLink>
@@ -35,13 +36,8 @@
                 class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
               <code
                 class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/deny_instances</code>
-              <svg xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                  clip-rule="evenodd" />
-              </svg>
+              <Icon name="lucide:chevron-right"
+                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
             </div>
             <p class="text-neutral-500 text-sm">拒否リストに登録されているサーバーの一覧を取得します。</p>
           </NuxtLink>
@@ -54,13 +50,8 @@
                 class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
               <code
                 class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/ignore_instances</code>
-              <svg xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                  clip-rule="evenodd" />
-              </svg>
+              <Icon name="lucide:chevron-right"
+                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
             </div>
             <p class="text-neutral-500 text-sm">無視リストに登録されているサーバーの一覧を取得します。</p>
           </NuxtLink>
@@ -73,13 +64,8 @@
                 class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
               <code
                 class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/stats</code>
-              <svg xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                  clip-rule="evenodd" />
-              </svg>
+              <Icon name="lucide:chevron-right"
+                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
             </div>
             <p class="text-neutral-500 text-sm">統計情報とリポジトリ使用状況の一覧を取得します。</p>
           </NuxtLink>
@@ -131,4 +117,29 @@ useHead({
     { name: 'twitter:description', content: 'Misskey Server List API v1のドキュメント。' },
   ]
 });
+
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'API v1 Documentation',
+  description: 'Misskey Server List API v1のドキュメント。',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://servers.misskey.ink/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'API v1',
+        item: 'https://servers.misskey.ink/docs/api/v1'
+      }
+    ]
+  }
+}
+));
 </script>

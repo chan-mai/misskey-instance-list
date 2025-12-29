@@ -123,4 +123,28 @@ useHead({
     { name: 'twitter:description', content: 'プライバシーポリシー' },
   ]
 });
+
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Privacy Policy',
+  description: 'プライバシーポリシー',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://servers.misskey.ink/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Privacy Policy',
+        item: 'https://servers.misskey.ink/privacy'
+      }
+    ]
+  }
+}));
 </script>

@@ -8,7 +8,8 @@ if (import.meta.client) {
   savedSettings = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null') as FilterSettings | null;
 }
 
-const f_query = ref<string>('');
+const route = useRoute();
+const f_query = ref<string>(route.query.q ? String(route.query.q) : '');
 const f_repository = ref<string>('');
 const f_language = ref<string>('');
 
@@ -59,14 +60,47 @@ const sortApiValue = computed(() => {
 
 const abortController = ref<AbortController | null>(null);
 
+// クエリパラメータ生成ヘルパー
+const getQueryParams = (currentOffset: number = 0) => ({
+  sort: sortApiValue.value,
+  order: f_order.value,
+  limit: PAGE_SIZE.toString(),
+  offset: currentOffset.toString(),
+  ...(f_query.value && { search: f_query.value }),
+  ...(f_repository.value && { repository: f_repository.value }),
+  ...(f_language.value && { language: f_language.value }),
+  ...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
+  ...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
+  ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
+  ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
+});
+
+// SSR対応の初期データ取得
+const { data: initialData } = await useFetch<InstancesResponse>('/api/v1/instances', {
+  params: computed(() => getQueryParams(0)),
+  key: 'servers-list',
+  watch: false // ウォッチャー経由で手動更新するためfalse
+});
+
+// SSRデータから状態を初期化
+if (initialData.value) {
+  instances.value = initialData.value.items;
+  total.value = initialData.value.total;
+  offset.value = initialData.value.limit; // 初回のlimitがoffsetになる
+  initialLoading.value = false;
+} else if (import.meta.client) {
+  // SSRフェッチ失敗時のフォールバック
+  fetchInstances(true);
+}
+
 async function fetchInstances(reset = false) {
-  // Cancel any pending request
+  // 保留中のリクエストをキャンセル
   if (abortController.value) {
     abortController.value.abort();
     abortController.value = null;
   }
 
-  // Create new controller
+  // 新しいコントローラーを作成
   const controller = new AbortController();
   abortController.value = controller;
 
@@ -80,19 +114,7 @@ async function fetchInstances(reset = false) {
 
   try {
     const currentOffset = reset ? 0 : offset.value;
-    const params = new URLSearchParams({
-      sort: sortApiValue.value,
-      order: f_order.value,
-      limit: PAGE_SIZE.toString(),
-      offset: currentOffset.toString(),
-      ...(f_query.value && { search: f_query.value }),
-      ...(f_repository.value && { repository: f_repository.value }),
-      ...(f_language.value && { language: f_language.value }),
-      ...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
-      ...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
-      ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
-      ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
-    });
+    const params = new URLSearchParams(getQueryParams(currentOffset));
 
     const signal = controller.signal;
     const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`, { signal });
@@ -107,12 +129,12 @@ async function fetchInstances(reset = false) {
     total.value = response.total;
   } catch (e: any) {
     if (e.name === 'AbortError') {
-      // Ignore abort errors
+      // 中断エラーは無視する
       return;
     }
     errorMessage.value = e instanceof Error ? e.message : 'Failed to load instances';
   } finally {
-    // Only update state if this request is still the active one
+    // アクティブなリクエストの場合のみ状態を更新
     if (abortController.value === controller) {
       isLoading.value = false;
       initialLoading.value = false;
@@ -127,11 +149,14 @@ watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_m
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
-const { data: stats } = await useFetch('/api/v1/stats');
+const { data: stats, refresh: refreshStats } = await useFetch('/api/v1/stats');
+if (!stats.value && import.meta.client) {
+  // SSRフェッチ失敗時のフォールバック
+  refreshStats();
+}
 
-onMounted(() => {
-  fetchInstances(true);
-});
+// onMounted removed as useFetch handles initial load
+
 
 watch(loadMoreTrigger, (el) => {
   if (import.meta.client && el) {
@@ -223,6 +248,22 @@ function handleOrderByChange(val: any) {
 function handleOrderChange(val: any) {
   f_order.value = val as FilterSettings['f_order'];
 }
+
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  numberOfItems: instances.value.length,
+  itemListElement: instances.value.map((instance, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'Thing',
+      name: instance.name || instance.host,
+      url: `https://${instance.host}`,
+      ...(instance.description && { description: instance.description })
+    }
+  }))
+}));
 </script>
 
 <template>
