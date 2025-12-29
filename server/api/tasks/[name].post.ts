@@ -1,3 +1,5 @@
+import { enqueueTask, VALID_TASKS } from '~~/server/utils/cloud-tasks';
+
 /**
  * タスク実行API
  * Cloud Schedulerから呼び出されるエンドポイント
@@ -32,8 +34,7 @@ export default defineEventHandler(async(event) => {
   }
   
   // 有効なタスク名かチェック
-  const validTasks = ['sync:denylist', 'sync:stats', 'sync:recommendation-scores', 'discovery', 'update'];
-  if (!validTasks.includes(taskName)) {
+  if (!VALID_TASKS.includes(taskName)) {
     throw createError({ statusCode: 404, message: `Task not found: ${taskName}` });
   }
 

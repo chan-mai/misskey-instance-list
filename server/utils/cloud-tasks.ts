@@ -3,13 +3,15 @@ import { CloudTasksClient } from '@google-cloud/tasks';
 const client = new CloudTasksClient();
 
 // Terraform設定に基づくキューのマッピング
-const QUEUE_MAPPING: Record<string, string> = {
+export const QUEUE_MAPPING: Record<string, string> = {
   'update': 'update-queue',
   'discovery': 'discovery-queue',
   'sync:stats': 'sync-stats-queue',
   'sync:recommendation-scores': 'rec-scores-queue',
   'sync:denylist': 'sync-denylist-queue',
 };
+
+export const VALID_TASKS = Object.keys(QUEUE_MAPPING);
 
 export const enqueueTask = async(taskName: string, scheduledTime: Date = new Date()) => {
   const config = useRuntimeConfig();

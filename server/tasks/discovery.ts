@@ -1,5 +1,5 @@
-import { prisma } from '../utils/prisma';
-import { validateInstance } from '../utils/misskey';
+import { prisma } from '~~/server/utils/prisma';
+import { validateInstance } from '~~/server/utils/misskey';
 
 /**
  * タスク: discovery

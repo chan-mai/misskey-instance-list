@@ -1,3 +1,5 @@
+import { VALID_TASKS } from '~~/server/utils/cloud-tasks';
+
 /**
  * Cloud Tasks ワーカーエンドポイント
  * Path: /api/tasks/workers/:name
@@ -16,16 +18,7 @@
 export default defineEventHandler(async(event) => {
   const taskName = getRouterParam(event, 'name');
   
-  // 有効なタスクのホワイトリスト (既存のタスクと一致する必要があります)
-  const validTasks = [
-    'sync:denylist', 
-    'sync:stats', 
-    'sync:recommendation-scores', 
-    'discovery', 
-    'update'
-  ];
-
-  if (!taskName || !validTasks.includes(taskName)) {
+  if (!taskName || !VALID_TASKS.includes(taskName)) {
     // 404 または 400 - Cloud Tasks は一般的な 4xx エラー（429 を除く）をリトライしません
     // 無効な名前の場合はリトライを停止したいためです。
     console.error(`Invalid task name requested: ${taskName}`);
