@@ -67,9 +67,8 @@ async function fetchInstances(reset = false) {
   }
 
   // Create new controller
-  abortController.value = new AbortController();
-
-
+  const controller = new AbortController();
+  abortController.value = controller;
 
   isLoading.value = true;
   errorMessage.value = null;
@@ -95,7 +94,7 @@ async function fetchInstances(reset = false) {
       ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
     });
 
-    const signal = abortController.value.signal;
+    const signal = controller.signal;
     const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`, { signal });
 
     if (reset) {
@@ -113,7 +112,8 @@ async function fetchInstances(reset = false) {
     }
     errorMessage.value = e instanceof Error ? e.message : 'Failed to load instances';
   } finally {
-    if (!abortController.value?.signal.aborted) {
+    // Only update state if this request is still the active one
+    if (abortController.value === controller) {
       isLoading.value = false;
       initialLoading.value = false;
       abortController.value = null;
