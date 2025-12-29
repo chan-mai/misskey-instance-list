@@ -19,48 +19,54 @@
     </div>
 
     <div
-      :class="view === 'list' ? 'absolute inset-0 z-10 p-4 flex flex-col justify-end' : 'absolute inset-0 p-3 flex flex-col justify-end sm:p-4'">
+      :class="view === 'list' ? 'absolute inset-0 z-10 p-4 flex flex-col justify-end gap-2' : 'absolute inset-0 p-3 flex flex-col justify-between lg:justify-end gap-2 sm:p-4'">
+
       <div>
-        <div class="flex items-center gap-2.5 mb-2">
+        <div class="flex flex-col items-start gap-2 mb-0">
           <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt=""
             @error="fetchedIcon = null" />
           <div v-else
             class="w-8 h-8 bg-primary flex items-center justify-center text-white text-sm font-bold shadow-sm">
             {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
           </div>
-          <div class="flex-1 min-w-0">
+          <div class="w-full min-w-0">
             <h3 class="font-bold truncate transition-colors text-white group-hover:text-primary text-sm sm:text-base">
               {{ instance.node_name || instance.id }}
             </h3>
-            <p class="text-[10px] font-mono text-white/70">
-              {{ instance.id }} (v{{ instance.version }})
-            </p>
+            <div class="text-[10px] font-mono text-white/70 flex flex-wrap gap-x-1 items-baseline w-full">
+              <span class="truncate max-w-full">{{ instance.id }}</span>
+              <span class="truncate max-w-full opacity-80 decoration-dotted whitespace-nowrap">(v{{ instance.version
+              }})</span>
+            </div>
           </div>
         </div>
-        <p class="text-xs line-clamp-2 mb-3 text-white/80">
+      </div>
+
+      <div>
+        <p class="text-xs line-clamp-2 mb-3 text-white/80 h-8 overflow-hidden">
           <span v-if="loadingDescription" class="opacity-50">Loading...</span>
           <span v-else>{{ description || instance.id }}</span>
         </p>
-      </div>
 
-      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium text-white/60">
-        <span class="flex items-center gap-1" title="Users">
-          <Icon name="lucide:users" class="w-3.5 h-3.5" />
-          {{ formatNumber(instance.users_count) }}
-        </span>
-        <span class="flex items-center gap-1" title="Notes">
-          <Icon name="lucide:file-text" class="w-3.5 h-3.5" />
-          {{ formatNumber(instance.notes_count) }}
-        </span>
-        <span v-if="instance.language" class="flex items-center gap-1" title="Language">
-          <Icon name="lucide:globe" class="w-3.5 h-3.5" />
-          {{ getLanguageName(instance.language) }}
-        </span>
-        <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
-          :title="instance.is_alive ? 'Online' : 'Offline'">
-          <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-500' : 'bg-red-500'"></span>
-          {{ instance.is_alive ? 'Online' : 'Offline' }}
-        </span>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium text-white/60">
+          <span class="flex items-center gap-1" title="Users">
+            <Icon name="lucide:users" class="w-3.5 h-3.5" />
+            {{ formatNumber(instance.users_count) }}
+          </span>
+          <span class="flex items-center gap-1" title="Notes">
+            <Icon name="lucide:file-text" class="w-3.5 h-3.5" />
+            {{ formatNumber(instance.notes_count) }}
+          </span>
+          <span v-if="instance.language" class="flex items-center gap-1" title="Language">
+            <Icon name="lucide:globe" class="w-3.5 h-3.5" />
+            {{ getLanguageName(instance.language) }}
+          </span>
+          <span class="flex items-center gap-1" :class="instance.is_alive ? 'text-green-500' : 'text-red-500'"
+            :title="instance.is_alive ? 'Online' : 'Offline'">
+            <span class="w-1.5 h-1.5 rounded-full" :class="instance.is_alive ? 'bg-green-500' : 'bg-red-500'"></span>
+            {{ instance.is_alive ? 'Online' : 'Offline' }}
+          </span>
+        </div>
       </div>
     </div>
     <div
