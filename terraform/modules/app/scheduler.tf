@@ -1,6 +1,11 @@
 # ------------------------------------------------------------------------------
 # Cloud Scheduler
 # ------------------------------------------------------------------------------
+# Note: Cloud Scheduler jobs continue to POST to /api/tasks/:name.
+# The endpoint now enqueues the task to Cloud Tasks and returns 202 Accepted.
+# This ensures that tasks are executed asynchronously and with concurrency control.
+# No infrastructure changes are needed for these scheduler jobs themselves.
+
 resource "google_cloud_scheduler_job" "sync_recommendation_scores" {
   name             = "${lower(var.environment)}_sync-recommendation-scores"
   region           = var.region

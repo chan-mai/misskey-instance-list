@@ -4,6 +4,9 @@
  * 
  * POST /api/tasks/:name
  * Authorization: Bearer <TASK_SECRET>
+ * 
+ * 注意: このエンドポイントはタスクを同期的に実行するのではなく、Cloud Tasks にキューイングするようになりました。
+ * これにより、タイムアウトの問題や競合を防ぎます。
  */
 export default defineEventHandler(async(event) => {
   const config = useRuntimeConfig();
@@ -35,19 +38,24 @@ export default defineEventHandler(async(event) => {
   }
 
   try {
-    // Nitro Taskを実行
-    const result = await runTask(taskName);
+    // Cloud Tasksにキューイング
+    // 即時実行のため現在時刻を指定
+    console.log(`[TaskAPI] Enqueuing task: ${taskName}`);
+    await enqueueTask(taskName, new Date());
     
+    // 202 Accepted: リクエストは受理されたが、処理は完了していない
+    setResponseStatus(event, 202);
+
     return {
       success: true,
-      task: taskName,
-      result
+      message: 'Task queued',
+      task: taskName
     };
   } catch (error) {
-    console.error(`Task ${taskName} failed:`, error);
+    console.error(`Failed to enqueue task ${taskName}:`, error);
     throw createError({ 
       statusCode: 500, 
-      message: `Task execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      message: `Task enqueue failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     });
   }
 });
