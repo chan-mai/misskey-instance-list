@@ -66,8 +66,7 @@ export const enqueueTask = async(taskName: string, scheduledTime: Date = new Dat
   } catch (error: unknown) {
     // タスクが既に存在する場合 (ALREADY_EXISTS) は問題なし（重複排除）
     // gRPCのエラーコード 6 は ALREADY_EXISTS
-    const grpcError = error as { code?: number };
-    if (grpcError.code === 6) { // ALREADY_EXISTS
+    if (error instanceof Error && 'code' in error && (error as { code: number }).code === 6) {
       console.log(`Task already exists: ${name}`);
       return { status: 'already_exists' };
     }
