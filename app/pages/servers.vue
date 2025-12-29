@@ -8,7 +8,8 @@ if (import.meta.client) {
   savedSettings = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null') as FilterSettings | null;
 }
 
-const f_query = ref<string>('');
+const route = useRoute();
+const f_query = ref<string>(route.query.q ? String(route.query.q) : '');
 const f_repository = ref<string>('');
 const f_language = ref<string>('');
 
