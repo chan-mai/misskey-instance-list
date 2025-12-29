@@ -138,7 +138,7 @@
             class="flex items-center justify-center gap-2 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors border-none w-full py-2 mt-2">
             <Icon name="lucide:chevron-down" class="h-4 w-4 transition-transform duration-200"
               :class="showDetails ? 'rotate-180' : ''" />
-            {{ showDetails ? '詳細検索' : '詳細検索' }}
+            {{ showDetails ? '詳細検索を閉じる' : '詳細検索を開く' }}
           </button>
 
           <div v-show="showDetails" class="space-y-4 pt-2">
