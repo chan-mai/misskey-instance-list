@@ -13,8 +13,7 @@
           <Icon name="lucide:image" class="w-12 h-12 mx-auto mb-2" />
         </div>
       </div>
-      <div :class="view === 'list' ? '' : ''"
-        class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
       </div>
     </div>
 
