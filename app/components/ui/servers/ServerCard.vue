@@ -180,8 +180,10 @@ async function updateDescription() {
 
 
 watch(() => props.instance, () => {
-  updateImages();
-  updateDescription();
+  if (import.meta.client) {
+    updateImages();
+    updateDescription();
+  }
 }, { immediate: true });
 
 

@@ -24,7 +24,7 @@ export const enqueueTask = async(taskName: string, scheduledTime: Date = new Dat
     try {
       const reqUrl = getRequestURL(event);
       serviceUrl = `${reqUrl.protocol}//${reqUrl.host}`;
-    } catch (e) {
+    } catch {
       console.warn('Could not determine serviceUrl from request context');
     }
   }

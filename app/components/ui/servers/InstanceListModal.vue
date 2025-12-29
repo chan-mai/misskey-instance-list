@@ -24,13 +24,13 @@ const isOpen = computed({
     set: (value) => emit('update:modelValue', value)
 });
 
-const expandedItems = ref<Set<string>>(new Set());
+const expandedItems = reactive(new Set<string>());
 
 function toggleReason(domain: string) {
-    if (expandedItems.value.has(domain)) {
-        expandedItems.value.delete(domain);
+    if (expandedItems.has(domain)) {
+        expandedItems.delete(domain);
     } else {
-        expandedItems.value.add(domain);
+        expandedItems.add(domain);
     }
 }
 </script>
