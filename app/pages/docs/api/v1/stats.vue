@@ -108,37 +108,33 @@ useHead({
   ]
 });
 
-defineOptions({
-  jsonld() {
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: 'GET /api/v1/stats',
-      description: '統計情報とリポジトリ使用状況の一覧を取得します。',
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: 'https://servers.misskey.ink/'
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'API v1',
-            item: 'https://servers.misskey.ink/docs/api/v1'
-          },
-          {
-            '@type': 'ListItem',
-            position: 3,
-            name: 'stats',
-            item: 'https://servers.misskey.ink/docs/api/v1/stats'
-          }
-        ]
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'GET /api/v1/stats',
+  description: '統計情報とリポジトリ使用状況の一覧を取得します。',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://servers.misskey.ink/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'API v1',
+        item: 'https://servers.misskey.ink/docs/api/v1'
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'stats',
+        item: 'https://servers.misskey.ink/docs/api/v1/stats'
       }
-    };
+    ]
   }
-});
+}));
 </script>

@@ -132,33 +132,29 @@ useHead({
   ]
 });
 
-defineOptions({
-  jsonld() {
-    return [
-      {
-        '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        name: 'API v1 Documentation',
-        description: 'Misskey Server List API v1のドキュメント。',
-        breadcrumb: {
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            {
-              '@type': 'ListItem',
-              position: 1,
-              name: 'Home',
-              item: 'https://servers.misskey.ink/'
-            },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: 'API v1',
-              item: 'https://servers.misskey.ink/docs/api/v1'
-            }
-          ]
+useJsonld(() => [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'API v1 Documentation',
+    description: 'Misskey Server List API v1のドキュメント。',
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://servers.misskey.ink/'
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'API v1',
+          item: 'https://servers.misskey.ink/docs/api/v1'
         }
-      }
-    ];
+      ]
+    }
   }
-});
+]);
 </script>

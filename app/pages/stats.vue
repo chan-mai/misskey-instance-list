@@ -172,33 +172,29 @@ useHead({
   ]
 });
 
-defineOptions({
-  jsonld() {
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: 'Network Statistics',
-      description: 'Statistics about Misskey instances and software usage distribution.',
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: 'https://servers.misskey.ink/'
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'Stats',
-            item: 'https://servers.misskey.ink/stats'
-          }
-        ]
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Network Statistics',
+  description: 'Statistics about Misskey instances and software usage distribution.',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://servers.misskey.ink/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Stats',
+        item: 'https://servers.misskey.ink/stats'
       }
-    };
+    ]
   }
-});
+}));
 
 // Software Pagination State
 const visibleSoftwareCount = ref(50);

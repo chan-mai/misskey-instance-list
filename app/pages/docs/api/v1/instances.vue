@@ -135,37 +135,33 @@ useHead({
   ]
 });
 
-defineOptions({
-  jsonld() {
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: 'GET /api/v1/instances',
-      description: 'Misskeyサーバーの一覧を取得します。',
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: 'https://servers.misskey.ink/'
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'API v1',
-            item: 'https://servers.misskey.ink/docs/api/v1'
-          },
-          {
-            '@type': 'ListItem',
-            position: 3,
-            name: 'instances',
-            item: 'https://servers.misskey.ink/docs/api/v1/instances'
-          }
-        ]
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'GET /api/v1/instances',
+  description: 'Misskeyサーバーの一覧を取得します。',
+  breadcrumb: {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://servers.misskey.ink/'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'API v1',
+        item: 'https://servers.misskey.ink/docs/api/v1'
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'instances',
+        item: 'https://servers.misskey.ink/docs/api/v1/instances'
       }
-    };
+    ]
   }
-});
+}));
 </script>
