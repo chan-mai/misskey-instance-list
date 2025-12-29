@@ -5,12 +5,18 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-  css: ['kiso.css', '~/assets/css/fonts.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode'],
+  css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld'],
+  components: [
+    { path: '~/components', pathPrefix: false },
+  ],
   colorMode: {
     classSuffix: '',
     preference: 'system',
-    fallback: 'light',
+    fallback: 'dark',
+  },
+  site: {
+    url: 'https://servers.misskey.ink',
   },
   app: {
     head: {
@@ -49,7 +55,8 @@ export default defineNuxtConfig({
           colors: {
             primary: '#fc9fa8',
             accent: '#f57aa5',
-            back: '#f5f3f3',
+            back: '#ffffff',
+            'back-dark': '#0a0a0a',
           },
         },
       },
@@ -59,12 +66,17 @@ export default defineNuxtConfig({
     database_url: process.env.DATABASE_URL,
     taskSecret: process.env.TASK_SECRET,
     githubToken: process.env.GITHUB_TOKEN,
+    gcpProjectId: process.env.GCP_PROJECT_ID,
+    gcpRegion: process.env.GCP_REGION || 'asia-northeast1',
+    serviceUrl: process.env.SERVICE_URL,
+    serviceAccountEmail: process.env.SERVICE_ACCOUNT_EMAIL,
+    serviceName: process.env.SERVICE_NAME,
   },
   nitro: {
     experimental: { tasks: true },
     prerender: {
       routes: [
-        '/about',
+        '/',
         '/docs/api/v1',
         '/docs/api/v1/instances',
         '/docs/api/v1/deny_instances',
@@ -78,5 +90,10 @@ export default defineNuxtConfig({
   },
   gtag: {
     id: 'G-3VEDN6VL0W'
-  }
+  },
+  vite: {
+    esbuild: {
+      drop: ['console', 'debugger'],
+    },
+  },
 });

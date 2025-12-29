@@ -3,6 +3,11 @@ import { calculateRecommendationScore } from '../../utils/calculate-score';
 /**
  * 全てのアクティブなインスタンスのおすすめスコアを更新
  */
+/**
+ * タスク: sync:recommendation-scores
+ * 説明: インスタンスのおすすめスコアを更新する
+ * 冪等性: 冪等。安全にリトライ可能。スコアを再計算して更新します。
+ */
 export default defineTask({
   meta: {
     name: 'sync:recommendation-scores',

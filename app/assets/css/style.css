@@ -1,0 +1,18 @@
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+a {
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+::selection {
+  background-color: rgba(252, 159, 168, 0.3);
+}
+

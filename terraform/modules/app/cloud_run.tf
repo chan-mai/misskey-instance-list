@@ -31,6 +31,7 @@ resource "google_cloud_run_service" "main" {
             }
           }
         }
+
         env {
           name = "GITHUB_TOKEN"
           value_from {
@@ -39,6 +40,22 @@ resource "google_cloud_run_service" "main" {
               key  = "latest"
             }
           }
+        }
+        env {
+          name  = "GCP_PROJECT_ID"
+          value = var.project_id
+        }
+        env {
+          name  = "GCP_REGION"
+          value = var.region
+        }
+        env {
+          name  = "SERVICE_NAME"
+          value = var.service_name
+        }
+        env {
+          name  = "SERVICE_ACCOUNT_EMAIL"
+          value = "${var.project_number}-compute@developer.gserviceaccount.com"
         }
         ports {
           container_port = 3000

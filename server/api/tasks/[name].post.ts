@@ -1,9 +1,14 @@
+import { enqueueTask, VALID_TASKS } from '~~/server/utils/cloud-tasks';
+
 /**
  * タスク実行API
  * Cloud Schedulerから呼び出されるエンドポイント
  * 
  * POST /api/tasks/:name
  * Authorization: Bearer <TASK_SECRET>
+ * 
+ * 注意: このエンドポイントはタスクを同期的に実行するのではなく、Cloud Tasks にキューイングするようになりました。
+ * これにより、タイムアウトの問題や競合を防ぎます。
  */
 export default defineEventHandler(async(event) => {
   const config = useRuntimeConfig();
@@ -29,25 +34,30 @@ export default defineEventHandler(async(event) => {
   }
   
   // 有効なタスク名かチェック
-  const validTasks = ['sync:denylist', 'sync:stats', 'sync:recommendation-scores', 'discovery', 'update'];
-  if (!validTasks.includes(taskName)) {
+  if (!VALID_TASKS.includes(taskName)) {
     throw createError({ statusCode: 404, message: `Task not found: ${taskName}` });
   }
 
   try {
-    // Nitro Taskを実行
-    const result = await runTask(taskName);
+    // Cloud Tasksにキューイング
+    // 即時実行のため現在時刻を指定
+    console.log(`[TaskAPI] Enqueuing task: ${taskName}`);
+    const result = await enqueueTask(taskName, new Date(), event);
     
+    // 202 Accepted: リクエストは受理されたが、処理は完了していない
+    setResponseStatus(event, 202);
+
     return {
       success: true,
+      message: result.status === 'already_exists' ? 'Task already exists' : 'Task queued',
       task: taskName,
-      result
+      status: result.status
     };
   } catch (error) {
-    console.error(`Task ${taskName} failed:`, error);
+    console.error(`Failed to enqueue task ${taskName}:`, error);
     throw createError({ 
       statusCode: 500, 
-      message: `Task execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      message: `Task enqueue failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     });
   }
 });

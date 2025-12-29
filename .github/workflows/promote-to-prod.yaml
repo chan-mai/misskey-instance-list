@@ -41,7 +41,7 @@ jobs:
           This PR contains the following commits since the last production deploy:
 
           \`\`\`
-          $(git log prod..stg --oneline)
+          $(git log origin/prod..HEAD --oneline)
           \`\`\`
 
           ## Checklist
@@ -58,5 +58,5 @@ jobs:
             --body "🔄 New commits added to this PR:
 
           \`\`\`
-          $(git log prod..stg --oneline)
+          $(git log origin/prod..HEAD --oneline)
           \`\`\`"

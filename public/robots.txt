@@ -1,2 +1,4 @@
 User-Agent: *
-Disallow:
+Disallow: /api/v1
+
+Sitemap: https://servers.misskey.ink/sitemap.xml
