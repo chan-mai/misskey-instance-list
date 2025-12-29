@@ -14,10 +14,9 @@ const QUEUE_MAPPING: Record<string, string> = {
 export const enqueueTask = async(taskName: string, scheduledTime: Date = new Date()) => {
   const config = useRuntimeConfig();
 
-  // 必須設定がない場合はスキップ（ビルド時やローカル開発時など）
+  // 必須設定がない場合はエラーを投げる
   if (!config.gcpProjectId || !config.serviceUrl || !config.serviceName) {
-    console.warn('Cloud Tasks configuration missing. Task not enqueued:', taskName);
-    return;
+    throw new Error(`Cloud Tasks configuration missing (GCP_PROJECT_ID, SERVICE_URL, or SERVICE_NAME). Task not enqueued: ${taskName}`);
   }
 
   const queueNameSuffix = QUEUE_MAPPING[taskName];
@@ -63,14 +62,14 @@ export const enqueueTask = async(taskName: string, scheduledTime: Date = new Dat
   try {
     const [response] = await client.createTask({ parent, task });
     console.log(`Task enqueued: ${response.name}`);
-    return response;
+    return { status: 'queued', response };
   } catch (error: unknown) {
     // タスクが既に存在する場合 (ALREADY_EXISTS) は問題なし（重複排除）
     // gRPCのエラーコード 6 は ALREADY_EXISTS
     const grpcError = error as { code?: number };
     if (grpcError.code === 6) { // ALREADY_EXISTS
       console.log(`Task already exists: ${name}`);
-      return;
+      return { status: 'already_exists' };
     }
     console.error(`Error enqueueing task ${taskName}:`, error);
     throw error;

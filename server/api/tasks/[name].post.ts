@@ -41,15 +41,16 @@ export default defineEventHandler(async(event) => {
     // Cloud Tasksにキューイング
     // 即時実行のため現在時刻を指定
     console.log(`[TaskAPI] Enqueuing task: ${taskName}`);
-    await enqueueTask(taskName, new Date());
+    const result = await enqueueTask(taskName, new Date());
     
     // 202 Accepted: リクエストは受理されたが、処理は完了していない
     setResponseStatus(event, 202);
 
     return {
       success: true,
-      message: 'Task queued',
-      task: taskName
+      message: result.status === 'already_exists' ? 'Task already exists' : 'Task queued',
+      task: taskName,
+      status: result.status
     };
   } catch (error) {
     console.error(`Failed to enqueue task ${taskName}:`, error);
