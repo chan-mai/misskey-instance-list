@@ -8,7 +8,8 @@ COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
+RUN pnpm prisma generate
 
 FROM base AS build
 RUN pnpm install --frozen-lockfile
