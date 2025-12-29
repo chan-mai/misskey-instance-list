@@ -5,7 +5,8 @@
 
     <div class="relative overflow-hidden"
       :class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[10/12] lg:aspect-[4/3] w-full'">
-      <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name || ''"
+      <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner"
+        :alt="instance.node_name || instance.id || 'Server banner'"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         @error="fetchedBanner = null" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
