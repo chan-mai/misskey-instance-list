@@ -1,10 +1,10 @@
 <template>
   <NuxtLink :to="`https://${instance.id}`" target="_blank" rel="noopener noreferrer"
     class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.005] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-    :class="view === 'list' ? 'flex flex-row h-32' : ''">
+    :class="view === 'list' ? 'h-40' : ''">
 
     <div class="relative overflow-hidden"
-      :class="view === 'list' ? 'aspect-square h-full w-24 sm:w-auto flex-shrink-0' : 'aspect-[4/3] w-full'">
+      :class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[4/3] w-full'">
       <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name || ''"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
@@ -12,12 +12,13 @@
           <Icon name="lucide:image" class="w-12 h-12 mx-auto mb-2" />
         </div>
       </div>
-      <div v-if="view !== 'list'" class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+      <div :class="view === 'list' ? '' : ''"
+        class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
       </div>
     </div>
 
     <div
-      :class="view === 'list' ? 'flex-1 p-4 flex flex-col justify-between' : 'absolute inset-0 p-4 flex flex-col justify-end'">
+      :class="view === 'list' ? 'absolute inset-0 z-10 p-4 flex flex-col justify-end' : 'absolute inset-0 p-4 flex flex-col justify-end'">
       <div>
         <div class="flex items-center gap-2.5 mb-2">
           <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt="" />
@@ -26,25 +27,21 @@
             {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
-            <h3 class="text-base font-bold truncate transition-colors"
-              :class="view === 'list' ? 'text-neutral-900 dark:text-white group-hover:text-primary' : 'text-white group-hover:text-primary'">
+            <h3 class="text-base font-bold truncate transition-colors text-white group-hover:text-primary">
               {{ instance.node_name || instance.id }}
             </h3>
-            <p class="text-[10px] font-mono"
-              :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/70'">
+            <p class="text-[10px] font-mono text-white/70">
               {{ instance.id }} (v{{ instance.version }})
             </p>
           </div>
         </div>
-        <p class="text-xs line-clamp-2 mb-3"
-          :class="view === 'list' ? 'text-neutral-600 dark:text-neutral-300' : 'text-white/80'">
+        <p class="text-xs line-clamp-2 mb-3 text-white/80">
           <span v-if="loadingDescription" class="opacity-50">Loading...</span>
           <span v-else>{{ description || instance.id }}</span>
         </p>
       </div>
 
-      <div class="flex items-center gap-3 text-[10px] font-medium"
-        :class="view === 'list' ? 'text-neutral-500 dark:text-neutral-400' : 'text-white/60'">
+      <div class="flex items-center gap-3 text-[10px] font-medium text-white/60">
         <span class="flex items-center gap-1" title="Users">
           <Icon name="lucide:users" class="w-3.5 h-3.5" />
           {{ formatNumber(instance.users_count) }}
