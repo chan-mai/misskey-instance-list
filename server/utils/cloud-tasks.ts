@@ -1,4 +1,5 @@
 import { CloudTasksClient } from '@google-cloud/tasks';
+import { H3Event, getRequestURL } from 'h3';
 
 const client = new CloudTasksClient();
 
@@ -13,11 +14,23 @@ export const QUEUE_MAPPING: Record<string, string> = {
 
 export const VALID_TASKS = Object.keys(QUEUE_MAPPING);
 
-export const enqueueTask = async(taskName: string, scheduledTime: Date = new Date()) => {
+
+export const enqueueTask = async(taskName: string, scheduledTime: Date = new Date(), event?: H3Event) => {
   const config = useRuntimeConfig();
 
+  // Service URLの取得（設定またはリクエストコンテキストから）
+  let serviceUrl = config.serviceUrl;
+  if (!serviceUrl && event) {
+    try {
+      const reqUrl = getRequestURL(event);
+      serviceUrl = `${reqUrl.protocol}//${reqUrl.host}`;
+    } catch (e) {
+      console.warn('Could not determine serviceUrl from request context');
+    }
+  }
+
   // 必須設定がない場合はエラーを投げる
-  if (!config.gcpProjectId || !config.serviceUrl || !config.serviceName) {
+  if (!config.gcpProjectId || !serviceUrl || !config.serviceName) {
     throw new Error(`Cloud Tasks configuration missing (GCP_PROJECT_ID, SERVICE_URL, or SERVICE_NAME). Task not enqueued: ${taskName}`);
   }
 
@@ -33,7 +46,7 @@ export const enqueueTask = async(taskName: string, scheduledTime: Date = new Dat
   const parent = client.queuePath(project, location, queue);
   
   // ワーカーエンドポイントのURLを構築
-  const url = `${config.serviceUrl}/api/tasks/workers/${taskName}`;
+  const url = `${serviceUrl}/api/tasks/workers/${taskName}`;
   
   // 重複排除のための決定論的なタスク名
   // 形式: projects/PROJECT/locations/LOCATION/queues/QUEUE/tasks/TASK_ID

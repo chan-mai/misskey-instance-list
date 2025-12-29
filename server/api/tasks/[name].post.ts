@@ -42,7 +42,7 @@ export default defineEventHandler(async(event) => {
     // Cloud Tasksにキューイング
     // 即時実行のため現在時刻を指定
     console.log(`[TaskAPI] Enqueuing task: ${taskName}`);
-    const result = await enqueueTask(taskName, new Date());
+    const result = await enqueueTask(taskName, new Date(), event);
     
     // 202 Accepted: リクエストは受理されたが、処理は完了していない
     setResponseStatus(event, 202);
