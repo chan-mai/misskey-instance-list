@@ -1,12 +1,13 @@
 <template>
   <NuxtLink :to="`https://${instance.id}`" target="_blank" rel="noopener noreferrer"
     class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.005] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-    :class="view === 'list' ? 'h-40' : ''">
+    :class="view === 'list' ? 'h-48' : ''">
 
     <div class="relative overflow-hidden"
-      :class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[4/3] w-full'">
+      :class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[10/12] lg:aspect-[4/3] w-full'">
       <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner" :alt="instance.node_name || ''"
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        @error="fetchedBanner = null" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
         <div class="text-neutral-600 text-center">
           <Icon name="lucide:image" class="w-12 h-12 mx-auto mb-2" />
@@ -18,16 +19,17 @@
     </div>
 
     <div
-      :class="view === 'list' ? 'absolute inset-0 z-10 p-4 flex flex-col justify-end' : 'absolute inset-0 p-4 flex flex-col justify-end'">
+      :class="view === 'list' ? 'absolute inset-0 z-10 p-4 flex flex-col justify-end' : 'absolute inset-0 p-3 flex flex-col justify-end sm:p-4'">
       <div>
         <div class="flex items-center gap-2.5 mb-2">
-          <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt="" />
+          <img v-if="fetchedIcon" :src="fetchedIcon" class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm" alt=""
+            @error="fetchedIcon = null" />
           <div v-else
             class="w-8 h-8 bg-primary flex items-center justify-center text-white text-sm font-bold shadow-sm">
             {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
-            <h3 class="text-base font-bold truncate transition-colors text-white group-hover:text-primary">
+            <h3 class="font-bold truncate transition-colors text-white group-hover:text-primary text-sm sm:text-base">
               {{ instance.node_name || instance.id }}
             </h3>
             <p class="text-[10px] font-mono text-white/70">
@@ -41,7 +43,7 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-3 text-[10px] font-medium text-white/60">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium text-white/60">
         <span class="flex items-center gap-1" title="Users">
           <Icon name="lucide:users" class="w-3.5 h-3.5" />
           {{ formatNumber(instance.users_count) }}
