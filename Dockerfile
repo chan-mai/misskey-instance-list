@@ -8,7 +8,7 @@ COPY . /app
 WORKDIR /app
 
 FROM base AS prod-deps
-RUN pnpm install --prod --frozen-lockfile --ignore-scripts
+RUN pnpm install --prod --frozen-lockfile
 
 FROM base AS build
 RUN pnpm install --frozen-lockfile

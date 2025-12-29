@@ -12,16 +12,25 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string | number): void;
+  (e: 'update:modelValue', value: string | number | null): void;
 }>();
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement;
-  let value: string | number = target.value;
-  if (props.type === 'number' && value !== '') {
-    value = Number(value);
+  if (props.type === 'number') {
+    if (target.value === '') {
+      emit('update:modelValue', null);
+      return;
+    }
+    const parsed = Number(target.value);
+    if (Number.isNaN(parsed)) {
+      emit('update:modelValue', null);
+    } else {
+      emit('update:modelValue', parsed);
+    }
+  } else {
+    emit('update:modelValue', target.value);
   }
-  emit('update:modelValue', value);
 }
 </script>
 

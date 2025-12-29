@@ -42,7 +42,7 @@
           <div>
             <h4 class="text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">Connect</h4>
             <nav class="flex flex-col gap-3">
-              <NuxtLink to="https://github.com/chan-mai/misskey-instance-list"
+              <NuxtLink to="https://github.com/chan-mai/misskey-instance-list" target="_blank" rel="noopener noreferrer"
                 class="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 GitHub</NuxtLink>
             </nav>
