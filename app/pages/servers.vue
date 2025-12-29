@@ -228,7 +228,7 @@ function handleOrderChange(val: any) {
 useJsonld(() => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  numberOfItems: total.value,
+  numberOfItems: instances.value.length,
   itemListElement: instances.value.map((instance, index) => ({
     '@type': 'ListItem',
     position: index + 1,
