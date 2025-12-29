@@ -68,12 +68,48 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'GET /api/v1/deny_instances - API Documentation',
+  title: 'GET /api/v1/deny_instances - (Unofficial) Misskey Server List',
   meta: [
-    { name: 'description', content: '拒否リストのサーバー一覧を取得するAPIのドキュメント。' },
-    { property: 'og:title', content: 'GET /api/v1/deny_instances - API Documentation' },
-    { property: 'og:description', content: '拒否リストのサーバー一覧を取得するAPIのドキュメント。' },
+    { name: 'description', content: '拒否リストに登録されているサーバーの一覧を取得します。' },
+    { property: 'og:title', content: 'GET /api/v1/deny_instances - (Unofficial) Misskey Server List' },
+    { property: 'og:description', content: '拒否リストに登録されているサーバーの一覧を取得します。' },
     { property: 'og:url', content: 'https://servers.misskey.ink/docs/api/v1/deny_instances' },
+    { name: 'twitter:title', content: 'GET /api/v1/deny_instances - (Unofficial) Misskey Server List' },
+    { name: 'twitter:description', content: '拒否リストに登録されているサーバーの一覧を取得します。' },
   ]
+});
+
+defineOptions({
+  jsonld() {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'GET /api/v1/deny_instances',
+      description: '拒否リストに登録されているサーバーの一覧を取得します。',
+      breadcrumb: {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://servers.misskey.ink/'
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'API v1',
+            item: 'https://servers.misskey.ink/docs/api/v1'
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: 'deny_instances',
+            item: 'https://servers.misskey.ink/docs/api/v1/deny_instances'
+          }
+        ]
+      }
+    };
+  }
 });
 </script>

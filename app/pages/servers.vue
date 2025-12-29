@@ -223,6 +223,22 @@ function handleOrderByChange(val: any) {
 function handleOrderChange(val: any) {
   f_order.value = val as FilterSettings['f_order'];
 }
+
+useJsonld(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  numberOfItems: total.value,
+  itemListElement: instances.value.map((instance, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'Thing',
+      name: instance.name || instance.host,
+      url: `https://${instance.host}`,
+      description: instance.description || ''
+    }
+  }))
+}));
 </script>
 
 <template>

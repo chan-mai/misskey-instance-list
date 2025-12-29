@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld'],
   components: [
     { path: '~/components', pathPrefix: false },
   ],
@@ -14,6 +14,9 @@ export default defineNuxtConfig({
     classSuffix: '',
     preference: 'system',
     fallback: 'dark',
+  },
+  site: {
+    url: 'https://servers.misskey.ink',
   },
   app: {
     head: {

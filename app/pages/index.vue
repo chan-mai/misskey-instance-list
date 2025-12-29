@@ -88,4 +88,32 @@ useHead({
     { name: 'twitter:description', content: '非公式Misskeyサーバーリスト(インスタンスリスト)について' },
   ]
 });
+
+defineOptions({
+  jsonld() {
+    return [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: '(Unofficial) Misskey Server List',
+        url: 'https://servers.misskey.ink/',
+        description: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。',
+        inLanguage: 'ja',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://servers.misskey.ink/servers?q={search_term_string}',
+          'query-input': 'required name=search_term_string'
+        }
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: '(Unofficial) Misskey Server List',
+        url: 'https://servers.misskey.ink/',
+        logo: 'https://servers.misskey.ink/icon.png',
+        description: '非公式Misskeyサーバーリスト(インスタンスリスト)'
+      }
+    ];
+  }
+});
 </script>
