@@ -132,7 +132,7 @@ async function fetchInstances(reset = false) {
       // 中断エラーは無視する
       return;
     }
-    errorMessage.value = e instanceof Error ? e.message : 'Failed to load instances';
+    errorMessage.value = 'データの取得に失敗しました。';
   } finally {
     // アクティブなリクエストの場合のみ状態を更新
     if (abortController.value === controller) {
@@ -299,8 +299,18 @@ useJsonld(() => ({
           : 'flex flex-col gap-3'">
 
           <!-- Server cards -->
-          <ServerCard v-if="instances.length > 0" v-for="instance in instances" :key="instance.id" :instance="instance"
+          <ServerCard v-if="!errorMessage && instances.length > 0" v-for="instance in instances" :key="instance.id" :instance="instance"
             :view="v_view" />
+
+          <!-- Error state -->
+          <StateError v-else-if="errorMessage" :message="errorMessage">
+            <template #action>
+              <button @click="fetchInstances(true)"
+                class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
+                Retry
+              </button>
+            </template>
+          </StateError>
 
           <!-- Empty state -->
           <StateEmpty v-else-if="!initialLoading"
