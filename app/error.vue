@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { NuxtError } from '#app'
+import type { NuxtError } from '#app';
 
 const props = defineProps<{
   error: NuxtError
-}>()
+}>();
 
-const handleError = () => clearError({ redirect: '/' })
+const handleError = () => clearError({ redirect: '/' });
 
-const is404 = computed(() => props.error.statusCode === 404)
-const title = computed(() => is404.value ? 'Page Not Found' : 'An Error Occurred')
-const description = computed(() => is404.value ? 'The page you are looking for does not exist.' : 'Something went wrong.')
+const is404 = computed(() => props.error.statusCode === 404);
+const title = computed(() => is404.value ? 'Page Not Found' : 'An Error Occurred');
+const description = computed(() => is404.value ? 'The page you are looking for does not exist.' : 'Something went wrong.');
 </script>
 
 <template>
