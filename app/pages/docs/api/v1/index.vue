@@ -97,7 +97,7 @@
           </div>
           <div class="bg-back dark:bg-back-dark p-6">
             <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Rate Limit</p>
-            <p class="text-lg font-medium text-neutral-900 dark:text-white">None</p>
+            <p class="text-lg font-medium text-neutral-900 dark:text-white">150 requests / min</p>
           </div>
         </div>
       </div>

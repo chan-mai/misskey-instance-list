@@ -6,10 +6,21 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld', 'nuxt-security'],
   components: [
     { path: '~/components', pathPrefix: false },
   ],
+  security: {
+    headers: {
+      contentSecurityPolicy: false,
+      strictTransportSecurity: false,
+    },
+    rateLimiter: {
+      tokensPerInterval: 150,
+      interval: 60 * 1000,
+      throwError: true,
+    },
+  },
   colorMode: {
     classSuffix: '',
     preference: 'system',
