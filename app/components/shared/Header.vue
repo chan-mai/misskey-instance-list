@@ -4,7 +4,7 @@
     <div class="container mx-auto max-w-screen-xl px-6">
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
-        <NuxtLink to="/#" class="flex items-center gap-3 group">
+        <NuxtLink to="/" class="flex items-center gap-3 group">
           <img src="/ogp.png" class="w-9 h-9 pointer-events-none">
           <span class="font-bold text-lg tracking-wide hidden sm:block text-neutral-900 dark:text-white">
             (Unofficial) Misskey Server List
