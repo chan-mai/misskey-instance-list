@@ -13,7 +13,7 @@
 
         <!-- Nav (Desktop) -->
         <nav class="hidden md:flex items-center gap-8">
-          <NuxtLink to="/#"
+          <NuxtLink to="/"
             class="text-sm font-medium tracking-wider transition-colors text-neutral-600 dark:text-white/70 hover:text-neutral-900 dark:hover:text-white visited:text-neutral-600 dark:visited:text-white/70">
             HOME
           </NuxtLink>
