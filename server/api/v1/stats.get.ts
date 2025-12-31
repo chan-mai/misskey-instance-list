@@ -1,5 +1,18 @@
 import { prisma } from '~~/server/utils/prisma';
 
+/**
+ * GET /api/v1/stats
+ *
+ * ネットワーク全体の統計情報を取得します。
+ * - 既知のインスタンス数
+ * - アクティブなインスタンス数
+ * - 除外されたインスタンス数
+ * - 総ユーザー数 (アクティブなインスタンスのみ)
+ * - リポジトリ使用状況 (アクティブなインスタンスのみ)
+ * - 言語使用状況 (アクティブなインスタンスのみ)
+ *
+ * @returns {Promise<Stats>} 統計情報オブジェクト
+ */
 export default defineCachedEventHandler(async() => {
   // 関知済みインスタンス数をカウント (停止中・消滅したものも含む)
   const known = await prisma.instance.count();
@@ -11,6 +24,14 @@ export default defineCachedEventHandler(async() => {
 
   // 除外リストのカウント
   const exclusionsCount = await prisma.excludedHost.count();
+
+  // ユーザー総数をカウント
+  const usersCount = await prisma.instance.aggregate({
+    where: { is_alive: true },
+    _sum: {
+      users_count: true
+    }
+  });
 
   // アクティブなインスタンスのリポジトリ使用状況を取得
   const repoStats = await prisma.instance.groupBy({
@@ -77,7 +98,8 @@ export default defineCachedEventHandler(async() => {
     counts: {
       known,
       active,
-      exclusions: exclusionsCount
+      exclusions: exclusionsCount,
+      users: usersCount._sum.users_count || 0
     },
     repositories,
     languages

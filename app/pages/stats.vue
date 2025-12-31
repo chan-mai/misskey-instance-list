@@ -34,6 +34,16 @@
               <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>
             </button>
 
+            <!-- Total Users -->
+            <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
+              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Users
+              </p>
+              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
+                {{ formatNumber(stats?.counts?.users) }}
+              </p>
+              <p class="text-[10px] lg:text-xs text-neutral-500">Across active servers</p>
+            </div>
+
             <!-- Known -->
             <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
               <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Known
@@ -146,9 +156,11 @@
 </template>
 
 <script setup lang="ts">
+import type { Stats } from '~/types/api';
+
 const { formatNumber, calculateShare } = useFormat();
 
-const { data: stats, pending, error } = await useFetch('/api/v1/stats', {
+const { data: stats, pending, error } = await useFetch<Stats>('/api/v1/stats', {
   lazy: true
 });
 
