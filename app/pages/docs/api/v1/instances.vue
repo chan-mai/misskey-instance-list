@@ -86,8 +86,8 @@
         <pre class="bg-back-dark text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed"><code>{
   "items": [
     {
-      "id": "example.com",
-      "node_name": "Example Instance",
+      "host": "example.com",
+      "name": "Example Instance",
       "users_count": 100,
       "notes_count": 10000,
       "created_at": 1704067200000,

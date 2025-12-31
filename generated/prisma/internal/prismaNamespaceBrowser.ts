@@ -53,8 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Instance: 'Instance',
   Repository: 'Repository',
-  Denylist: 'Denylist',
-  IgnoreHost: 'IgnoreHost'
+  ExcludedHost: 'ExcludedHost'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,22 +104,14 @@ export const RepositoryScalarFieldEnum = {
 export type RepositoryScalarFieldEnum = (typeof RepositoryScalarFieldEnum)[keyof typeof RepositoryScalarFieldEnum]
 
 
-export const DenylistScalarFieldEnum = {
+export const ExcludedHostScalarFieldEnum = {
   domain: 'domain',
   reason: 'reason',
+  source: 'source',
   created_at: 'created_at'
 } as const
 
-export type DenylistScalarFieldEnum = (typeof DenylistScalarFieldEnum)[keyof typeof DenylistScalarFieldEnum]
-
-
-export const IgnoreHostScalarFieldEnum = {
-  domain: 'domain',
-  reason: 'reason',
-  created_at: 'created_at'
-} as const
-
-export type IgnoreHostScalarFieldEnum = (typeof IgnoreHostScalarFieldEnum)[keyof typeof IgnoreHostScalarFieldEnum]
+export type ExcludedHostScalarFieldEnum = (typeof ExcludedHostScalarFieldEnum)[keyof typeof ExcludedHostScalarFieldEnum]
 
 
 export const SortOrder = {

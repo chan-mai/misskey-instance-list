@@ -22,8 +22,8 @@
   "counts": {
     "known": 1500,
     "active": 800,
-    "denies": 100,
-    "ignores": 50
+    "exclusions": 150,
+    "users": 120000
   },
   "repositories": [
     {
@@ -31,6 +31,12 @@
       "name": "misskey-dev/misskey",
       "description": "🌎 A completely free and open interplanetary-microblogging platform 🚀",
       "count": 600
+    }
+  ],
+  "languages": [
+    {
+      "code": "ja",
+      "count": 750
     }
   ]
 }</code></pre>
@@ -49,12 +55,12 @@
             <p class="text-neutral-600 dark:text-neutral-300">生存確認ができているインスタンス数</p>
           </div>
           <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
-            <code class="text-primary font-mono text-sm shrink-0">counts.denies</code>
-            <p class="text-neutral-600 dark:text-neutral-300">拒否リストに含まれるドメイン数</p>
+            <code class="text-primary font-mono text-sm shrink-0">counts.exclusions</code>
+            <p class="text-neutral-600 dark:text-neutral-300">除外リストに含まれるドメイン総数</p>
           </div>
           <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
-            <code class="text-primary font-mono text-sm shrink-0">counts.ignores</code>
-            <p class="text-neutral-600 dark:text-neutral-300">無視リストに含まれるドメイン数</p>
+            <code class="text-primary font-mono text-sm shrink-0">counts.users</code>
+            <p class="text-neutral-600 dark:text-neutral-300">アクティブなインスタンスの総ユーザー数</p>
           </div>
           <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
             <code class="text-primary font-mono text-sm shrink-0">repositories</code>
@@ -75,6 +81,18 @@
           <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
             <code class="text-primary font-mono text-sm shrink-0">repositories[].count</code>
             <p class="text-neutral-600 dark:text-neutral-300">このリポジトリを使用しているインスタンス数</p>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono text-sm shrink-0">languages</code>
+            <p class="text-neutral-600 dark:text-neutral-300">言語ごとの使用数 (多い順)</p>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono text-sm shrink-0">languages[].code</code>
+            <p class="text-neutral-600 dark:text-neutral-300">ISO 639-1 言語コード (e.g. ja, en)</p>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono text-sm shrink-0">languages[].count</code>
+            <p class="text-neutral-600 dark:text-neutral-300">この言語が主要言語のインスタンス数</p>
           </div>
         </div>
       </div>

@@ -312,9 +312,9 @@ export async function getInstanceInfo(
 /**
  * Validate an instance's identity and integrity, and remove it if it is not a valid Misskey instance.
  *
- * Performs checks using both a bot-like and a browser-like user agent to detect non-Misskey software, repository forks, or spoofing. When a problematic condition is detected the function records the domain in the denylist with an explanatory reason and deletes the instance record.
+ * Performs checks using both a bot-like and a browser-like user agent to detect non-Misskey software, repository forks, or spoofing. When a problematic condition is detected the function records the domain in the excluded hosts list with an explanatory reason and deletes the instance record.
  *
- * @param prisma - Prisma client used to update denylist and instances
+ * @param prisma - Prisma client used to update excludedHost and instances
  * @param host - Instance host (domain) to validate
  * @returns An InstanceResult containing the discovered InstanceInfo on success, or `info: null` with `error` set to `TIMEOUT`, `GONE`, or `UNKNOWN` when the instance is unreachable, gone, or rejected due to validation (non-Misskey, fork, or spoofing)
  */
@@ -359,10 +359,14 @@ export async function validateInstance(
     // Misskey以外は除外
     if (botSoftware !== 'misskey' && botSoftware !== '') {
       console.log(`Detected non-misskey software for ${host}: ${botSoftware}`);
-      await prisma.denylist.upsert({
+      await prisma.excludedHost.upsert({
         where: { domain: host },
         update: { reason: `Not Misskey: ${botSoftware}` },
-        create: { domain: host, reason: `Not Misskey: ${botSoftware}` },
+        create: {
+          domain: host,
+          reason: `Not Misskey: ${botSoftware}`,
+          source: 'system',
+        },
       });
       await prisma.instance.deleteMany({ where: { id: host } });
       return { info: null, error: 'UNKNOWN' };
@@ -384,12 +388,13 @@ export async function validateInstance(
       );
       if (detectedForkUrl) {
         console.log(`Detected fork repository for ${host}: ${detectedForkUrl}`);
-        await prisma.denylist.upsert({
+        await prisma.excludedHost.upsert({
           where: { domain: host },
           update: { reason: `Fork Repository: ${detectedForkUrl}` },
           create: {
             domain: host,
             reason: `Fork Repository: ${detectedForkUrl}`,
+            source: 'system',
           },
         });
         await prisma.instance.deleteMany({ where: { id: host } });
@@ -412,7 +417,7 @@ export async function validateInstance(
         `Detected spoofing/fork behavior for ${host}: Bot=${botSoftware}, Browser=${browserSoftware}`
       );
 
-      await prisma.denylist.upsert({
+      await prisma.excludedHost.upsert({
         where: { domain: host },
         update: {
           reason: `Spoofing: JoinMisskey=${botSoftware}, Browser=${browserSoftware}`,
@@ -420,6 +425,7 @@ export async function validateInstance(
         create: {
           domain: host,
           reason: `Spoofing: JoinMisskey=${botSoftware}, Browser=${browserSoftware}`,
+          source: 'system',
         },
       });
       await prisma.instance.deleteMany({ where: { id: host } });

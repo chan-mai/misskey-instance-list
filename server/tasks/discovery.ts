@@ -12,9 +12,8 @@ export default defineTask({
     description: 'Discover new Misskey instances from known instances'
   },
   async run() {
-    const denyList = await prisma.denylist.findMany({ select: { domain: true } });
-    const ignoreList = await prisma.ignoreHost.findMany({ select: { domain: true } });
-    const denySet = new Set([...denyList, ...ignoreList].map(r => r.domain));
+    const excludedList = await prisma.excludedHost.findMany({ select: { domain: true } });
+    const excludedSet = new Set(excludedList.map(r => r.domain));
 
     const actives = await prisma.$queryRaw<{ id: string }[]>`
         SELECT id FROM instances WHERE is_alive = true ORDER BY RANDOM() LIMIT 5
@@ -66,7 +65,7 @@ export default defineTask({
 
           for (const item of list) {
             if (typeof item.host === 'string' && item.host.includes('.')) {
-              if (!denySet.has(item.host)) {
+              if (!excludedSet.has(item.host)) {
                 newHosts.push(item.host);
               }
             }
