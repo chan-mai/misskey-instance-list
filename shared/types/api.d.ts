@@ -34,8 +34,7 @@ interface StatsResponse {
   counts: {
     known: number;
     active: number;
-    denies: number;
-    ignores: number;
+    exclusions: number;
   };
   repositories: {
     url: string;

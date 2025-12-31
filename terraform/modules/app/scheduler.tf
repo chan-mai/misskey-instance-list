@@ -109,10 +109,10 @@ resource "google_cloud_scheduler_job" "update" {
   }
 }
 
-resource "google_cloud_scheduler_job" "sync_denylist" {
-  name             = "${lower(var.environment)}_sync-denylist"
+resource "google_cloud_scheduler_job" "sync_exclusions" {
+  name             = "${lower(var.environment)}_sync-exclusions"
   region           = var.region
-  description      = "Sync denylist from external source"
+  description      = "Sync exclusions from external source"
   schedule         = "0 * * * *"
   time_zone        = "Asia/Tokyo"
   attempt_deadline = "1800s"
@@ -127,7 +127,7 @@ resource "google_cloud_scheduler_job" "sync_denylist" {
 
   http_target {
     http_method = "POST"
-    uri         = "${var.service_url}/api/tasks/sync:denylist"
+    uri         = "${var.service_url}/api/tasks/sync:exclusions"
     body        = base64encode("{\"message\": \"from cloud scheduler\"}")
     headers = {
       "Authorization" = "Bearer ${google_secret_manager_secret_version.task_secret.secret_data}"

@@ -28,32 +28,18 @@
             <p class="text-neutral-500 text-sm">Misskeyサーバーの一覧を取得します。検索、ソート、ページネーションに対応。</p>
           </NuxtLink>
 
-          <!-- Deny Instances API -->
-          <NuxtLink to="/docs/api/v1/deny_instances"
+          <!-- Exclusions API -->
+          <NuxtLink to="/docs/api/v1/exclusions"
             class="group bg-back dark:bg-back-dark p-6 lg:p-8 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors">
             <div class="flex items-center gap-4 mb-3">
               <span
                 class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
               <code
-                class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/deny_instances</code>
+                class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/exclusions</code>
               <Icon name="lucide:chevron-right"
                 class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
             </div>
-            <p class="text-neutral-500 text-sm">拒否リストに登録されているサーバーの一覧を取得します。</p>
-          </NuxtLink>
-
-          <!-- Ignore Instances API -->
-          <NuxtLink to="/docs/api/v1/ignore_instances"
-            class="group bg-back dark:bg-back-dark p-6 lg:p-8 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors">
-            <div class="flex items-center gap-4 mb-3">
-              <span
-                class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
-              <code
-                class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/ignore_instances</code>
-              <Icon name="lucide:chevron-right"
-                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
-            </div>
-            <p class="text-neutral-500 text-sm">無視リストに登録されているサーバーの一覧を取得します。</p>
+            <p class="text-neutral-500 text-sm">除外リストの一覧を取得します。</p>
           </NuxtLink>
 
           <!-- Stats API -->

@@ -8,7 +8,7 @@ locals {
     discovery                 = "discovery-queue"
     sync_stats                = "sync-stats-queue"
     sync_recommendation_scores = "rec-scores-queue"
-    sync_denylist             = "sync-denylist-queue"
+    sync_exclusions            = "sync-exclusions-queue"
   }
 }
 

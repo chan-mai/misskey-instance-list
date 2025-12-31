@@ -9,9 +9,8 @@ export default defineCachedEventHandler(async() => {
     where: { is_alive: true }
   });
 
-  // 拒否・無視リストのカウント
-  const denyCount = await prisma.denylist.count();
-  const ignoreCount = await prisma.ignoreHost.count();
+  // 除外リストのカウント
+  const exclusionsCount = await prisma.excludedHost.count();
 
   // アクティブなインスタンスのリポジトリ使用状況を取得
   const repoStats = await prisma.instance.groupBy({
@@ -78,8 +77,7 @@ export default defineCachedEventHandler(async() => {
     counts: {
       known,
       active,
-      denies: denyCount,
-      ignores: ignoreCount
+      exclusions: exclusionsCount
     },
     repositories,
     languages

@@ -70,13 +70,9 @@ export default defineCachedEventHandler(async(event) => {
   }
 
   // 除外ドメインを取得
-  const denyDomains = (
-    await prisma.denylist.findMany({ select: { domain: true } })
+  const excluded = (
+    await prisma.excludedHost.findMany({ select: { domain: true } })
   ).map((d: { domain: string }) => d.domain);
-  const ignoreDomains = (
-    await prisma.ignoreHost.findMany({ select: { domain: true } })
-  ).map((d: { domain: string }) => d.domain);
-  const excluded = [...denyDomains, ...ignoreDomains];
 
   // 検索条件を構築
   interface WhereCondition {

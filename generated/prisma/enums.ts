@@ -18,9 +18,10 @@ export const SuspensionState = {
 export type SuspensionState = (typeof SuspensionState)[keyof typeof SuspensionState]
 
 
-export const IgnoreHostSource = {
+export const ExcludedHostSource = {
   joinmisskey: 'joinmisskey',
-  manual: 'manual'
+  manual: 'manual',
+  system: 'system'
 } as const
 
-export type IgnoreHostSource = (typeof IgnoreHostSource)[keyof typeof IgnoreHostSource]
+export type ExcludedHostSource = (typeof ExcludedHostSource)[keyof typeof ExcludedHostSource]

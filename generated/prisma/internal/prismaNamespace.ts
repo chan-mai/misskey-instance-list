@@ -386,8 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Instance: 'Instance',
   Repository: 'Repository',
-  Denylist: 'Denylist',
-  IgnoreHost: 'IgnoreHost'
+  ExcludedHost: 'ExcludedHost'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +402,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "instance" | "repository" | "denylist" | "ignoreHost"
+    modelProps: "instance" | "repository" | "excludedHost"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -555,151 +554,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Denylist: {
-      payload: Prisma.$DenylistPayload<ExtArgs>
-      fields: Prisma.DenylistFieldRefs
+    ExcludedHost: {
+      payload: Prisma.$ExcludedHostPayload<ExtArgs>
+      fields: Prisma.ExcludedHostFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.DenylistFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload> | null
+          args: Prisma.ExcludedHostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.DenylistFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>
+          args: Prisma.ExcludedHostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>
         }
         findFirst: {
-          args: Prisma.DenylistFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload> | null
+          args: Prisma.ExcludedHostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.DenylistFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>
+          args: Prisma.ExcludedHostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>
         }
         findMany: {
-          args: Prisma.DenylistFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>[]
+          args: Prisma.ExcludedHostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>[]
         }
         create: {
-          args: Prisma.DenylistCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>
+          args: Prisma.ExcludedHostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>
         }
         createMany: {
-          args: Prisma.DenylistCreateManyArgs<ExtArgs>
+          args: Prisma.ExcludedHostCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.DenylistCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>[]
+          args: Prisma.ExcludedHostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>[]
         }
         delete: {
-          args: Prisma.DenylistDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>
+          args: Prisma.ExcludedHostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>
         }
         update: {
-          args: Prisma.DenylistUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>
+          args: Prisma.ExcludedHostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>
         }
         deleteMany: {
-          args: Prisma.DenylistDeleteManyArgs<ExtArgs>
+          args: Prisma.ExcludedHostDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.DenylistUpdateManyArgs<ExtArgs>
+          args: Prisma.ExcludedHostUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.DenylistUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>[]
+          args: Prisma.ExcludedHostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>[]
         }
         upsert: {
-          args: Prisma.DenylistUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$DenylistPayload>
+          args: Prisma.ExcludedHostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExcludedHostPayload>
         }
         aggregate: {
-          args: Prisma.DenylistAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateDenylist>
+          args: Prisma.ExcludedHostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExcludedHost>
         }
         groupBy: {
-          args: Prisma.DenylistGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.DenylistGroupByOutputType>[]
+          args: Prisma.ExcludedHostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExcludedHostGroupByOutputType>[]
         }
         count: {
-          args: Prisma.DenylistCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.DenylistCountAggregateOutputType> | number
-        }
-      }
-    }
-    IgnoreHost: {
-      payload: Prisma.$IgnoreHostPayload<ExtArgs>
-      fields: Prisma.IgnoreHostFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.IgnoreHostFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.IgnoreHostFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>
-        }
-        findFirst: {
-          args: Prisma.IgnoreHostFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.IgnoreHostFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>
-        }
-        findMany: {
-          args: Prisma.IgnoreHostFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>[]
-        }
-        create: {
-          args: Prisma.IgnoreHostCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>
-        }
-        createMany: {
-          args: Prisma.IgnoreHostCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.IgnoreHostCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>[]
-        }
-        delete: {
-          args: Prisma.IgnoreHostDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>
-        }
-        update: {
-          args: Prisma.IgnoreHostUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>
-        }
-        deleteMany: {
-          args: Prisma.IgnoreHostDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.IgnoreHostUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.IgnoreHostUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>[]
-        }
-        upsert: {
-          args: Prisma.IgnoreHostUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$IgnoreHostPayload>
-        }
-        aggregate: {
-          args: Prisma.IgnoreHostAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateIgnoreHost>
-        }
-        groupBy: {
-          args: Prisma.IgnoreHostGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.IgnoreHostGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.IgnoreHostCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.IgnoreHostCountAggregateOutputType> | number
+          args: Prisma.ExcludedHostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExcludedHostCountAggregateOutputType> | number
         }
       }
     }
@@ -774,23 +699,14 @@ export const RepositoryScalarFieldEnum = {
 export type RepositoryScalarFieldEnum = (typeof RepositoryScalarFieldEnum)[keyof typeof RepositoryScalarFieldEnum]
 
 
-export const DenylistScalarFieldEnum = {
-  domain: 'domain',
-  reason: 'reason',
-  created_at: 'created_at'
-} as const
-
-export type DenylistScalarFieldEnum = (typeof DenylistScalarFieldEnum)[keyof typeof DenylistScalarFieldEnum]
-
-
-export const IgnoreHostScalarFieldEnum = {
+export const ExcludedHostScalarFieldEnum = {
   domain: 'domain',
   reason: 'reason',
   source: 'source',
   created_at: 'created_at'
 } as const
 
-export type IgnoreHostScalarFieldEnum = (typeof IgnoreHostScalarFieldEnum)[keyof typeof IgnoreHostScalarFieldEnum]
+export type ExcludedHostScalarFieldEnum = (typeof ExcludedHostScalarFieldEnum)[keyof typeof ExcludedHostScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -901,16 +817,16 @@ export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMode
 
 
 /**
- * Reference to a field of type 'IgnoreHostSource'
+ * Reference to a field of type 'ExcludedHostSource'
  */
-export type EnumIgnoreHostSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IgnoreHostSource'>
+export type EnumExcludedHostSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExcludedHostSource'>
     
 
 
 /**
- * Reference to a field of type 'IgnoreHostSource[]'
+ * Reference to a field of type 'ExcludedHostSource[]'
  */
-export type ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IgnoreHostSource[]'>
+export type ListEnumExcludedHostSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExcludedHostSource[]'>
     
 
 /**
@@ -1010,8 +926,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   instance?: Prisma.InstanceOmit
   repository?: Prisma.RepositoryOmit
-  denylist?: Prisma.DenylistOmit
-  ignoreHost?: Prisma.IgnoreHostOmit
+  excludedHost?: Prisma.ExcludedHostOmit
 }
 
 /* Types for Logging */

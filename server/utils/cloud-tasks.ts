@@ -9,7 +9,7 @@ export const QUEUE_MAPPING: Record<string, string> = {
   'discovery': 'discovery-queue',
   'sync:stats': 'sync-stats-queue',
   'sync:recommendation-scores': 'rec-scores-queue',
-  'sync:denylist': 'sync-denylist-queue',
+  'sync:exclusions': 'sync-exclusions-queue',
 };
 
 export const VALID_TASKS = Object.keys(QUEUE_MAPPING);
