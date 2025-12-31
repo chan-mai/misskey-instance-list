@@ -11,9 +11,9 @@ import { prisma } from '~~/server/utils/prisma';
  * - リポジトリ使用状況 (アクティブなインスタンスのみ)
  * - 言語使用状況 (アクティブなインスタンスのみ)
  *
- * @returns {Promise<Stats>} 統計情報オブジェクト
+ * @returns {Promise<StatsResponse>} 統計情報オブジェクト
  */
-export default defineCachedEventHandler(async() => {
+export default defineCachedEventHandler(async(): Promise<StatsResponse> => {
   // 関知済みインスタンス数をカウント (停止中・消滅したものも含む)
   const known = await prisma.instance.count();
 

@@ -1,25 +1,43 @@
-interface Instance {
-  id: string;
-  host: string;
+interface StatsRepository {
+  url: string;
   name: string | null;
-  node_name: string | null;
-  software_name: string;
-  software_version: string;
-  version: string;
-  icon_url: string | null;
-  favicon_url: string | null;
-  banner_url: string | null;
-  users_count: number;
-  notes_count: number;
-  is_alive: boolean;
-  is_verified: boolean;
-  open_registrations: boolean | null;
-  email_required: boolean | null;
   description: string | null;
+  count: number;
+}
+
+interface Stats {
+  counts: {
+    known: number;
+    active: number;
+    exclusions: number;
+    users: number;
+  };
+  repositories: StatsRepository[];
+  languages: {
+    code: string;
+    count: number;
+  }[];
+}
+
+type StatsResponse = Stats
+
+interface Instance {
+  host: string; // domain
+  name: string | null;
+  users_count: number | null;
+  notes_count: number | null;
+  version: string | null;
+  is_alive: boolean;
   created_at: number | null;
   last_updated: number | null;
   last_check_at: number | null;
+  banner_url: string | null;
+  icon_url: string | null;
+  suspension_state: 'none' | 'suspended' | 'gone';
   recommendation_score: number | null;
+  open_registrations: boolean | null;
+  email_required: boolean | null;
+  repository_url: string | null;
   language: string | null;
 }
 
@@ -30,30 +48,7 @@ interface InstancesResponse {
   offset: number;
 }
 
-interface StatsResponse {
-  counts: {
-    known: number;
-    active: number;
-    exclusions: number;
-  };
-  repositories: {
-    url: string;
-    name: string | null;
-    description: string | null;
-    count: number;
-  }[];
-  languages: {
-    code: string;
-    count: number;
-  }[];
-}
-
-interface DenyInstance {
-  domain: string;
-  reason: string | null;
-}
-
-interface IgnoreInstance {
+interface ExclusionResponse {
   domain: string;
   reason: string | null;
 }

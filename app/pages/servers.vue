@@ -191,7 +191,7 @@ const isFilterDrawerOpen = ref(false);
 
 
 const repositories = computed(() => {
-  const repos = stats.value?.repositories?.map(repo => ({
+  const repos = stats.value?.repositories?.map((repo: StatsRepository) => ({
     name: repo.name || 'Unknown',
     url: repo.url,
     count: repo.count
@@ -248,12 +248,16 @@ function handleOrderByChange(val: any) {
 function handleOrderChange(val: any) {
   f_order.value = val as FilterSettings['f_order'];
 }
+// ローカルでの拡張型定義
+type InstanceWithDescription = Instance & {
+  description?: string;
+};
 
 useJsonld(() => ({
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   numberOfItems: instances.value.length,
-  itemListElement: instances.value.map((instance, index) => ({
+  itemListElement: instances.value.map((instance: InstanceWithDescription, index) => ({
     '@type': 'ListItem',
     position: index + 1,
     item: {
@@ -299,7 +303,7 @@ useJsonld(() => ({
           : 'flex flex-col gap-3'">
 
           <!-- Server cards -->
-          <ServerCard v-if="!errorMessage && instances.length > 0" v-for="instance in instances" :key="instance.id" :instance="instance"
+          <ServerCard v-if="!errorMessage && instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance"
             :view="v_view" />
 
           <!-- Error state -->

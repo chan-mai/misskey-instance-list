@@ -1,12 +1,12 @@
 <template>
-  <NuxtLink :to="`https://${instance.id}`" target="_blank" rel="noopener noreferrer"
+  <NuxtLink :to="`https://${instance.host}`" target="_blank" rel="noopener noreferrer"
     class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.005] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
     :class="view === 'list' ? 'h-48' : ''">
 
     <div class="relative overflow-hidden"
       :class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[10/12] lg:aspect-[4/3] w-full'">
       <img v-if="fetchedBanner" loading="lazy" :src="fetchedBanner"
-        :alt="instance.node_name || instance.id || 'Server banner'"
+        :alt="instance.name || instance.host || 'Server banner'"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         @error="fetchedBanner = null" />
       <div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
@@ -27,14 +27,14 @@
             @error="fetchedIcon = null" />
           <div v-else
             class="w-8 h-8 bg-primary flex items-center justify-center text-white text-sm font-bold shadow-sm">
-            {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
+            {{ (instance.name || instance.host).charAt(0).toUpperCase() }}
           </div>
           <div class="w-full min-w-0">
             <h3 class="font-bold truncate transition-colors text-white group-hover:text-primary text-sm sm:text-base">
-              {{ instance.node_name || instance.id }}
+              {{ instance.name || instance.host }}
             </h3>
             <div class="text-[10px] font-mono text-white/70 flex flex-wrap gap-x-1 items-baseline w-full">
-              <span class="truncate max-w-full">{{ instance.id }}</span>
+              <span class="truncate max-w-full">{{ instance.host }}</span>
               <span class="truncate max-w-full opacity-80 decoration-dotted whitespace-nowrap">(v{{ instance.version
               }})</span>
             </div>
@@ -45,7 +45,7 @@
       <div>
         <p class="text-xs line-clamp-2 mb-3 text-white/80">
           <span v-if="loadingDescription" class="opacity-50">Loading...</span>
-          <span v-else>{{ description || instance.id }}</span>
+          <span v-else>{{ description || instance.host }}</span>
         </p>
 
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium text-white/60">
@@ -150,7 +150,7 @@ async function updateDescription() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(`/api/meta?host=${props.instance.id}`, {
+    const res = await fetch(`/api/meta?host=${props.instance.host}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal

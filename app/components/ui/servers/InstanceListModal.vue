@@ -90,29 +90,29 @@ function toggleReason(domain: string) {
             </ul>
 
             <div v-else class="grid gap-px bg-neutral-200 dark:bg-neutral-800">
-                <NuxtLink v-for="instance in instances" :key="instance.id" :to="`https://${instance.id}`"
+                <NuxtLink v-for="instance in instances" :key="instance.host" :to="`https://${instance.host}`"
                     target="_blank" rel="noopener noreferrer"
                     class="flex items-center gap-4 p-4 bg-back dark:bg-back-dark hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors group">
                     <img v-if="instance.icon_url" :src="instance.icon_url"
                         class="w-10 h-10 bg-neutral-100 dark:bg-neutral-800 object-cover" loading="lazy"
                         @error="(e) => (e.target as HTMLImageElement).src = 'https://placehold.co/40x40?text=?'" />
                     <div v-else class="w-10 h-10 bg-primary flex items-center justify-center text-white font-bold">
-                        {{ (instance.node_name || instance.id).charAt(0).toUpperCase() }}
+                        {{ (instance.name || instance.host).charAt(0).toUpperCase() }}
                     </div>
 
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
                             <h4
                                 class="font-bold text-neutral-900 dark:text-white truncate group-hover:text-primary transition-colors">
-                                <span class="sm:hidden">{{ (instance.node_name || instance.id).length > 15 ?
-                                    (instance.node_name
-                                        || instance.id).slice(0, 15) + '...' : (instance.node_name || instance.id) }}</span>
-                                <span class="hidden sm:inline">{{ instance.node_name || instance.id }}</span>
+                                <span class="sm:hidden">{{ (instance.name || instance.host).length > 15 ?
+                                    (instance.name
+                                        || instance.host).slice(0, 15) + '...' : (instance.name || instance.host) }}</span>
+                                <span class="hidden sm:inline">{{ instance.name || instance.host }}</span>
                             </h4>
                             <span v-if="!instance.is_alive"
                                 class="px-2 py-0.5 text-[10px] bg-red-500/10 text-red-500 border border-red-500/20">Offline</span>
                         </div>
-                        <span class="text-xs text-neutral-500 truncate block">{{ instance.id }}</span>
+                        <span class="text-xs text-neutral-500 truncate block">{{ instance.host }}</span>
                     </div>
 
                     <div class="text-right shrink-0">

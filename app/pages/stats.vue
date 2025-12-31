@@ -156,8 +156,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Stats } from '~/types/api';
-
 const { formatNumber, calculateShare } = useFormat();
 
 const { data: stats, pending, error } = await useFetch<Stats>('/api/v1/stats', {

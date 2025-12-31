@@ -1,6 +1,6 @@
 import { prisma } from '~~/server/utils/prisma';
 
-export default defineCachedEventHandler(async(_event) => {
+export default defineCachedEventHandler(async(_event): Promise<ExclusionResponse[]> => {
   // すべての除外ホストを返す
   const exclusions = await prisma.excludedHost.findMany({ 
     select: { 
