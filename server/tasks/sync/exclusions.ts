@@ -28,7 +28,7 @@ export default defineTask({
       // 既存の 'joinmisskey' ソースのエントリのみを取得
       const existingEntries = await prisma.excludedHost.findMany({
         where: { source: 'joinmisskey' },
-        select: { domain: true }
+        select: { domain: true, source: true }
       });
 
       const existingDomains = new Set(existingEntries.map(e => e.domain));

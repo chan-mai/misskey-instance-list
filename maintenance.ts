@@ -1,7 +1,22 @@
+import { createJiti } from 'jiti';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Initialize jiti with aliases
+const jiti = createJiti(import.meta.url, {
+  alias: {
+    '~~': __dirname,
+    '~': __dirname,
+    '@': __dirname,
+  }
+});
 
 import { prisma } from './server/utils/prisma';
 
-// Mock defineTask to allow importing task files directly in this script
+// Mock defineTask to allow importing task files directly
 globalThis.defineTask = (config) => config;
 globalThis.useRuntimeConfig = () => ({
   githubToken: process.env.GITHUB_TOKEN,
@@ -12,14 +27,11 @@ globalThis.useRuntimeConfig = () => ({
 async function runMaintenance() {
   console.log('--- STARTING EMERGENCY MAINTENANCE ---');
   
-  // Dynamic imports to load tasks after defineTask is mocked
-  // We need to use valid relative paths. 
-  // tsx runs from root, so ./server/...
-  
-  // Note: We are importing the default export which is the task config object
-  const updateTask = (await import('./server/tasks/update')).default;
-  const statsTask = (await import('./server/tasks/sync/stats')).default;
-  const discoveryTask = (await import('./server/tasks/discovery')).default;
+  // Load tasks using jiti to resolve aliases
+  console.log('Loading tasks...');
+  const updateTask = (await jiti.import('./server/tasks/update') as any).default;
+  const statsTask = (await jiti.import('./server/tasks/sync/stats') as any).default;
+  const discoveryTask = (await jiti.import('./server/tasks/discovery') as any).default;
 
   const ITERATIONS = 3;
 

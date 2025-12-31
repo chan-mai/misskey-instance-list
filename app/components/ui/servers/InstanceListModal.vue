@@ -4,9 +4,9 @@ const { formatNumber } = useFormat();
 interface Props {
     modelValue: boolean;
     title: string;
-    type: 'active' | 'denied' | 'ignored';
+    type: 'active' | 'excluded';
     loading: boolean;
-    items: (DenyInstance | IgnoreInstance)[];
+    items: { domain: string; reason: string | null }[];
     instances: Instance[];
     hasMore: boolean;
     loadingMore: boolean;
@@ -54,7 +54,7 @@ function toggleReason(domain: string) {
         </div>
 
         <div v-else>
-            <ul v-if="type === 'denied' || type === 'ignored'"
+            <ul v-if="type === 'excluded'"
                 class="divide-y divide-neutral-200 dark:divide-neutral-800">
                 <li v-for="item in items" :key="item.domain" class="py-4">
                     <div class="relative flex items-center justify-between min-h-[52px]">
