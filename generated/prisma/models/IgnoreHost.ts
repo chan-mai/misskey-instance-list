@@ -27,18 +27,21 @@ export type AggregateIgnoreHost = {
 export type IgnoreHostMinAggregateOutputType = {
   domain: string | null
   reason: string | null
+  source: $Enums.IgnoreHostSource | null
   created_at: Date | null
 }
 
 export type IgnoreHostMaxAggregateOutputType = {
   domain: string | null
   reason: string | null
+  source: $Enums.IgnoreHostSource | null
   created_at: Date | null
 }
 
 export type IgnoreHostCountAggregateOutputType = {
   domain: number
   reason: number
+  source: number
   created_at: number
   _all: number
 }
@@ -47,18 +50,21 @@ export type IgnoreHostCountAggregateOutputType = {
 export type IgnoreHostMinAggregateInputType = {
   domain?: true
   reason?: true
+  source?: true
   created_at?: true
 }
 
 export type IgnoreHostMaxAggregateInputType = {
   domain?: true
   reason?: true
+  source?: true
   created_at?: true
 }
 
 export type IgnoreHostCountAggregateInputType = {
   domain?: true
   reason?: true
+  source?: true
   created_at?: true
   _all?: true
 }
@@ -138,6 +144,7 @@ export type IgnoreHostGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type IgnoreHostGroupByOutputType = {
   domain: string
   reason: string | null
+  source: $Enums.IgnoreHostSource
   created_at: Date
   _count: IgnoreHostCountAggregateOutputType | null
   _min: IgnoreHostMinAggregateOutputType | null
@@ -165,12 +172,14 @@ export type IgnoreHostWhereInput = {
   NOT?: Prisma.IgnoreHostWhereInput | Prisma.IgnoreHostWhereInput[]
   domain?: Prisma.StringFilter<"IgnoreHost"> | string
   reason?: Prisma.StringNullableFilter<"IgnoreHost"> | string | null
+  source?: Prisma.EnumIgnoreHostSourceFilter<"IgnoreHost"> | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeFilter<"IgnoreHost"> | Date | string
 }
 
 export type IgnoreHostOrderByWithRelationInput = {
   domain?: Prisma.SortOrder
   reason?: Prisma.SortOrderInput | Prisma.SortOrder
+  source?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
 
@@ -180,12 +189,14 @@ export type IgnoreHostWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.IgnoreHostWhereInput[]
   NOT?: Prisma.IgnoreHostWhereInput | Prisma.IgnoreHostWhereInput[]
   reason?: Prisma.StringNullableFilter<"IgnoreHost"> | string | null
+  source?: Prisma.EnumIgnoreHostSourceFilter<"IgnoreHost"> | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeFilter<"IgnoreHost"> | Date | string
 }, "domain">
 
 export type IgnoreHostOrderByWithAggregationInput = {
   domain?: Prisma.SortOrder
   reason?: Prisma.SortOrderInput | Prisma.SortOrder
+  source?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   _count?: Prisma.IgnoreHostCountOrderByAggregateInput
   _max?: Prisma.IgnoreHostMaxOrderByAggregateInput
@@ -198,67 +209,82 @@ export type IgnoreHostScalarWhereWithAggregatesInput = {
   NOT?: Prisma.IgnoreHostScalarWhereWithAggregatesInput | Prisma.IgnoreHostScalarWhereWithAggregatesInput[]
   domain?: Prisma.StringWithAggregatesFilter<"IgnoreHost"> | string
   reason?: Prisma.StringNullableWithAggregatesFilter<"IgnoreHost"> | string | null
+  source?: Prisma.EnumIgnoreHostSourceWithAggregatesFilter<"IgnoreHost"> | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeWithAggregatesFilter<"IgnoreHost"> | Date | string
 }
 
 export type IgnoreHostCreateInput = {
   domain: string
   reason?: string | null
+  source?: $Enums.IgnoreHostSource
   created_at?: Date | string
 }
 
 export type IgnoreHostUncheckedCreateInput = {
   domain: string
   reason?: string | null
+  source?: $Enums.IgnoreHostSource
   created_at?: Date | string
 }
 
 export type IgnoreHostUpdateInput = {
   domain?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.EnumIgnoreHostSourceFieldUpdateOperationsInput | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type IgnoreHostUncheckedUpdateInput = {
   domain?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.EnumIgnoreHostSourceFieldUpdateOperationsInput | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type IgnoreHostCreateManyInput = {
   domain: string
   reason?: string | null
+  source?: $Enums.IgnoreHostSource
   created_at?: Date | string
 }
 
 export type IgnoreHostUpdateManyMutationInput = {
   domain?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.EnumIgnoreHostSourceFieldUpdateOperationsInput | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type IgnoreHostUncheckedUpdateManyInput = {
   domain?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.EnumIgnoreHostSourceFieldUpdateOperationsInput | $Enums.IgnoreHostSource
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type IgnoreHostCountOrderByAggregateInput = {
   domain?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
 
 export type IgnoreHostMaxOrderByAggregateInput = {
   domain?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
 }
 
 export type IgnoreHostMinOrderByAggregateInput = {
   domain?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
+}
+
+export type EnumIgnoreHostSourceFieldUpdateOperationsInput = {
+  set?: $Enums.IgnoreHostSource
 }
 
 
@@ -266,28 +292,32 @@ export type IgnoreHostMinOrderByAggregateInput = {
 export type IgnoreHostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   domain?: boolean
   reason?: boolean
+  source?: boolean
   created_at?: boolean
 }, ExtArgs["result"]["ignoreHost"]>
 
 export type IgnoreHostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   domain?: boolean
   reason?: boolean
+  source?: boolean
   created_at?: boolean
 }, ExtArgs["result"]["ignoreHost"]>
 
 export type IgnoreHostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   domain?: boolean
   reason?: boolean
+  source?: boolean
   created_at?: boolean
 }, ExtArgs["result"]["ignoreHost"]>
 
 export type IgnoreHostSelectScalar = {
   domain?: boolean
   reason?: boolean
+  source?: boolean
   created_at?: boolean
 }
 
-export type IgnoreHostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"domain" | "reason" | "created_at", ExtArgs["result"]["ignoreHost"]>
+export type IgnoreHostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"domain" | "reason" | "source" | "created_at", ExtArgs["result"]["ignoreHost"]>
 
 export type $IgnoreHostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "IgnoreHost"
@@ -295,6 +325,7 @@ export type $IgnoreHostPayload<ExtArgs extends runtime.Types.Extensions.Internal
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     domain: string
     reason: string | null
+    source: $Enums.IgnoreHostSource
     created_at: Date
   }, ExtArgs["result"]["ignoreHost"]>
   composites: {}
@@ -721,6 +752,7 @@ export interface Prisma__IgnoreHostClient<T, Null = never, ExtArgs extends runti
 export interface IgnoreHostFieldRefs {
   readonly domain: Prisma.FieldRef<"IgnoreHost", 'String'>
   readonly reason: Prisma.FieldRef<"IgnoreHost", 'String'>
+  readonly source: Prisma.FieldRef<"IgnoreHost", 'IgnoreHostSource'>
   readonly created_at: Prisma.FieldRef<"IgnoreHost", 'DateTime'>
 }
     

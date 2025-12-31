@@ -232,6 +232,23 @@ export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
 }
 
+export type EnumIgnoreHostSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.IgnoreHostSource | Prisma.EnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIgnoreHostSourceFilter<$PrismaModel> | $Enums.IgnoreHostSource
+}
+
+export type EnumIgnoreHostSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.IgnoreHostSource | Prisma.EnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIgnoreHostSourceWithAggregatesFilter<$PrismaModel> | $Enums.IgnoreHostSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumIgnoreHostSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumIgnoreHostSourceFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -450,6 +467,23 @@ export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
   _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumIgnoreHostSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.IgnoreHostSource | Prisma.EnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIgnoreHostSourceFilter<$PrismaModel> | $Enums.IgnoreHostSource
+}
+
+export type NestedEnumIgnoreHostSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.IgnoreHostSource | Prisma.EnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IgnoreHostSource[] | Prisma.ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIgnoreHostSourceWithAggregatesFilter<$PrismaModel> | $Enums.IgnoreHostSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumIgnoreHostSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumIgnoreHostSourceFilter<$PrismaModel>
 }
 
 

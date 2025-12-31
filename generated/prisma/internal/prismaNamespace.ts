@@ -786,6 +786,7 @@ export type DenylistScalarFieldEnum = (typeof DenylistScalarFieldEnum)[keyof typ
 export const IgnoreHostScalarFieldEnum = {
   domain: 'domain',
   reason: 'reason',
+  source: 'source',
   created_at: 'created_at'
 } as const
 
@@ -896,6 +897,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'IgnoreHostSource'
+ */
+export type EnumIgnoreHostSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IgnoreHostSource'>
+    
+
+
+/**
+ * Reference to a field of type 'IgnoreHostSource[]'
+ */
+export type ListEnumIgnoreHostSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IgnoreHostSource[]'>
     
 
 /**

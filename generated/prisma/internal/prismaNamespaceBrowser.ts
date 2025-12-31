@@ -117,6 +117,7 @@ export type DenylistScalarFieldEnum = (typeof DenylistScalarFieldEnum)[keyof typ
 export const IgnoreHostScalarFieldEnum = {
   domain: 'domain',
   reason: 'reason',
+  source: 'source',
   created_at: 'created_at'
 } as const
 

@@ -13,6 +13,11 @@ enum SuspensionState {
   gone
 }
 
+enum IgnoreHostSource {
+  joinmisskey
+  manual
+}
+
 model Instance {
   id               String           @id
   node_name        String?
@@ -58,8 +63,9 @@ model Denylist {
 }
 
 model IgnoreHost {
-  domain     String   @id
+  domain     String           @id
   reason     String?
+  source     IgnoreHostSource @default(joinmisskey)
   created_at DateTime @default(now())
 
   @@map("ignore_hosts")
