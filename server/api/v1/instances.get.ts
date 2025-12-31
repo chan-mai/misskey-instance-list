@@ -21,8 +21,10 @@ import { prisma } from '~~/server/utils/prisma';
  * - total: 総件数
  * - limit: 1ページあたりの件数
  * - offset: 現在のオフセット
+ *
+ * @returns {Promise<InstancesResponse>} インスタンス一覧
  */
-export default defineCachedEventHandler(async(event) => {
+export default defineCachedEventHandler(async(event): Promise<InstancesResponse> => {
   const query = getQuery(event);
 
   // クエリパラメータを取得
@@ -70,13 +72,9 @@ export default defineCachedEventHandler(async(event) => {
   }
 
   // 除外ドメインを取得
-  const denyDomains = (
-    await prisma.denylist.findMany({ select: { domain: true } })
+  const excluded = (
+    await prisma.excludedHost.findMany({ select: { domain: true } })
   ).map((d: { domain: string }) => d.domain);
-  const ignoreDomains = (
-    await prisma.ignoreHost.findMany({ select: { domain: true } })
-  ).map((d: { domain: string }) => d.domain);
-  const excluded = [...denyDomains, ...ignoreDomains];
 
   // 検索条件を構築
   interface WhereCondition {
@@ -165,8 +163,8 @@ export default defineCachedEventHandler(async(event) => {
   // レスポンス用に整形
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const items = instances.map((i: any) => ({
-    id: i.id,
-    node_name: i.node_name ?? i.id,
+    host: i.id,
+    name: i.node_name ?? i.id,
     users_count: i.users_count ?? 0,
     notes_count: i.notes_count ?? 0,
     created_at: i.created_at ? Number(i.created_at) : null,
@@ -177,6 +175,8 @@ export default defineCachedEventHandler(async(event) => {
     banner_url: i.banner_url,
     icon_url: i.icon_url,
     recommendation_score: i.recommendation_score ?? null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    suspension_state: (i as any).suspension_state ?? 'none',
     repository_url: i.repository_url,
     language: i.language ?? null,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

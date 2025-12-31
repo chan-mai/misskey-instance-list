@@ -24,10 +24,9 @@ export default defineTask({
 
     const candidates = await prisma.$queryRaw<{ id: string }[]>`
       SELECT i.id FROM instances i
-      LEFT JOIN denylist d ON i.id = d.domain
-      LEFT JOIN ignore_hosts ih ON i.id = ih.domain
+      LEFT JOIN excluded_hosts eh ON i.id = eh.domain
       WHERE ( i.suspension_state != 'gone' OR i.suspension_state IS NULL) 
-        AND (d.domain IS NULL AND ih.domain IS NULL)
+        AND (eh.domain IS NULL)
       ORDER BY i.last_check_at ASC NULLS FIRST 
       LIMIT 100
     `;

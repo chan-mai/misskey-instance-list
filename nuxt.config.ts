@@ -90,8 +90,8 @@ export default defineNuxtConfig({
         '/',
         '/docs/api/v1',
         '/docs/api/v1/instances',
-        '/docs/api/v1/deny_instances',
-        '/docs/api/v1/ignore_instances'
+        '/docs/api/v1/exclusions',
+        '/docs/api/v1/stats'
       ]
     },
     // dev環境ではAPIキャッシュを無効化

@@ -13,6 +13,12 @@ enum SuspensionState {
   gone
 }
 
+enum ExcludedHostSource {
+  joinmisskey
+  manual
+  system
+}
+
 model Instance {
   id               String           @id
   node_name        String?
@@ -49,18 +55,11 @@ model Repository {
   @@map("repositories")
 }
 
-model Denylist {
-  domain     String   @id
+model ExcludedHost {
+  domain     String             @id
   reason     String?
-  created_at DateTime @default(now())
+  source     ExcludedHostSource @default(system)
+  created_at DateTime           @default(now())
 
-  @@map("denylist")
-}
-
-model IgnoreHost {
-  domain     String   @id
-  reason     String?
-  created_at DateTime @default(now())
-
-  @@map("ignore_hosts")
+  @@map("excluded_hosts")
 }

@@ -50,12 +50,7 @@ export type Instance = Prisma.InstanceModel
  */
 export type Repository = Prisma.RepositoryModel
 /**
- * Model Denylist
+ * Model ExcludedHost
  * 
  */
-export type Denylist = Prisma.DenylistModel
-/**
- * Model IgnoreHost
- * 
- */
-export type IgnoreHost = Prisma.IgnoreHostModel
+export type ExcludedHost = Prisma.ExcludedHostModel

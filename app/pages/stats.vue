@@ -34,6 +34,16 @@
               <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>
             </button>
 
+            <!-- Total Users -->
+            <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
+              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Users
+              </p>
+              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
+                {{ formatNumber(stats?.counts?.users) }}
+              </p>
+              <p class="text-[10px] lg:text-xs text-neutral-500">Across active servers</p>
+            </div>
+
             <!-- Known -->
             <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
               <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Known
@@ -44,25 +54,14 @@
               <p class="text-[10px] lg:text-xs text-neutral-500">All discovered</p>
             </div>
 
-            <!-- Denied -->
-            <button @click="openModal('denied')"
+            <!-- Excluded -->
+            <button @click="openModal('excluded')"
               class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
-              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Denied</p>
+              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Excluded</p>
               <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.denies) }}
+                {{ formatNumber(stats?.counts?.exclusions) }}
               </p>
-              <p class="text-[10px] lg:text-xs text-red-500">Blocked</p>
-              <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>
-            </button>
-
-            <!-- Ignored -->
-            <button @click="openModal('ignored')"
-              class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
-              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Ignored</p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.ignores) }}
-              </p>
-              <p class="text-[10px] lg:text-xs text-neutral-500">Excluded</p>
+              <p class="text-[10px] lg:text-xs text-red-500">Blocked / Ignored</p>
               <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>
             </button>
           </div>
@@ -159,7 +158,7 @@
 <script setup lang="ts">
 const { formatNumber, calculateShare } = useFormat();
 
-const { data: stats, pending, error } = await useFetch('/api/v1/stats', {
+const { data: stats, pending, error } = await useFetch<Stats>('/api/v1/stats', {
   lazy: true
 });
 
@@ -216,10 +215,10 @@ const loadMoreSoftware = () => {
 // Modal State
 const isModalOpen = ref(false);
 const modalTitle = ref('');
-const modalType = ref<'active' | 'denied' | 'ignored'>('active');
+const modalType = ref<'active' | 'excluded'>('active');
 const loadingModal = ref(false);
 const loadingMore = ref(false);
-const modalItems = ref<(DenyInstance | IgnoreInstance)[]>([]);
+const modalItems = ref<{ domain: string; reason: string | null }[]>([]);
 const modalInstances = ref<Instance[]>([]);
 const modalOffset = ref(0);
 const modalTotal = ref(0);
@@ -230,7 +229,7 @@ const hasMore = computed(() => {
   return modalInstances.value.length < modalTotal.value;
 });
 
-async function openModal(type: 'active' | 'denied' | 'ignored') {
+async function openModal(type: 'active' | 'excluded') {
   isModalOpen.value = true;
   modalType.value = type;
   loadingModal.value = true;
@@ -245,15 +244,10 @@ async function openModal(type: 'active' | 'denied' | 'ignored') {
         modalTitle.value = 'Active Servers';
         await fetchActiveInstances(true);
         break;
-      case 'denied':
-        modalTitle.value = 'Denied Domains';
-        const deniedRes = await $fetch<DenyInstance[]>('/api/v1/deny_instances');
-        modalItems.value = deniedRes;
-        break;
-      case 'ignored':
-        modalTitle.value = 'Ignored Domains';
-        const ignoredRes = await $fetch<IgnoreInstance[]>('/api/v1/ignore_instances');
-        modalItems.value = ignoredRes;
+      case 'excluded':
+        modalTitle.value = 'Excluded Domains';
+        const excludedRes = await $fetch<{ domain: string; reason: string | null }[]>('/api/v1/exclusions');
+        modalItems.value = excludedRes;
         break;
     }
   } catch (e) {
