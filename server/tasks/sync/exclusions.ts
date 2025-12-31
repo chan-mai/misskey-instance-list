@@ -2,8 +2,8 @@ import yaml from 'js-yaml';
 import { prisma } from '../../utils/prisma';
 
 /**
- * タスク: sync:denylist
- * 説明: 外部ソースから拒否リストを同期する
+ * タスク: sync:exclusions
+ * 説明: 外部ソースから除外リストを同期する
  * 冪等性: 冪等。安全にリトライ可能。外部リストの状態に従ってデータベースを更新します。
  */
 export default defineTask({
@@ -31,7 +31,6 @@ export default defineTask({
         select: { domain: true, source: true }
       });
 
-      const existingDomains = new Set(existingEntries.map(e => e.domain));
       const upstreamSet = new Set(upstreamDomains);
 
       // 追加分: アップストリームにあるがDB (joinmisskey source) にないもの
@@ -40,7 +39,7 @@ export default defineTask({
       // 明示的に指定する必要がある。また、既存の manual/system のドメインと被る場合は ignore するのが望ましい。
       // なので、まずは全てのExcludedHostのドメインを取得して、それらに含まれていないものだけを追加対象にする。
       
-      const allExisting = await prisma.excludedHost.findMany({ select: { domain: true } });
+      const allExisting = await prisma.excludedHost.findMany({ select: { domain: true, source: true } });
       const allExistingSet = new Set(allExisting.map(e => e.domain));
 
       const additions = upstreamDomains.filter(d => !allExistingSet.has(d));

@@ -312,7 +312,7 @@ export async function getInstanceInfo(
 /**
  * Validate an instance's identity and integrity, and remove it if it is not a valid Misskey instance.
  *
- * Performs checks using both a bot-like and a browser-like user agent to detect non-Misskey software, repository forks, or spoofing. When a problematic condition is detected the function records the domain in the denylist with an explanatory reason and deletes the instance record.
+ * Performs checks using both a bot-like and a browser-like user agent to detect non-Misskey software, repository forks, or spoofing. When a problematic condition is detected the function records the domain in the excluded hosts list with an explanatory reason and deletes the instance record.
  *
  * @param prisma - Prisma client used to update excludedHost and instances
  * @param host - Instance host (domain) to validate
