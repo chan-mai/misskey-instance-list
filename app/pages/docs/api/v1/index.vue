@@ -69,7 +69,7 @@
         </div>
 
         <div class="bg-neutral-100 dark:bg-neutral-900 p-8">
-          <code class="text-xl lg:text-2xl font-mono text-primary">https://servers.misskey.ink/api/v1</code>
+          <code class="text-xl lg:text-2xl font-mono text-primary">https://servers.misskey.ink</code>
         </div>
 
         <div class="mt-8 grid lg:grid-cols-3 gap-px bg-neutral-200 dark:bg-neutral-800">
