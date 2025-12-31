@@ -2,7 +2,7 @@
   <div class="bg-neutral-50 dark:bg-black">
     <!-- Hero -->
     <DocApiHero method="GET" endpoint="/api/v1/exclusions"
-      description="除外リストに登録されているサーバー（拒否または無視）の一覧を取得します。" />
+      description="除外リストに登録されているサーバーの一覧を取得します。" />
 
     <!-- Parameters -->
     <section class="py-24 bg-neutral-50 dark:bg-black">
