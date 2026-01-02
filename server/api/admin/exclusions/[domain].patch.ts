@@ -23,6 +23,10 @@ export default defineEventHandler(async(event) => {
     throw createError({ statusCode: 400, statusMessage: 'Domain is required' });
   }
 
+  if (body.reason === undefined || body.reason === null) {
+    throw createError({ statusCode: 400, statusMessage: 'Reason is required' });
+  }
+
   try {
     // 理由の更新実行
     const exclusion = await prisma.excludedHost.update({
