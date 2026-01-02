@@ -46,7 +46,7 @@ export const requireAdminAuth = (event: H3Event) => {
     });
   }
 
-  const throwAuthError = () => {
+  const throwAuthError = (): never => {
     // ブラウザに認証ダイアログを表示させるためのヘッダー
     setHeader(event, 'WWW-Authenticate', 'Basic realm="Admin Area"');
     throw createError({
@@ -72,9 +72,13 @@ export const requireAdminAuth = (event: H3Event) => {
   const user = credentials[0];
   const pass = credentials[1];
 
+  if (!user || !pass) {
+    throwAuthError();
+  }
+
   // 認証情報の照合
-  const userMatch = safeCompare(user, validUser);
-  const passMatch = safeCompare(pass, validPass);
+  const userMatch = safeCompare(user as string, validUser);
+  const passMatch = safeCompare(pass as string, validPass);
 
   if (!userMatch || !passMatch) {
     throwAuthError();

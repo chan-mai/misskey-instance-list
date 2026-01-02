@@ -193,6 +193,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ExcludedHostModel as ExcludedHost } from '~~/generated/prisma/models/ExcludedHost';
+
 definePageMeta({
   layout: 'admin',
 });
@@ -254,7 +256,7 @@ const openAddModal = async () => {
   dialogRef.value?.showModal();
 };
 
-const editItem = async (item: any) => {
+const editItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
   isEditing.value = true;
   form.domain = item.domain;
   form.reason = item.reason || '';
@@ -295,7 +297,7 @@ const submitForm = async () => {
   }
 };
 
-const deleteItem = async (item: any) => {
+const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
   if (!confirm(`${item.domain} を削除してもよろしいですか？`)) return;
   
   try {
