@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3';
+import { Buffer } from 'node:buffer';
 import crypto from 'node:crypto';
 
 /**
@@ -68,9 +69,15 @@ export const requireAdminAuth = (event: H3Event) => {
   const token = match![1] as string;
 
   // Base64デコードしてユーザー名とパスワードを取得
-  const credentials = Buffer.from(token, 'base64').toString().split(':');
-  const user = credentials[0];
-  const pass = credentials[1];
+  const decoded = Buffer.from(token, 'base64').toString('utf-8');
+  const colonIndex = decoded.indexOf(':');
+
+  if (colonIndex === -1) {
+    throwAuthError();
+  }
+
+  const user = decoded.substring(0, colonIndex);
+  const pass = decoded.substring(colonIndex + 1);
 
   if (!user || !pass) {
     throwAuthError();
