@@ -23,8 +23,18 @@ export default defineEventHandler(async(event) => {
     throw createError({ statusCode: 400, statusMessage: 'Domain is required' });
   }
 
-  if (body.reason === undefined || body.reason === null) {
-    throw createError({ statusCode: 400, statusMessage: 'Reason is required' });
+  if (typeof body.reason !== 'string') {
+    throw createError({ statusCode: 400, statusMessage: 'Reason must be a string' });
+  }
+
+  const reason = body.reason.trim();
+
+  if (reason.length === 0) {
+    throw createError({ statusCode: 400, statusMessage: 'Reason cannot be empty' });
+  }
+
+  if (reason.length > 500) {
+    throw createError({ statusCode: 400, statusMessage: 'Reason is too long (max 500 chars)' });
   }
 
   try {
@@ -32,7 +42,7 @@ export default defineEventHandler(async(event) => {
     const exclusion = await prisma.excludedHost.update({
       where: { domain },
       data: {
-        reason: body.reason,
+        reason: reason,
       },
     });
     return exclusion;
