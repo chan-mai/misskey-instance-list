@@ -62,3 +62,15 @@ variable "custom_domain" {
   type        = string
   default     = ""
 }
+
+variable "admin_user" {
+  description = "Admin Basic Auth User"
+  type        = string
+  sensitive   = true
+}
+
+variable "admin_password" {
+  description = "Admin Basic Auth Password"
+  type        = string
+  sensitive   = true
+}

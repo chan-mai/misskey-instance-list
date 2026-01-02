@@ -67,3 +67,33 @@ resource "google_secret_manager_secret_version" "service_url" {
   secret      = google_secret_manager_secret.service_url.id
   secret_data = var.service_url
 }
+
+# --- ADMIN_USER ---
+resource "google_secret_manager_secret" "admin_user" {
+  labels    = { managed-by-cnrm = "true" }
+  project   = var.project_number
+  secret_id = "${local.secret_prefix}ADMIN_USER"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "admin_user" {
+  secret      = google_secret_manager_secret.admin_user.id
+  secret_data = var.admin_user
+}
+
+# --- ADMIN_PASSWORD ---
+resource "google_secret_manager_secret" "admin_password" {
+  labels    = { managed-by-cnrm = "true" }
+  project   = var.project_number
+  secret_id = "${local.secret_prefix}ADMIN_PASSWORD"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "admin_password" {
+  secret      = google_secret_manager_secret.admin_password.id
+  secret_data = var.admin_password
+}

@@ -37,6 +37,16 @@ variable "service_url" {
   sensitive = true
 }
 
+variable "admin_user" {
+  type      = string
+  sensitive = true
+}
+
+variable "admin_password" {
+  type      = string
+  sensitive = true
+}
+
 module "app" {
   source = "../../modules/app"
 
@@ -55,6 +65,10 @@ module "app" {
   service_url             = var.service_url
   artifact_registry_id    = "cloud-run-source-deploy-prod"
   cloudbuild_trigger_name = "misskey-instance-list-prod-trigger"
+
+  # Basic Auth
+  admin_user     = var.admin_user
+  admin_password = var.admin_password
   
   # カスタムドメイン
   custom_domain = "servers.misskey.ink"
