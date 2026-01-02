@@ -32,7 +32,7 @@ steps:
           --platform managed \
           --region ${_REGION} \
           --allow-unauthenticated \
-          --update-secrets "DATABASE_URL=${_SECRET_PREFIX}DATABASE_URL:latest,TASK_SECRET=${_SECRET_PREFIX}TASK_SECRET:latest,GITHUB_TOKEN=${_SECRET_PREFIX}GITHUB_TOKEN:latest"
+          --update-secrets "DATABASE_URL=${_SECRET_PREFIX}DATABASE_URL:latest,TASK_SECRET=${_SECRET_PREFIX}TASK_SECRET:latest,GITHUB_TOKEN=${_SECRET_PREFIX}GITHUB_TOKEN:latest,NUXT_ADMIN_USER=${_SECRET_PREFIX}ADMIN_USER:latest,NUXT_ADMIN_PASSWORD=${_SECRET_PREFIX}ADMIN_PASSWORD:latest"
 availableSecrets:
   secretManager:
     - versionName: projects/1023578240084/secrets/${_SECRET_PREFIX}DATABASE_URL/versions/latest
