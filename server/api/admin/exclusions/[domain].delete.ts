@@ -1,4 +1,5 @@
 import { prisma } from '~~/server/utils/prisma';
+import { validateDomain } from '~~/server/utils/domain-validation';
 
 /**
  * 除外解除API (管理者用)
