@@ -1,3 +1,6 @@
+import type { H3Event } from 'h3';
+import crypto from 'node:crypto';
+
 /**
  * 管理者権限チェックユーティリティ
  *
@@ -8,7 +11,26 @@
  * @throws 401 Unauthorized (Basic認証ヘッダー付き)
  * @throws 500 Server misconfiguration (環境変数が未設定の場合)
  */
-export const requireAdminAuth = (event: any) => {
+
+const safeCompare = (a: string, b: string) => {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  const len = Math.max(bufA.length, bufB.length);
+  
+  const padA = Buffer.alloc(len, 0);
+  bufA.copy(padA);
+  
+  const padB = Buffer.alloc(len, 0);
+  bufB.copy(padB);
+  
+  try {
+    return crypto.timingSafeEqual(padA, padB) && bufA.length === bufB.length;
+  } catch {
+    return false;
+  }
+};
+
+export const requireAdminAuth = (event: H3Event) => {
   const config = useRuntimeConfig();
   const authHeader = getRequestHeader(event, 'Authorization');
 
@@ -51,7 +73,10 @@ export const requireAdminAuth = (event: any) => {
   const pass = credentials[1];
 
   // 認証情報の照合
-  if (user !== validUser || pass !== validPass) {
+  const userMatch = safeCompare(user, validUser);
+  const passMatch = safeCompare(pass, validPass);
+
+  if (!userMatch || !passMatch) {
     throwAuthError();
   }
 

@@ -1,5 +1,4 @@
 import { prisma } from '~~/server/utils/prisma';
-import { requireAdminAuth } from '~~/server/utils/admin-basic-auth';
 
 /**
  * 除外解除API (管理者用)
@@ -15,8 +14,6 @@ import { requireAdminAuth } from '~~/server/utils/admin-basic-auth';
  * @throws 404 Not Found
  */
 export default defineEventHandler(async(event) => {
-  // 管理者権限チェック
-  requireAdminAuth(event);
   const domain = getRouterParam(event, 'domain');
 
   if (!domain) {

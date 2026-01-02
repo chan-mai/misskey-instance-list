@@ -203,14 +203,19 @@ const search = ref('');
 const sourceFilter = ref('all');
 const debouncedSearchKey = ref('');
 
-let timeout: NodeJS.Timeout;
+let timeout: NodeJS.Timeout | null = null;
+
 const debouncedSearch = () => {
-  clearTimeout(timeout);
+  if (timeout) clearTimeout(timeout);
   timeout = setTimeout(() => {
     debouncedSearchKey.value = search.value;
     page.value = 1;
   }, 300);
 };
+
+onBeforeUnmount(() => {
+  if (timeout) clearTimeout(timeout);
+});
 
 // データ取得
 const { data, pending, error, refresh } = await useFetch('/api/admin/exclusions', {
@@ -220,11 +225,6 @@ const { data, pending, error, refresh } = await useFetch('/api/admin/exclusions'
     search: debouncedSearchKey.value,
     source: sourceFilter.value,
   })),
-  onResponseError: (err) => {
-    if (err.response.status === 401) {
-      // ブラウザが認証プロンプトを出しますが、ここでUI状態を操作することも可能です
-    }
-  }
 });
 
 watch(sourceFilter, () => {

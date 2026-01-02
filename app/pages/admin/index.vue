@@ -53,7 +53,7 @@
 
     <div class="p-6 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
       <p class="text-gray-600 dark:text-gray-400">
-        ようこそーーーー
+        管理コンソールへようこそ。サーバーの統計情報や設定をここで確認・管理できます。
       </p>
     </div>
   </div>

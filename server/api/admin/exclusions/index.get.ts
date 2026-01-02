@@ -11,7 +11,7 @@ import { ExcludedHostSource } from '~~/generated/prisma/enums';
  * - page: ページ番号 (デフォルト: 1)
  * - limit: 1ページあたりの件数 (デフォルト: 20)
  * - search: ドメインまたは理由の部分一致検索
- * - source: 除外ソース ('manual' | 'system' | 'joinmisskey' | 'all') (デフォルト: 'manual')
+ * - source: 除外ソース ('manual' | 'system' | 'joinmisskey' | 'all') (デフォルト: 'all')
  *
  * @returns {Promise<Object>} 除外ホスト一覧とページネーション情報
  */
