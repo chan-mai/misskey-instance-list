@@ -278,7 +278,7 @@ const submitForm = async () => {
 
   try {
     if (isEditing.value) {
-      await $fetch(`/api/admin/exclusions/${form.domain}`, {
+      await $fetch(`/api/admin/exclusions/${encodeURIComponent(form.domain)}`, {
         method: 'PATCH',
         body: { reason: form.reason },
       });
@@ -301,7 +301,7 @@ const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at:
   if (!confirm(`${item.domain} を削除してもよろしいですか？`)) return;
   
   try {
-    await $fetch(`/api/admin/exclusions/${item.domain}`, {
+    await $fetch(`/api/admin/exclusions/${encodeURIComponent(item.domain)}`, {
       method: 'DELETE',
     });
     refresh();

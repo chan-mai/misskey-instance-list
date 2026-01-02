@@ -20,10 +20,16 @@ export default defineEventHandler(async(event) => {
     throw createError({ statusCode: 400, statusMessage: 'Domain is required' });
   }
 
+  const validation = validateDomain(domain);
+  if (!validation.valid) {
+    throw createError({ statusCode: 400, statusMessage: validation.error });
+  }
+  const normalizedDomain = validation.normalized!;
+
   try {
     // 削除実行
     const exclusion = await prisma.excludedHost.delete({
-      where: { domain },
+      where: { domain: normalizedDomain },
     });
     return exclusion;
   } catch (e: unknown) {
