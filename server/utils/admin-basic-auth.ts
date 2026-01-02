@@ -43,7 +43,7 @@ export const requireAdminAuth = (event: any) => {
     throwAuthError();
   }
 
-  const token = match![1];
+  const token = match![1] as string;
 
   // Base64デコードしてユーザー名とパスワードを取得
   const credentials = Buffer.from(token, 'base64').toString().split(':');
