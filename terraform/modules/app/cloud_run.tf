@@ -54,6 +54,24 @@ resource "google_cloud_run_service" "main" {
           value = var.service_name
         }
         env {
+          name = "ADMIN_USER"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.admin_user.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "ADMIN_PASSWORD"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.admin_password.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
           name  = "SERVICE_ACCOUNT_EMAIL"
           value = "${var.project_number}-compute@developer.gserviceaccount.com"
         }
