@@ -82,6 +82,8 @@ export default defineNuxtConfig({
     serviceUrl: process.env.SERVICE_URL,
     serviceAccountEmail: process.env.SERVICE_ACCOUNT_EMAIL,
     serviceName: process.env.SERVICE_NAME,
+    adminUser: process.env.ADMIN_USER,
+    adminPassword: process.env.ADMIN_PASSWORD,
   },
   nitro: {
     experimental: { tasks: true },
