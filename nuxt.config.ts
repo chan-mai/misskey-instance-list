@@ -15,6 +15,11 @@ export default defineNuxtConfig({
       contentSecurityPolicy: false,
       strictTransportSecurity: false,
     },
+    rateLimiter: {
+      tokensPerInterval: 1500,
+      interval: 10 * 1000,
+      throwError: true,
+    },
   },
   colorMode: {
     classSuffix: '',
