@@ -56,8 +56,6 @@ const sortApiValue = computed(() => {
   }
 });
 
-
-
 const abortController = ref<AbortController | null>(null);
 
 // クエリパラメータ生成ヘルパー
@@ -75,22 +73,27 @@ const getQueryParams = (currentOffset: number = 0) => ({
   ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
 });
 
-// SSR対応の初期データ取得
-const { data: initialData } = await useFetch<InstancesResponse>('/api/v1/instances', {
-  params: computed(() => getQueryParams(0)),
-  key: 'servers-list',
-  watch: false // ウォッチャー経由で手動更新するためfalse
-});
+const { data: initialResponse, status: initialStatus, error: initialError } = await useAsyncData(
+  'servers-list',
+  () => {
+    const headers = useRequestHeaders(['host', 'cookie']);
+    return $fetch<InstancesResponse>('/api/v1/instances', { 
+      params: getQueryParams(0),
+      headers
+    });
+  }
+);
 
-// SSRデータから状態を初期化
-if (initialData.value) {
-  instances.value = initialData.value.items;
-  total.value = initialData.value.total;
-  offset.value = initialData.value.limit; // 初回のlimitがoffsetになる
+// 初期データを反映
+if (initialResponse.value) {
+  instances.value = initialResponse.value.items;
+  total.value = initialResponse.value.total;
+  offset.value = initialResponse.value.limit;
   initialLoading.value = false;
-} else if (import.meta.client) {
-  // SSRフェッチ失敗時のフォールバック
-  fetchInstances(true);
+}
+
+if (initialError.value) {
+  errorMessage.value = 'データの取得に失敗しました。';
 }
 
 async function fetchInstances(reset = false) {
@@ -149,14 +152,8 @@ watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_m
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
-const { data: stats, refresh: refreshStats } = await useFetch('/api/v1/stats');
-if (!stats.value && import.meta.client) {
-  // SSRフェッチ失敗時のフォールバック
-  refreshStats();
-}
-
-// onMounted removed as useFetch handles initial load
-
+// Statsの取得もuseAsyncDataに統一
+const { data: stats } = await useAsyncData('stats', () => $fetch<StatsResponse>('/api/v1/stats'));
 
 watch(loadMoreTrigger, (el) => {
   if (import.meta.client && el) {
@@ -303,11 +300,11 @@ useJsonld(() => ({
           : 'flex flex-col gap-3'">
 
           <!-- Server cards -->
-          <ServerCard v-if="!errorMessage && instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance"
+          <ServerCard v-if="instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance"
             :view="v_view" />
 
-          <!-- Error state -->
-          <StateError v-else-if="errorMessage" :message="errorMessage">
+          <!-- Error state (only if no data) -->
+          <StateError v-else-if="errorMessage && instances.length === 0" :message="errorMessage">
             <template #action>
               <button @click="fetchInstances(true)"
                 class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
@@ -333,9 +330,19 @@ useJsonld(() => ({
         </div>
 
         <!-- Infinite scroll trigger -->
-        <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center">
+        <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center flex-col items-center gap-4">
           <div v-if="isLoading"
             class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
+          
+          <!-- Pagination Error -->
+          <div v-else-if="errorMessage" class="text-center">
+            <p class="text-red-600 mb-2">{{ errorMessage }}</p>
+            <button @click="fetchInstances(false)"
+              class="px-4 py-2 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors border border-neutral-900 dark:border-white">
+              Retry
+            </button>
+          </div>
+
           <p v-else-if="!hasMore" class="text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
             — All {{ formatNumber(total) }} servers —
           </p>

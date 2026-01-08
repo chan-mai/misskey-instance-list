@@ -16,8 +16,8 @@ export default defineNuxtConfig({
       strictTransportSecurity: false,
     },
     rateLimiter: {
-      tokensPerInterval: 150,
-      interval: 60 * 1000,
+      tokensPerInterval: 1500,
+      interval: 10 * 1000,
       throwError: true,
     },
   },
@@ -50,7 +50,6 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://servers.misskey.ink/ogp.png' },
       ],
       link: [
-        { rel: 'canonical', href: 'https://servers.misskey.ink/' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       ],
       htmlAttrs: {
