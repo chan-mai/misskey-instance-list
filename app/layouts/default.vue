@@ -7,3 +7,17 @@
     <Footer />
   </div>
 </template>
+
+<script setup lang="ts">
+const route = useRoute();
+
+useHead(() => ({
+  link: [
+    {
+      rel: 'canonical',
+      href: `https://servers.misskey.ink${route.path}`
+    }
+  ]
+}));
+
+</script>

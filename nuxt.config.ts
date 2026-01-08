@@ -15,11 +15,6 @@ export default defineNuxtConfig({
       contentSecurityPolicy: false,
       strictTransportSecurity: false,
     },
-    rateLimiter: {
-      tokensPerInterval: 150,
-      interval: 60 * 1000,
-      throwError: true,
-    },
   },
   colorMode: {
     classSuffix: '',
@@ -50,7 +45,6 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://servers.misskey.ink/ogp.png' },
       ],
       link: [
-        { rel: 'canonical', href: 'https://servers.misskey.ink/' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       ],
       htmlAttrs: {
