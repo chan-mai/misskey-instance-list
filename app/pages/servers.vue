@@ -300,11 +300,11 @@ useJsonld(() => ({
           : 'flex flex-col gap-3'">
 
           <!-- Server cards -->
-          <ServerCard v-if="!errorMessage && instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance"
+          <ServerCard v-if="instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance"
             :view="v_view" />
 
-          <!-- Error state -->
-          <StateError v-else-if="errorMessage" :message="errorMessage">
+          <!-- Error state (only if no data) -->
+          <StateError v-else-if="errorMessage && instances.length === 0" :message="errorMessage">
             <template #action>
               <button @click="fetchInstances(true)"
                 class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
@@ -330,9 +330,19 @@ useJsonld(() => ({
         </div>
 
         <!-- Infinite scroll trigger -->
-        <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center">
+        <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center flex-col items-center gap-4">
           <div v-if="isLoading"
             class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
+          
+          <!-- Pagination Error -->
+          <div v-else-if="errorMessage" class="text-center">
+            <p class="text-red-600 mb-2">{{ errorMessage }}</p>
+            <button @click="fetchInstances(false)"
+              class="px-4 py-2 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors border border-neutral-900 dark:border-white">
+              Retry
+            </button>
+          </div>
+
           <p v-else-if="!hasMore" class="text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
             — All {{ formatNumber(total) }} servers —
           </p>
