@@ -2,7 +2,7 @@ import { defineEventHandler, getQuery, createError } from 'h3';
 import { prisma } from '~~/server/utils/prisma';
 import { validateInstance } from '~~/server/utils/misskey';
 
-export default defineEventHandler(async (event): Promise<CheckResponse> => {
+export default defineEventHandler(async(event): Promise<CheckResponse> => {
   const query = getQuery(event);
   let domain = query.domain;
 
