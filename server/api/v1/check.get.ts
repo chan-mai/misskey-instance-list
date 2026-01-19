@@ -47,7 +47,6 @@ export default defineEventHandler(async(event) => {
   // 既知のインスタンスを確認
   const existingInstance = await prisma.instance.findUnique({
     where: { id: domain },
-    include: { repository: true },
   });
 
   if (existingInstance && existingInstance.is_alive && existingInstance.suspension_state === 'none') {
@@ -83,6 +82,7 @@ export default defineEventHandler(async(event) => {
     ) {
       return {
         isMisskey: false,
+        data: null,
         reason: excludedHost.reason,
         source: 'database',
       };
@@ -113,6 +113,7 @@ export default defineEventHandler(async(event) => {
       // 検証に失敗したか、明示的に拒否された
       return {
         isMisskey: false,
+        data: null,
         reason: result.error || 'Unknown error or not a Misskey instance',
         source: 'fetch',
       };
