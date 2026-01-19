@@ -4,12 +4,43 @@ import { validateInstance } from '~~/server/utils/misskey';
 
 export default defineEventHandler(async(event) => {
   const query = getQuery(event);
-  const domain = query.domain as string;
+  let domain = query.domain;
 
-  if (!domain) {
+  if (Array.isArray(domain)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Multiple domain parameters are not allowed',
+    });
+  }
+
+  if (!domain || typeof domain !== 'string') {
     throw createError({
       statusCode: 400,
       statusMessage: 'Domain parameter is required',
+    });
+  }
+
+  domain = domain.trim().toLowerCase();
+
+  if (domain.includes('://') || domain.startsWith('http')) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Domain parameter must be a hostname, not a URL (do not include http/https)',
+    });
+  }
+
+  if (!/^[a-z0-9.-]+$/.test(domain)) {
+     throw createError({
+      statusCode: 400,
+      statusMessage: 'Domain parameter contains invalid characters',
+    });
+  }
+
+  const loopbackList = ['localhost', '127.0.0.1', '::1'];
+  if (loopbackList.includes(domain)) {
+     throw createError({
+      statusCode: 400,
+      statusMessage: 'Localhost addresses are not allowed',
     });
   }
 
