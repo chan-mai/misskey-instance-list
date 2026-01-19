@@ -122,7 +122,9 @@ export default defineEventHandler(async(event) => {
     console.error(`Check API Error for ${domain}:`, e);
     return {
       isMisskey: false,
+      data: null,
       reason: 'Internal Server Error during check',
+      source: 'error',
       error: e.message,
     };
   }
