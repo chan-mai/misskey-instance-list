@@ -101,6 +101,16 @@
                 <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">バナーURL</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary pl-8">.softwareName</td>
+                <td class="py-4 px-4 text-neutral-500">string | null</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ソフトウェア名</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary pl-8">.description</td>
+                <td class="py-4 px-4 text-neutral-500">string | null</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">インスタンス説明</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">reason</td>
                 <td class="py-4 px-4 text-neutral-500">string | null</td>
                 <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">非Misskey判定時の理由</td>
