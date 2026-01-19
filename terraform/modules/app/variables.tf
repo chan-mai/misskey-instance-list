@@ -74,3 +74,33 @@ variable "admin_password" {
   type        = string
   sensitive   = true
 }
+
+variable "schedule_sync_recommendation_scores" {
+  description = "Schedule for sync-recommendation-scores job"
+  type        = string
+  default     = "0 */6 * * *"
+}
+
+variable "schedule_sync_stats" {
+  description = "Schedule for sync-stats job"
+  type        = string
+  default     = "0 */6 * * *"
+}
+
+variable "schedule_discovery" {
+  description = "Schedule for discovery job"
+  type        = string
+  default     = "*/30 * * * *"
+}
+
+variable "schedule_update" {
+  description = "Schedule for update job"
+  type        = string
+  default     = "*/10 * * * *"
+}
+
+variable "schedule_sync_exclusions" {
+  description = "Schedule for sync-exclusions job"
+  type        = string
+  default     = "0 * * * *"
+}

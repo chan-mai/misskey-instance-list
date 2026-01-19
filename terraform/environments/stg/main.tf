@@ -70,8 +70,15 @@ module "app" {
   admin_user     = var.admin_user
   admin_password = var.admin_password
 
-  # カスタムドメイン
+  # Custom Domain
   custom_domain = "stg.servers.misskey.ink"
+
+  # Job Schedules
+  schedule_sync_recommendation_scores = "0 0 * * *"   # Daily
+  schedule_sync_stats                 = "0 0 * * *"   # Daily
+  schedule_discovery                  = "0 0 * * *"   # Daily
+  schedule_update                     = "0 */12 * * *" # Every 12 hours
+  schedule_sync_exclusions            = "0 0 * * *"   # Daily
 }
 
 output "service_url" {
