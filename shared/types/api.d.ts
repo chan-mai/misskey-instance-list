@@ -52,3 +52,18 @@ interface ExclusionResponse {
   domain: string;
   reason: string | null;
 }
+
+interface CheckResponse {
+  isMisskey: boolean;
+  data: {
+    name: string | null;
+    version: string | null;
+    icon: string | null;
+    banner: string | null;
+    softwareName: string | null;
+    description: string | null;
+  } | null;
+  reason?: string | null;
+  source: 'database' | 'fetch' | 'error';
+  error?: string;
+}
