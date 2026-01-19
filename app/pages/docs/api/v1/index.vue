@@ -55,6 +55,19 @@
             </div>
             <p class="text-neutral-500 text-sm">統計情報とリポジトリ使用状況の一覧を取得します。</p>
           </NuxtLink>
+          <!-- Check API -->
+          <NuxtLink to="/docs/api/v1/check"
+            class="group bg-back dark:bg-back-dark p-6 lg:p-8 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors">
+            <div class="flex items-center gap-4 mb-3">
+              <span
+                class="px-3 py-1 text-xs font-mono font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">GET</span>
+              <code
+                class="text-lg font-mono text-neutral-900 dark:text-white group-hover:text-primary transition-colors">/api/v1/check</code>
+              <Icon name="lucide:chevron-right"
+                class="h-4 w-4 text-neutral-400 group-hover:text-primary transition-colors ml-auto" />
+            </div>
+            <p class="text-neutral-500 text-sm">指定されたドメインが有効なMisskeyインスタンスかどうかを確認します。</p>
+          </NuxtLink>
         </div>
       </div>
     </section>
