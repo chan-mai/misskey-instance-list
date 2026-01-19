@@ -48,6 +48,10 @@ interface InstancesResponse {
   offset: number;
 }
 
+interface ExclusionResponse {
+  domain: string;
+  reason: string | null;
+}
 
 interface CheckResponse {
   isMisskey: boolean;
@@ -59,7 +63,7 @@ interface CheckResponse {
     softwareName: string | null;
     description: string | null;
   } | null;
-  reason?: string;
+  reason?: string | null;
   source: 'database' | 'fetch' | 'error';
   error?: string;
 }
