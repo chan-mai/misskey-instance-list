@@ -22,11 +22,17 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
 
   domain = domain.trim().toLowerCase();
 
+  // URLが入力された場合、ホスト名を抽出する
   if (domain.includes('://') || domain.startsWith('http')) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Domain parameter must be a hostname, not a URL (do not include http/https)',
-    });
+    try {
+      const url = new URL(domain);
+      domain = url.hostname;
+    } catch {
+       throw createError({
+          statusCode: 400,
+          statusMessage: 'Invalid URL format',
+       });
+    }
   }
 
   if (!/^[a-z0-9.-]+$/.test(domain)) {
@@ -60,6 +66,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
         softwareName: 'misskey',
         description: null,
       },
+      is_embeddable: await checkEmbeddable(domain),
       source: 'database',
     };
   }
@@ -84,6 +91,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
         isMisskey: false,
         data: null,
         reason: excludedHost.reason,
+        is_embeddable: false, // 除外されている場合は、埋め込み不可とする
         source: 'database',
       };
     }
@@ -107,6 +115,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
           softwareName: result.info.softwareName,
           description: result.info.description ?? null,
         },
+        is_embeddable: await checkEmbeddable(domain),
         source: 'fetch',
       };
     } else {
@@ -129,3 +138,38 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
     };
   }
 });
+
+async function checkEmbeddable(host: string): Promise<boolean> {
+  const timeout = 5000;
+  // HEADリクエストを試行
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    const res = await fetch(`https://${host}`, {
+      method: 'HEAD',
+      signal: controller.signal,
+      redirect: 'follow',
+    });
+    clearTimeout(id);
+    if (res.ok) return true;
+  } catch {
+    // HEADが失敗した場合はGETを試行
+  }
+
+  // GETリクエストで再試行
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    const res = await fetch(`https://${host}`, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
+      },
+    });
+    clearTimeout(id);
+    return res.ok; // 2xx系ならアクセス可能とみなす
+  } catch {
+    return false;
+  }
+}
