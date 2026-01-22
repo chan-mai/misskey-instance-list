@@ -139,37 +139,76 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
   }
 });
 
-async function checkEmbeddable(host: string): Promise<boolean> {
+
+import dns from 'node:dns/promises';
+import { isValidPublicIp } from '~~/server/utils/ip';
+
+async function checkEmbeddable(initialHost: string): Promise<boolean> {
   const timeout = 5000;
-  // HEADリクエストを試行
-  try {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    const res = await fetch(`https://${host}`, {
-      method: 'HEAD',
-      signal: controller.signal,
-      redirect: 'follow',
-    });
-    clearTimeout(id);
-    if (res.ok) return true;
-  } catch {
-    // HEADが失敗した場合はGETを試行
+  const maxRedirects = 5;
+
+  async function safeFetch(url: string, method: 'HEAD' | 'GET', redirectCount = 0): Promise<boolean> {
+    if (redirectCount > maxRedirects) return false;
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(url);
+    } catch {
+      return false;
+    }
+
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
+
+    // ホスト名 / IP の検証
+    try {
+      const addresses = await dns.lookup(parsedUrl.hostname, { all: true });
+      if (addresses.length === 0) return false;
+      
+      // 解決されたIPのいずれかが有効なパブリックIPでない場合、リクエストを拒否する
+      const isSafe = addresses.every(addr => isValidPublicIp(addr.address));
+      if (!isSafe) {
+        console.warn(`Blocked access to unsafe IP for host: ${parsedUrl.hostname}`);
+        return false;
+      }
+    } catch {
+      return false;
+    }
+
+    // Fetchの実行
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+      try {
+        const res = await fetch(url, {
+          method,
+          signal: controller.signal,
+          redirect: 'manual', // リダイレクトを手動で処理する
+          headers: method === 'GET' ? {
+             'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
+          } : undefined,
+        });
+
+        if (res.status >= 200 && res.status < 300) {
+          return true;
+        } else if (res.status >= 300 && res.status < 400) {
+          const location = res.headers.get('location');
+          if (!location) return false;
+          
+          // 相対URLを解決する
+          const nextUrl = new URL(location, url).toString();
+          return safeFetch(nextUrl, method, redirectCount + 1);
+        }
+        return false;
+      } finally {
+        clearTimeout(id);
+      }
+    } catch {
+      return false;
+    }
   }
 
-  // GETリクエストで再試行
-  try {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeout);
-    const res = await fetch(`https://${host}`, {
-      method: 'GET',
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
-      },
-    });
-    clearTimeout(id);
-    return res.ok; // 2xx系ならアクセス可能とみなす
-  } catch {
-    return false;
-  }
+  // HEAD -> GET の順でフォールバック
+  if (await safeFetch(`https://${initialHost}`, 'HEAD')) return true;
+  return await safeFetch(`https://${initialHost}`, 'GET');
 }
+
