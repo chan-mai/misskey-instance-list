@@ -63,6 +63,7 @@ interface CheckResponse {
     softwareName: string | null;
     description: string | null;
   } | null;
+  is_embeddable?: boolean;
   reason?: string | null;
   source: 'database' | 'fetch' | 'error';
   error?: string;

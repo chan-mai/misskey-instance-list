@@ -22,11 +22,17 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
 
   domain = domain.trim().toLowerCase();
 
-  if (domain.includes('://') || domain.startsWith('http')) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Domain parameter must be a hostname, not a URL (do not include http/https)',
-    });
+  // URLが入力された場合、ホスト名を抽出する
+  if (domain.includes('://') || domain.startsWith('http://') || domain.startsWith('https://')) {
+    try {
+      const url = new URL(domain);
+      domain = url.hostname;
+    } catch {
+       throw createError({
+          statusCode: 400,
+          statusMessage: 'Invalid URL format',
+       });
+    }
   }
 
   if (!/^[a-z0-9.-]+$/.test(domain)) {
@@ -60,6 +66,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
         softwareName: 'misskey',
         description: null,
       },
+      is_embeddable: await checkEmbeddable(domain),
       source: 'database',
     };
   }
@@ -84,6 +91,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
         isMisskey: false,
         data: null,
         reason: excludedHost.reason,
+        is_embeddable: false, // 除外されている場合は、埋め込み不可とする
         source: 'database',
       };
     }
@@ -107,6 +115,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
           softwareName: result.info.softwareName,
           description: result.info.description ?? null,
         },
+        is_embeddable: await checkEmbeddable(domain),
         source: 'fetch',
       };
     } else {
@@ -129,3 +138,104 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
     };
   }
 });
+
+
+import dns from 'node:dns/promises';
+import { fetch as undiciFetch, Agent } from 'undici';
+import { isValidPublicIp } from '~~/server/utils/ip';
+
+async function checkEmbeddable(initialHost: string): Promise<boolean> {
+  const timeout = 5000;
+  const maxRedirects = 5;
+
+  async function safeFetch(url: string, method: 'HEAD' | 'GET', redirectCount = 0): Promise<boolean> {
+    if (redirectCount >= maxRedirects) return false;
+
+    let parsedUrl: URL;
+    try {
+      parsedUrl = new URL(url);
+    } catch {
+      return false;
+    }
+
+    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
+
+    // ホスト名 / IP の検証
+    let targetIp: string;
+    let family: 4 | 6 = 4;
+    try {
+      const addresses = await dns.lookup(parsedUrl.hostname, { all: true });
+      if (addresses.length === 0) return false;
+      
+      // 解決されたIPのいずれかが有効なパブリックIPでない場合、リクエストを拒否する
+      const isSafe = addresses.every(addr => isValidPublicIp(addr.address));
+      if (!isSafe) {
+        console.warn(`Blocked access to unsafe IP for host: ${parsedUrl.hostname}`);
+        return false;
+      }
+      
+      // 最初の安全なIPを使用する (connection pinning)
+      const validAddress = addresses[0];
+      if (!validAddress) return false;
+      targetIp = validAddress.address;
+      family = validAddress.family as 4 | 6;
+
+    } catch {
+      return false;
+    }
+
+    // undici Agent with custom lookup for connection pinning
+    const dispatcher = new Agent({
+      connect: {
+        timeout: timeout,
+        lookup: (hostname, options, callback) => {
+          if (hostname !== parsedUrl.hostname) {
+             // Should not happen in this specific flow, but as safeguard
+             callback(new Error('Hostname mismatch in custom lookup'), null as any);
+             return;
+          }
+           // Directly callback with the already validated IP
+           callback(null, [{ address: targetIp, family }]);
+        }
+      }
+    });
+
+    // Fetchの実行
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+      try {
+        const res = await undiciFetch(url, {
+          method,
+          signal: controller.signal,
+          dispatcher, // Use the pinned agent
+          redirect: 'manual', // リダイレクトを手動で処理する
+          headers: method === 'GET' ? {
+             'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
+          } : undefined,
+        });
+
+        if (res.status >= 200 && res.status < 300) {
+          return true;
+        } else if (res.status >= 300 && res.status < 400) {
+          const location = res.headers.get('location');
+          if (!location) return false;
+          
+          // 相対URLを解決する
+          const nextUrl = new URL(location, url).toString();
+          return safeFetch(nextUrl, method, redirectCount + 1);
+        }
+        return false;
+      } finally {
+        clearTimeout(id);
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  // HEAD -> GET の順でフォールバック
+  if (await safeFetch(`https://${initialHost}`, 'HEAD')) return true;
+  return await safeFetch(`https://${initialHost}`, 'GET');
+}
+
