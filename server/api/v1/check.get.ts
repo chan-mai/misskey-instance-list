@@ -23,7 +23,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
   domain = domain.trim().toLowerCase();
 
   // URLが入力された場合、ホスト名を抽出する
-  if (domain.includes('://') || domain.startsWith('http')) {
+  if (domain.includes('://') || domain.startsWith('http://') || domain.startsWith('https://')) {
     try {
       const url = new URL(domain);
       domain = url.hostname;
