@@ -141,6 +141,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
 
 
 import dns from 'node:dns/promises';
+import { fetch as undiciFetch, Agent } from 'undici';
 import { isValidPublicIp } from '~~/server/utils/ip';
 
 async function checkEmbeddable(initialHost: string): Promise<boolean> {
@@ -160,6 +161,8 @@ async function checkEmbeddable(initialHost: string): Promise<boolean> {
     if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
 
     // ホスト名 / IP の検証
+    let targetIp: string;
+    let family: 4 | 6 = 4;
     try {
       const addresses = await dns.lookup(parsedUrl.hostname, { all: true });
       if (addresses.length === 0) return false;
@@ -170,18 +173,41 @@ async function checkEmbeddable(initialHost: string): Promise<boolean> {
         console.warn(`Blocked access to unsafe IP for host: ${parsedUrl.hostname}`);
         return false;
       }
+      
+      // 最初の安全なIPを使用する (connection pinning)
+      const validAddress = addresses[0];
+      targetIp = validAddress.address;
+      family = validAddress.family as 4 | 6;
+
     } catch {
       return false;
     }
+
+    // undici Agent with custom lookup for connection pinning
+    const dispatcher = new Agent({
+      connect: {
+        timeout: timeout,
+        lookup: (hostname, options, callback) => {
+          if (hostname !== parsedUrl.hostname) {
+             // Should not happen in this specific flow, but as safeguard
+             callback(new Error('Hostname mismatch in custom lookup'), null as any);
+             return;
+          }
+           // Directly callback with the already validated IP
+           callback(null, [{ address: targetIp, family }]);
+        }
+      }
+    });
 
     // Fetchの実行
     try {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), timeout);
       try {
-        const res = await fetch(url, {
+        const res = await undiciFetch(url, {
           method,
           signal: controller.signal,
+          dispatcher, // Use the pinned agent
           redirect: 'manual', // リダイレクトを手動で処理する
           headers: method === 'GET' ? {
              'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
