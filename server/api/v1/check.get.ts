@@ -176,6 +176,7 @@ async function checkEmbeddable(initialHost: string): Promise<boolean> {
       
       // 最初の安全なIPを使用する (connection pinning)
       const validAddress = addresses[0];
+      if (!validAddress) return false;
       targetIp = validAddress.address;
       family = validAddress.family as 4 | 6;
 
