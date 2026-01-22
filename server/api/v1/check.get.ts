@@ -148,7 +148,7 @@ async function checkEmbeddable(initialHost: string): Promise<boolean> {
   const maxRedirects = 5;
 
   async function safeFetch(url: string, method: 'HEAD' | 'GET', redirectCount = 0): Promise<boolean> {
-    if (redirectCount > maxRedirects) return false;
+    if (redirectCount >= maxRedirects) return false;
 
     let parsedUrl: URL;
     try {
