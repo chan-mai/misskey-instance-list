@@ -42,7 +42,7 @@
 
         <pre
           class="bg-back-dark text-neutral-100 p-6 lg:p-8 overflow-x-auto text-sm font-mono leading-relaxed mb-12"><code>{
-  "isMisskey": true,
+  "is_misskey": true,
   "data": {
     "name": "Misskey.Example",
     "version": "2024.1.0",
@@ -72,7 +72,7 @@
             </thead>
             <tbody class="divide-y divide-neutral-100 dark:divide-neutral-800">
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
-                <td class="py-4 px-4 font-mono text-primary">isMisskey</td>
+                <td class="py-4 px-4 font-mono text-primary">is_misskey</td>
                 <td class="py-4 px-4 text-neutral-500">boolean</td>
                 <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">Misskeyインスタンスかどうか</td>
               </tr>
@@ -84,7 +84,7 @@
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">data</td>
                 <td class="py-4 px-4 text-neutral-500">object | null</td>
-                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">インスタンス情報(isMisskey=true時)</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">インスタンス情報(is_misskey=true時)</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary pl-8">.name</td>

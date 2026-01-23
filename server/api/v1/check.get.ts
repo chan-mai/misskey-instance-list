@@ -57,7 +57,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
 
   if (existingInstance && existingInstance.is_alive && existingInstance.suspension_state === 'none') {
     return {
-      isMisskey: true,
+      is_misskey: true,
       data: {
         name: existingInstance.node_name,
         version: existingInstance.version,
@@ -88,7 +88,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
       reason.includes('spoofing')
     ) {
       return {
-        isMisskey: false,
+        is_misskey: false,
         data: null,
         reason: excludedHost.reason,
         is_embeddable: false, // 除外されている場合は、埋め込み不可とする
@@ -106,7 +106,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
       // Note: validateInstance はすでに 'mastodon' のような非Misskeyソフトウェア名を除外している
       // また、フォークも拒否リスト判定で除外済み
       return {
-        isMisskey: true,
+        is_misskey: true,
         data: {
           name: result.info.name,
           version: result.info.version,
@@ -121,7 +121,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
     } else {
       // 検証に失敗したか、明示的に拒否された
       return {
-        isMisskey: false,
+        is_misskey: false,
         data: null,
         reason: result.error || 'Unknown error or not a Misskey instance',
         source: 'fetch',
@@ -130,7 +130,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
   } catch (e: any) {
     console.error(`Check API Error for ${domain}:`, e);
     return {
-      isMisskey: false,
+      is_misskey: false,
       data: null,
       reason: 'Internal Server Error during check',
       source: 'error',
@@ -144,72 +144,100 @@ import dns from 'node:dns/promises';
 import { fetch as undiciFetch, Agent } from 'undici';
 import { isValidPublicIp } from '~~/server/utils/ip';
 
-async function checkEmbeddable(initialHost: string): Promise<boolean> {
+async function checkEmbeddable(domain: string): Promise<boolean> {
   const timeout = 5000;
-  const maxRedirects = 5;
 
-  async function safeFetch(url: string, method: 'HEAD' | 'GET', redirectCount = 0): Promise<boolean> {
-    if (redirectCount >= maxRedirects) return false;
+  // 1. IP検証と接続ピン留めの設定
+  let targetIp: string;
+  let family: 4 | 6 = 4;
 
-    let parsedUrl: URL;
-    try {
-      parsedUrl = new URL(url);
-    } catch {
+  try {
+    const addresses = await dns.lookup(domain, { all: true });
+    if (addresses.length === 0) return false;
+
+    // 安全性のため、解決されたすべてのIPがパブリックであることを確認 (SSRF対策)
+    const isSafe = addresses.every(addr => isValidPublicIp(addr.address));
+    if (!isSafe) {
+      console.warn(`Blocked access to unsafe IP for host: ${domain}`);
       return false;
     }
 
-    if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') return false;
+    // DNSリバインディングを防ぐため、最初の安全なIPに固定
+    const primaryAddress = addresses[0];
+    if (!primaryAddress) return false;
+    targetIp = primaryAddress.address;
+    family = primaryAddress.family as 4 | 6;
+  } catch {
+    return false;
+  }
 
-    // ホスト名 / IP の検証
-    let targetIp: string;
-    let family: 4 | 6 = 4;
-    try {
-      const addresses = await dns.lookup(parsedUrl.hostname, { all: true });
-      if (addresses.length === 0) return false;
-      
-      // 解決されたIPのいずれかが有効なパブリックIPでない場合、リクエストを拒否する
-      const isSafe = addresses.every(addr => isValidPublicIp(addr.address));
-      if (!isSafe) {
-        console.warn(`Blocked access to unsafe IP for host: ${parsedUrl.hostname}`);
-        return false;
-      }
-      
-      // 最初の安全なIPを使用する (connection pinning)
-      const validAddress = addresses[0];
-      if (!validAddress) return false;
-      targetIp = validAddress.address;
-      family = validAddress.family as 4 | 6;
-
-    } catch {
-      return false;
-    }
-
-    // undici Agent with custom lookup for connection pinning
-    const dispatcher = new Agent({
-      connect: {
-        timeout: timeout,
-        lookup: (hostname, options, callback) => {
-          if (hostname !== parsedUrl.hostname) {
-             // Should not happen in this specific flow, but as safeguard
-             callback(new Error('Hostname mismatch in custom lookup'), null as any);
-             return;
+  // 解決されたIPに固定されたエージェントを作成
+  const dispatcher = new Agent({
+    connect: {
+      timeout,
+      lookup: (hostname, options, callback) => {
+          if (hostname === domain) {
+               callback(null, [{ address: targetIp, family }]);
+          } else {
+               // その他のドメインに対するフォールバックまたはエラー
+               // このロジックでは domain との通信のみを想定
+               callback(new Error('Hostname mismatch in custom lookup'), null as any);
           }
-           // Directly callback with the already validated IP
-           callback(null, [{ address: targetIp, family }]);
-        }
       }
-    });
+    }
+  });
 
-    // Fetchの実行
+  // 2. ユーザーIDの取得
+  let userId: string;
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+      const res = await undiciFetch(`https://${domain}/api/users/show`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)'
+        },
+        body: JSON.stringify({ username: 'instance.actor' }),
+        dispatcher,
+        signal: controller.signal
+      });
+
+      if (res.status !== 200) return false;
+      const data = await res.json() as any;
+      if (!data || typeof data.id !== 'string') return false;
+      userId = data.id;
+    } finally {
+      clearTimeout(id);
+    }
+  } catch (e) {
+    return false;
+  }
+
+  // 3. 埋め込みURLの確認
+  const embedUrl = `https://${domain}/embed/user-timeline/${userId}`;
+
+  async function checkUrl(url: string, method: 'HEAD' | 'GET', redirectCount = 0): Promise<boolean> {
+    if (redirectCount >= 5) return false;
+
+    let parsed: URL;
+    try {
+       parsed = new URL(url);
+    } catch { return false; }
+
+    // 固定されたディスパッチャーを安全に使用するため、同一ドメインを強制
+    if (parsed.hostname !== domain) return false;
+
     try {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), timeout);
       try {
         const res = await undiciFetch(url, {
           method,
+          redirect: 'manual',
+          dispatcher,
           signal: controller.signal,
-          dispatcher, // Use the pinned agent
-          redirect: 'manual', // リダイレクトを手動で処理する
           headers: method === 'GET' ? {
              'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
           } : undefined,
@@ -220,10 +248,9 @@ async function checkEmbeddable(initialHost: string): Promise<boolean> {
         } else if (res.status >= 300 && res.status < 400) {
           const location = res.headers.get('location');
           if (!location) return false;
-          
-          // 相対URLを解決する
+          // 相対URLを解決
           const nextUrl = new URL(location, url).toString();
-          return safeFetch(nextUrl, method, redirectCount + 1);
+          return checkUrl(nextUrl, method, redirectCount + 1);
         }
         return false;
       } finally {
@@ -234,8 +261,8 @@ async function checkEmbeddable(initialHost: string): Promise<boolean> {
     }
   }
 
-  // HEAD -> GET の順でフォールバック
-  if (await safeFetch(`https://${initialHost}`, 'HEAD')) return true;
-  return await safeFetch(`https://${initialHost}`, 'GET');
+  // Fallback HEAD -> GET
+  if (await checkUrl(embedUrl, 'HEAD')) return true;
+  return await checkUrl(embedUrl, 'GET');
 }
 

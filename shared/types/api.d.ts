@@ -54,7 +54,7 @@ interface ExclusionResponse {
 }
 
 interface CheckResponse {
-  isMisskey: boolean;
+  is_misskey: boolean;
   data: {
     name: string | null;
     version: string | null;
