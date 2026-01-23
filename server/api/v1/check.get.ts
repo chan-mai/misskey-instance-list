@@ -163,8 +163,10 @@ async function checkEmbeddable(domain: string): Promise<boolean> {
     }
 
     // DNSリバインディングを防ぐため、最初の安全なIPに固定
-    targetIp = addresses[0].address;
-    family = addresses[0].family as 4 | 6;
+    const primaryAddress = addresses[0];
+    if (!primaryAddress) return false;
+    targetIp = primaryAddress.address;
+    family = primaryAddress.family as 4 | 6;
   } catch {
     return false;
   }
