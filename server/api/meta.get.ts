@@ -33,6 +33,8 @@ export default defineEventHandler(async(event) => {
        });
     }
 
+    // キャッシュヘッダーを追加 (1時間)
+    setHeader(event, 'Cache-Control', 'public, max-age=3600');
     const data = await response.json();
     return data;
   } catch (error) {
