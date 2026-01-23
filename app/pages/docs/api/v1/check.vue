@@ -51,6 +51,7 @@
     "softwareName": "misskey",
     "description": "Misskey Example"
   },
+  "is_embeddable": true,
   "source": "database"
 }</code></pre>
 
@@ -74,6 +75,11 @@
                 <td class="py-4 px-4 font-mono text-primary">isMisskey</td>
                 <td class="py-4 px-4 text-neutral-500">boolean</td>
                 <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">Misskeyインスタンスかどうか</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">is_embeddable</td>
+                <td class="py-4 px-4 text-neutral-500">boolean</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">埋め込みに対応しているか</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">data</td>

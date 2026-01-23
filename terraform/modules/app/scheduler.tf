@@ -10,7 +10,7 @@ resource "google_cloud_scheduler_job" "sync_recommendation_scores" {
   name             = "${lower(var.environment)}_sync-recommendation-scores"
   region           = var.region
   description      = "Update instance recommendation scores (Version usage, Activity, etc.)"
-  schedule         = "0 */6 * * *"
+  schedule         = var.schedule_sync_recommendation_scores
   time_zone        = "Asia/Tokyo"
   attempt_deadline = "1800s"
   project          = var.project_id
@@ -35,7 +35,7 @@ resource "google_cloud_scheduler_job" "sync_stats" {
   name             = "${lower(var.environment)}_sync-stats"
   region           = var.region
   description      = "Sync instance statistics (users, notes, etc.)"
-  schedule         = "0 */6 * * *"
+  schedule         = var.schedule_sync_stats
   time_zone        = "Asia/Tokyo"
   attempt_deadline = "1800s"
   project          = var.project_id
@@ -61,7 +61,7 @@ resource "google_cloud_scheduler_job" "discovery" {
   name             = "${lower(var.environment)}_discovery"
   region           = var.region
   description      = "Discover new Misskey instances from known instances"
-  schedule         = "*/30 * * * *"
+  schedule         = var.schedule_discovery
   time_zone        = "Asia/Tokyo"
   attempt_deadline = "1800s"
   project          = var.project_id
@@ -87,7 +87,7 @@ resource "google_cloud_scheduler_job" "update" {
   name             = "${lower(var.environment)}_update"
   region           = var.region
   description      = "Update instance information (version, name, etc.)"
-  schedule         = "*/10 * * * *"
+  schedule         = var.schedule_update
   time_zone        = "Asia/Tokyo"
   attempt_deadline = "1800s"
   project          = var.project_id
@@ -113,7 +113,7 @@ resource "google_cloud_scheduler_job" "sync_exclusions" {
   name             = "${lower(var.environment)}_sync-exclusions"
   region           = var.region
   description      = "Sync exclusions from external source"
-  schedule         = "0 * * * *"
+  schedule         = var.schedule_sync_exclusions
   time_zone        = "Asia/Tokyo"
   attempt_deadline = "1800s"
   project          = var.project_id

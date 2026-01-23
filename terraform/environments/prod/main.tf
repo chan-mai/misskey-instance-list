@@ -72,6 +72,13 @@ module "app" {
   
   # カスタムドメイン
   custom_domain = "servers.misskey.ink"
+
+  # Job Schedules
+  schedule_sync_recommendation_scores = "0 */12 * * *"    # Every 12 hours
+  schedule_sync_stats                 = "0 */6 * * *"     # Every 6 hours
+  schedule_discovery                  = "0 0 * * *"       # Daily
+  schedule_update                     = "0 */12 * * *"    # Every 12 hours
+  schedule_sync_exclusions            = "0 0 * * *"       # Daily
 }
 
 output "service_url" {

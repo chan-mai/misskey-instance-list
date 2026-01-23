@@ -91,31 +91,44 @@ function getProxiedUrl(url: string): string {
   return `/api/image?url=${encodeURIComponent(url)}`;
 }
 
+// 画像URLの解決キャッシュ (key: originalUrl, value: resolvedUrl)
+const resolvedUrls = new Map<string, string>();
+// Meta情報のキャッシュ (key: host, value: Meta)
+const metaCache = new Map<string, any>();
+
 async function resolveUrl(url: string | null | undefined): Promise<string | null> {
   if (!url) return null;
 
+  // キャッシュにあれば返す
+  if (resolvedUrls.has(url)) {
+    return resolvedUrls.get(url)!;
+  }
 
+  // 直接アクセスを試行
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
 
     const res = await fetch(url, {
       method: 'GET',
       signal: controller.signal,
+      // CORS制限などのため、モードはno-corsにしないと検証できない場合があるが、画像自体が取得可能か確認するため通常のリクエストを行う
     });
 
     clearTimeout(timeoutId);
 
     if (res.ok) {
+      resolvedUrls.set(url, url);
       return url;
     }
-  } catch (error) {
-
-    console.debug(`Direct fetch failed for ${url}, falling back to proxy:`, error);
+  } catch {
+    // 失敗時はプロキシへフォールバック
   }
 
-
-  return getProxiedUrl(url);
+  // プロキシURLを生成して返す
+  const proxied = getProxiedUrl(url);
+  resolvedUrls.set(url, proxied);
+  return proxied;
 }
 
 async function updateImages() {
@@ -129,7 +142,6 @@ async function updateImages() {
 const description = ref<string>('');
 const loadingDescription = ref(true);
 
-
 function stripTags(str: string): string {
   if (!import.meta.client) {
     return str;
@@ -138,7 +150,6 @@ function stripTags(str: string): string {
   return doc.body.textContent || '';
 }
 
-
 async function updateDescription() {
   if (!props.instance) {
     description.value = '';
@@ -146,6 +157,40 @@ async function updateDescription() {
     return;
   }
 
+  // キャッシュ確認
+  if (metaCache.has(props.instance.host)) {
+    const meta = metaCache.get(props.instance.host);
+    applyMeta(meta);
+    loadingDescription.value = false;
+    return;
+  }
+
+  // クライアントサイドから直接取得を試みる
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(`https://${props.instance.host}/api/meta`, {
+      method: 'POST', // MisskeyのAPIはPOST
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ detail: true }), // 詳細情報を要求
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const meta = await res.json();
+      metaCache.set(props.instance.host, meta);
+      await applyMeta(meta);
+      loadingDescription.value = false;
+      return;
+    }
+  } catch {
+    // 失敗時はサーバープロキシへフォールバック
+  }
+
+  // プロキシ経由で取得
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -159,22 +204,28 @@ async function updateDescription() {
     clearTimeout(timeoutId);
 
     if (res.ok) {
-      const meta = await res.json() as { description?: string, iconUrl?: string, bannerUrl?: string, backgroundImageUrl?: string };
-      if (meta.description) description.value = stripTags(meta.description);
-
-      if (meta.iconUrl) {
-        const resolved = await resolveUrl(meta.iconUrl);
-        fetchedIcon.value = resolved;
-      }
-      if (meta.bannerUrl || meta.backgroundImageUrl) {
-        const resolved = await resolveUrl(meta.bannerUrl || meta.backgroundImageUrl);
-        fetchedBanner.value = resolved;
-      }
+      const meta = await res.json();
+      // プロキシ経由の結果もキャッシュする
+      metaCache.set(props.instance.host, meta);
+      await applyMeta(meta);
     }
   } catch {
-    // ignore
+    // 取得失敗
   } finally {
     loadingDescription.value = false;
+  }
+}
+
+async function applyMeta(meta: any) {
+  if (meta.description) description.value = stripTags(meta.description);
+
+  if (meta.iconUrl) {
+    const resolved = await resolveUrl(meta.iconUrl);
+    fetchedIcon.value = resolved;
+  }
+  if (meta.bannerUrl || meta.backgroundImageUrl) {
+    const resolved = await resolveUrl(meta.bannerUrl || meta.backgroundImageUrl);
+    fetchedBanner.value = resolved;
   }
 }
 
