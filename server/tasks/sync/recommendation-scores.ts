@@ -91,7 +91,7 @@ export default defineTask({
 
         processed += instances.length;
         updated += updates.length;
-        cursor = instances[instances.length - 1].id;
+        cursor = instances.at(-1)!.id;
 
         console.log(`[Task] Processed ${processed} instances...`);
       }
