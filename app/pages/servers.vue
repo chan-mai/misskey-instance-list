@@ -73,28 +73,28 @@ const getQueryParams = (currentOffset: number = 0) => ({
   ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
 });
 
-const { data: initialResponse, status: initialStatus, error: initialError } = await useAsyncData(
+const { data: initialResponse, status: initialStatus, error: initialError } = useLazyAsyncData(
   'servers-list',
   () => {
     const headers = useRequestHeaders(['host', 'cookie']);
-    return $fetch<InstancesResponse>('/api/v1/instances', { 
+    return $fetch<InstancesResponse>('/api/v1/instances', {
       params: getQueryParams(0),
       headers
     });
   }
 );
 
-// 初期データを反映
-if (initialResponse.value) {
-  instances.value = initialResponse.value.items;
-  total.value = initialResponse.value.total;
-  offset.value = initialResponse.value.limit;
-  initialLoading.value = false;
-}
-
-if (initialError.value) {
-  errorMessage.value = 'データの取得に失敗しました。';
-}
+watch(initialStatus, (status) => {
+  if (status === 'success' && initialResponse.value) {
+    instances.value = initialResponse.value.items;
+    total.value = initialResponse.value.total;
+    offset.value = initialResponse.value.limit;
+    initialLoading.value = false;
+  } else if (status === 'error') {
+    errorMessage.value = 'データの取得に失敗しました。';
+    initialLoading.value = false;
+  }
+}, { immediate: true });
 
 async function fetchInstances(reset = false) {
   // 保留中のリクエストをキャンセル
@@ -153,7 +153,7 @@ watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_m
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 // Statsの取得もuseAsyncDataに統一
-const { data: stats } = await useAsyncData('stats', () => $fetch<StatsResponse>('/api/v1/stats'));
+const { data: stats } = useLazyAsyncData('stats', () => $fetch<StatsResponse>('/api/v1/stats'));
 
 watch(loadMoreTrigger, (el) => {
   if (import.meta.client && el) {
