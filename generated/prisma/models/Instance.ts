@@ -284,7 +284,7 @@ export type InstanceGroupByOutputType = {
   _max: InstanceMaxAggregateOutputType | null
 }
 
-type GetInstanceGroupByPayload<T extends InstanceGroupByArgs> = Prisma.PrismaPromise<
+export type GetInstanceGroupByPayload<T extends InstanceGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<InstanceGroupByOutputType, T['by']> &
       {
@@ -1642,6 +1642,11 @@ export type InstanceFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` Instances.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Instances.
+   */
   distinct?: Prisma.InstanceScalarFieldEnum | Prisma.InstanceScalarFieldEnum[]
 }
 

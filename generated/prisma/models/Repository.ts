@@ -158,7 +158,7 @@ export type RepositoryGroupByOutputType = {
   _max: RepositoryMaxAggregateOutputType | null
 }
 
-type GetRepositoryGroupByPayload<T extends RepositoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetRepositoryGroupByPayload<T extends RepositoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<RepositoryGroupByOutputType, T['by']> &
       {
@@ -1090,6 +1090,11 @@ export type RepositoryFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` Repositories.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Repositories.
+   */
   distinct?: Prisma.RepositoryScalarFieldEnum | Prisma.RepositoryScalarFieldEnum[]
 }
 

@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/triple-slash-reference */
-/// <reference path="../types/eld.d.ts" />
 import { detect as tinyDetect } from 'tinyld';
 import { franc } from 'franc';
-import { eld } from 'eld';
+import { eld } from 'eld/large';
 import { iso6393To1 } from 'iso-639-3';
 
 /**
