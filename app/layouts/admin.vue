@@ -1,3 +1,11 @@
+<script setup lang="ts">
+useHead({
+  meta: [
+    { name: 'robots', content: 'noindex, nofollow' },
+  ],
+});
+</script>
+
 <template>
   <div class="min-h-screen bg-back text-sm flex flex-col">
     <header class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-back-dark sticky top-0 z-50">

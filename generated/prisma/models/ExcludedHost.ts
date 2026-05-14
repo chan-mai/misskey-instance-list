@@ -151,7 +151,7 @@ export type ExcludedHostGroupByOutputType = {
   _max: ExcludedHostMaxAggregateOutputType | null
 }
 
-type GetExcludedHostGroupByPayload<T extends ExcludedHostGroupByArgs> = Prisma.PrismaPromise<
+export type GetExcludedHostGroupByPayload<T extends ExcludedHostGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ExcludedHostGroupByOutputType, T['by']> &
       {
@@ -930,6 +930,11 @@ export type ExcludedHostFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` ExcludedHosts.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ExcludedHosts.
+   */
   distinct?: Prisma.ExcludedHostScalarFieldEnum | Prisma.ExcludedHostScalarFieldEnum[]
 }
 

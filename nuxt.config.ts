@@ -29,6 +29,19 @@ export default defineNuxtConfig({
   site: {
     url: 'https://servers.misskey.ink',
   },
+  sitemap: {
+    urls: [
+      '/',
+      '/docs/api/v1',
+      '/docs/api/v1/instances',
+      '/docs/api/v1/exclusions',
+      '/docs/api/v1/stats',
+    ],
+    exclude: [
+      '/admin',
+      '/admin/**',
+    ],
+  },
   app: {
     head: {
       charset: 'utf-8',
