@@ -45,5 +45,14 @@
     "jiti": "^2.7.0",
     "typescript-eslint": "^8.59.3",
     "vue-eslint-parser": "^10.4.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "protobufjs"
+    ]
   }
 }
