@@ -25,7 +25,7 @@
     "iso-639-3": "^3.0.1",
     "js-yaml": "^4.1.1",
     "kiso.css": "^1.2.4",
-    "nuxt": "^4.4.5",
+    "nuxt": "^4.4.6",
     "nuxt-gtag": "4.1.0",
     "nuxt-jsonld": "^2.2.1",
     "nuxt-security": "^2.6.0",
