@@ -69,8 +69,8 @@ importers:
         specifier: ^1.3.4
         version: 1.3.4
       undici:
-        specifier: ^8.2.0
-        version: 8.2.0
+        specifier: ^8.5.0
+        version: 8.5.0
       vue:
         specifier: ^3.5.34
         version: 3.5.34(typescript@5.9.3)
@@ -4677,8 +4677,8 @@ packages:
   undici-types@7.21.0:
     resolution: {integrity: sha512-w9IMgQrz4O0YN1LtB7K5P63vhlIOvC7opSmouCJ+ZywlPAlO9gIkJ+otk6LvGpAs2wg4econaCz3TvQ9xPoyuQ==}
 
-  undici@8.2.0:
-    resolution: {integrity: sha512-Z+4Hx9GE26Lh9Upwfnc8C7SsrpBPGaM/Gm6kMFtiG7c+5IvQKlXi/t+9x9DrrCh29cww5TSP9YdVaBcnLDs5fQ==}
+  undici@8.5.0:
+    resolution: {integrity: sha512-xamtWoB1EshgjpmlXd7GGm2VfdDtw1+rD8uhry8pSNW3If6S8E0m2T2+orSKeZXEn/aPJMviCpDBA65WJt8zhg==}
     engines: {node: '>=22.19.0'}
 
   unenv@2.0.0-rc.24:
@@ -10093,7 +10093,7 @@ snapshots:
 
   undici-types@7.21.0: {}
 
-  undici@8.2.0: {}
+  undici@8.5.0: {}
 
   unenv@2.0.0-rc.24:
     dependencies:
