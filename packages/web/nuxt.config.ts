@@ -121,6 +121,14 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare_module',
+    // workerdのconsole.createTaskは呼ぶとERR_METHOD_NOT_IMPLEMENTEDで落ちるスタブ
+    // hookableが機能検出して掴むためundefinedにして無効化する
+    // (ESMのimportは巻き上げられるので全チャンク先頭に注入する必要がある)
+    rollupConfig: {
+      output: {
+        banner: 'globalThis.console && (globalThis.console.createTask = undefined);',
+      },
+    },
     // ローカルD1をパッケージ間で共有する
     cloudflareDev: {
       persistDir: '../../.wrangler/state/v3',

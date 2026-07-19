@@ -32,6 +32,8 @@
         "NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI": "https://stg.servers.misskey.ink/auth/zitadel/callback",
         "NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_ID": "382500899836169407"
       },
+      // DNS切替前の確認用にworkers.devも開けておく
+      "workers_dev": true,
       "routes": [{ "pattern": "stg.servers.misskey.ink", "custom_domain": true }]
     },
     "prod": {
