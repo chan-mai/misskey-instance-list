@@ -11,7 +11,7 @@
   "dependencies": {
     "@mil/core": "workspace:*",
     "drizzle-orm": "catalog:",
-    "hono": "^4.6.0",
+    "hono": "^4.12.25",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
