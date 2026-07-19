@@ -25,8 +25,9 @@ export default defineNuxtConfig({
     defaultProvider: 'zitadel',
     providers: {
       zitadel: {
-        // baseUrlはビルド時にauthorizationUrl/tokenUrl等の導出に使われるため, build-argで渡す必要がある
-        baseUrl: process.env.NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL || '',
+        // baseUrlはビルド時にauthorizationUrl/tokenUrl等の導出に使われるため既定値を持たせる。
+        // 秘匿情報ではなくstg/prod共通
+        baseUrl: process.env.NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL || 'https://rimely-xepglr.ch1.zitadel.cloud',
         // clientId/clientSecret/redirectUriはNUXT_OIDC_PROVIDERS_ZITADEL_*で実行時に注入
         clientId: '',
         clientSecret: '',
