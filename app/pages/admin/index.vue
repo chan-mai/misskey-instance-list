@@ -62,6 +62,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'admin',
+  middleware: 'admin',
 });
 
 const { data, pending, error } = await useFetch('/api/admin/stats');

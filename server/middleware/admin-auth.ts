@@ -1,8 +1,8 @@
-import { requireAdminAuth } from '~~/server/utils/admin-basic-auth';
+import { requireAdminAuth } from '~~/server/utils/admin-auth';
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(async(event) => {
   const path = getRequestURL(event).pathname.toLowerCase();
   if (path.startsWith('/admin') || path.startsWith('/api/admin')) {
-    requireAdminAuth(event);
+    await requireAdminAuth(event);
   }
 });

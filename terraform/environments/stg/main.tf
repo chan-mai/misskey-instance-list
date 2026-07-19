@@ -37,12 +37,31 @@ variable "service_url" {
   sensitive = true
 }
 
-variable "admin_user" {
+variable "zitadel_base_url" {
+  type = string
+}
+
+variable "zitadel_client_id" {
   type      = string
   sensitive = true
 }
 
-variable "admin_password" {
+variable "zitadel_client_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "oidc_session_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "oidc_token_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "oidc_auth_session_secret" {
   type      = string
   sensitive = true
 }
@@ -60,25 +79,30 @@ module "app" {
   # Pass secrets
   database_url = var.database_url
   github_token = var.github_token
-  
+
   # New variables for consistency
   service_url             = var.service_url
   artifact_registry_id    = "cloud-run-source-deploy-stg"
   cloudbuild_trigger_name = "misskey-instance-list-stg-trigger"
 
-  # Basic Auth
-  admin_user     = var.admin_user
-  admin_password = var.admin_password
+  # ZITADEL (OIDC)
+  zitadel_base_url         = var.zitadel_base_url
+  zitadel_redirect_uri     = "https://stg.servers.misskey.ink/auth/zitadel/callback"
+  zitadel_client_id        = var.zitadel_client_id
+  zitadel_client_secret    = var.zitadel_client_secret
+  oidc_session_secret      = var.oidc_session_secret
+  oidc_token_key           = var.oidc_token_key
+  oidc_auth_session_secret = var.oidc_auth_session_secret
 
   # Custom Domain
   custom_domain = "stg.servers.misskey.ink"
 
   # Job Schedules
-  schedule_sync_recommendation_scores = "0 0 * * *"   # Daily
-  schedule_sync_stats                 = "0 0 * * *"   # Daily
-  schedule_discovery                  = "0 0 * * *"   # Daily
+  schedule_sync_recommendation_scores = "0 0 * * *"    # Daily
+  schedule_sync_stats                 = "0 0 * * *"    # Daily
+  schedule_discovery                  = "0 0 * * *"    # Daily
   schedule_update                     = "0 */12 * * *" # Every 12 hours
-  schedule_sync_exclusions            = "0 0 * * *"   # Daily
+  schedule_sync_exclusions            = "0 0 * * *"    # Daily
 }
 
 output "service_url" {
