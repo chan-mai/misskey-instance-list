@@ -1,12 +1,20 @@
-import { prisma } from '@mil/core/db';
+import { and, asc, eq, isNull, ne } from 'drizzle-orm';
+import { instances, excludedHosts } from '@mil/core/db';
 import { validateInstance, saveInstance, fetchLocalTimeline } from '@mil/core/crawl';
-import { detectLanguageFromTexts } from '@mil/core/crawl';
-import { defineTask } from '../define.js';
+import { detectLanguageFromTexts } from '@mil/core/lang';
+import { defineTask, type TaskContext } from '../define.js';
+
+/** 1チャンクあたりのホスト数 */
+const CHUNK_SIZE = 50;
 
 /**
  * タスク: sync:stats
  * 説明: インスタンスの統計情報（ユーザー数、ノート数など）を同期する
- * 冪等性: 冪等。安全にリトライ可能。現在のタイムスタンプ/データに基づいて時系列データを更新または追加します。
+ * 冪等性: 冪等安全にリトライ可能現在のタイムスタンプ/データに基づいて時系列データを更新または追加します
+ *
+ * Workersは1回の実行に壁時計の上限があるため, ここでは対象をチャンクへ割ってキューに積むだけに留め,
+ * 実処理はconsumer側にチャンク単位で分散する
+ * Cloud Run前提の20分DEADLINE_MS打ち切りは不要になり, チャンク単位のリトライが効くようになった
  */
 export default defineTask({
   meta: {
@@ -15,72 +23,70 @@ export default defineTask({
   },
   async run(ctx) {
     console.log('Starting Full Stats Sync...');
-    
-    // 全インスタンス取得 (410以外)
-    // 更新日時が古い順に取得することで、タイムアウトで中断しても次回は残りを処理できる
-    const candidates = await prisma.$queryRaw<{ id: string }[]>`
-      SELECT i.id FROM instances i
-      LEFT JOIN excluded_hosts eh ON i.id = eh.domain
-      WHERE ( i.suspension_state != 'gone' OR i.suspension_state IS NULL) 
-        AND (eh.domain IS NULL)
-      ORDER BY i.last_check_at ASC NULLS FIRST
-    `;
 
-    if (!candidates || candidates.length === 0) {
+    // 全インスタンス取得 (410以外)
+    // 更新日時が古い順に取得することで、途中で止まっても次回は残りを処理できる
+    const candidates = await ctx.db
+      .select({ id: instances.id })
+      .from(instances)
+      .leftJoin(excludedHosts, eq(instances.id, excludedHosts.domain))
+      .where(and(ne(instances.suspension_state, 'gone'), isNull(excludedHosts.domain)))
+      .orderBy(asc(instances.last_check_at));
+
+    if (candidates.length === 0) {
       console.log('No instances to sync.');
       return { result: 'No instances' };
     }
 
-    const all = candidates;
-    const now = new Date();
-    // 実行開始時間
-    const startTime = Date.now();
-    // 期限 (サーバーレス関数のタイムアウト対策, 20分で打ち切り)
-    const DEADLINE_MS = 20 * 60 * 1000;
-
-    console.log(`Syncing stats for ${all.length} instances...`);
-
-    const chunkSize = 50; 
-    let processed = 0;
-
-    for (let i = 0; i < all.length; i += chunkSize) {
-      // 期限チェック
-      if (Date.now() - startTime > DEADLINE_MS) {
-        console.log(`Stats Sync timed out after ${processed} instances. Stopping gracefully.`);
-        break;
-      }
-
-      const chunk = all.slice(i, i + chunkSize);
-      
-      await Promise.all(chunk.map(async(row: { id: string }) => {
-        try {
-          const res = await validateInstance(ctx, row.id);
-          
-          let language: string | null = null;
-          if (res.info) {
-            const texts: string[] = [];
-            
-            // サーバー名と説明文を追加
-            if (res.info.name) texts.push(res.info.name);
-            if (res.info.description) texts.push(res.info.description);
-            
-            // タイムラインの投稿を取得して言語検出の精度を向上
-            const timelinePosts = await fetchLocalTimeline(row.id, 30);
-            texts.push(...timelinePosts);
-            
-            language = detectLanguageFromTexts(texts);
-          }
-
-          // repository_url is updated in saveInstance if present in res.info
-          await saveInstance(ctx, row.id, res, now, language);
-        } catch(e) {
-          console.warn(`Error syncing ${row.id}:`, e);
-        }
-      }));
-
-      processed += chunk.length;
+    const hosts = candidates.map((row) => row.id);
+    const messages: { kind: 'stats-chunk'; hosts: string[] }[] = [];
+    for (let i = 0; i < hosts.length; i += CHUNK_SIZE) {
+      messages.push({ kind: 'stats-chunk', hosts: hosts.slice(i, i + CHUNK_SIZE) });
     }
-    console.log(`Stats Sync Completed (Processed: ${processed}/${all.length}).`);
-    return { result: `Synced ${processed}/${all.length} instances` };
+
+    await ctx.enqueue(messages);
+
+    console.log(`Enqueued ${messages.length} chunks for ${hosts.length} instances.`);
+    return { result: `Enqueued ${messages.length} chunks (${hosts.length} instances)` };
   }
 });
+
+/**
+ * チャンク1件分の統計同期キューのconsumerから呼ばれる
+ *
+ * Workersは1呼び出しあたり同時外向き接続が6本までなので,
+ * Promise.allで並べても実際は6件ずつ流れる
+ */
+export async function processStatsChunk(ctx: TaskContext, hosts: string[]): Promise<number> {
+  const now = new Date();
+  let processed = 0;
+
+  await Promise.all(hosts.map(async(host) => {
+    try {
+      const res = await validateInstance(ctx, host);
+
+      let language: string | null = null;
+      if (res.info) {
+        const texts: string[] = [];
+
+        // サーバー名と説明文を追加
+        if (res.info.name) texts.push(res.info.name);
+        if (res.info.description) texts.push(res.info.description);
+
+        // タイムラインの投稿を取得して言語検出の精度を向上
+        const timelinePosts = await fetchLocalTimeline(host, 30);
+        texts.push(...timelinePosts);
+
+        language = await detectLanguageFromTexts(texts);
+      }
+
+      // repository_url is updated in saveInstance if present in res.info
+      await saveInstance(ctx, host, res, now, language);
+      processed++;
+    } catch (e) {
+      console.warn(`Error syncing ${host}:`, e);
+    }
+  }));
+
+  return processed;
+}

@@ -1,22 +1,10 @@
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/client.js';
-import pg from 'pg';
+import { drizzle, type DrizzleD1Database } from 'drizzle-orm/d1';
+import type { D1Database } from '@cloudflare/workers-types';
+import * as schema from './schema.js';
 
-const { Pool } = pg;
+export type { D1Database };
 
-const globalForPrisma = global as unknown as {
-  prisma: PrismaClient;
-};
+// D1バインディングはリクエスト時のenvにしか無いためsingletonは持てない
+export type Database = DrizzleD1Database<typeof schema>;
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    adapter,
-  });
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+export const createDb = (binding: D1Database): Database => drizzle(binding, { schema });

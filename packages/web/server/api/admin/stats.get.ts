@@ -1,5 +1,6 @@
-import { prisma } from '@mil/core/db';
-import { ExcludedHostSource } from '@mil/core/db';
+import { count, eq, sum } from 'drizzle-orm';
+import { instances, excludedHosts, ExcludedHostSource } from '@mil/core/db';
+import { useDb } from '~~/server/utils/db';
 
 /**
  * GET /api/admin/stats
@@ -7,8 +8,10 @@ import { ExcludedHostSource } from '@mil/core/db';
  * 管理者ダッシュボード用の統計情報を取得します。
  * キャッシュは行いません。
  */
-export default defineEventHandler(async() => {
-  // 並列でデータを取得
+export default defineEventHandler(async(event) => {
+  const db = useDb(event);
+
+  // D1は1クエリ1往復のため, batchで7クエリを1往復にまとめる
   const [
     known,
     active,
@@ -16,40 +19,52 @@ export default defineEventHandler(async() => {
     exclusionTotal,
     exclusionManual,
     exclusionSystem,
-    exclusionJoinMisskey
-  ] = await Promise.all([
+    exclusionJoinMisskey,
+  ] = await db.batch([
     // 既知のインスタンス数
-    prisma.instance.count(),
-    
+    db.select({ value: count() }).from(instances),
+
     // アクティブなインスタンス数
-    prisma.instance.count({ where: { is_alive: true } }),
-    
+    db.select({ value: count() }).from(instances).where(eq(instances.is_alive, true)),
+
     // 総ユーザー数 (ユーザー数はアクティブなインスタンスからのみ集計するのが一般的だが、要件次第。一旦v1/statsと同様にaliveのみで集計)
-    prisma.instance.aggregate({
-      where: { is_alive: true },
-      _sum: { users_count: true }
-    }),
-    
+    // sum()はドライバによって文字列を返すためmapWith(Number)で正規化する
+    db
+      .select({ value: sum(instances.users_count).mapWith(Number) })
+      .from(instances)
+      .where(eq(instances.is_alive, true)),
+
     // 除外ホスト総数
-    prisma.excludedHost.count(),
-    
+    db.select({ value: count() }).from(excludedHosts),
+
     // Excluded breakdown
-    prisma.excludedHost.count({ where: { source: ExcludedHostSource.manual } }),
-    prisma.excludedHost.count({ where: { source: ExcludedHostSource.system } }),
-    prisma.excludedHost.count({ where: { source: ExcludedHostSource.joinmisskey } }),
+    db
+      .select({ value: count() })
+      .from(excludedHosts)
+      .where(eq(excludedHosts.source, ExcludedHostSource.manual)),
+    db
+      .select({ value: count() })
+      .from(excludedHosts)
+      .where(eq(excludedHosts.source, ExcludedHostSource.system)),
+    db
+      .select({ value: count() })
+      .from(excludedHosts)
+      .where(eq(excludedHosts.source, ExcludedHostSource.joinmisskey)),
   ]);
 
+  // 集計クエリは常に1行返るため添字アクセスを断定する
   return {
     instances: {
-      known,
-      active,
+      known: known[0]!.value,
+      active: active[0]!.value,
     },
-    users: users._sum.users_count || 0,
+    // sum()は0行だとNULLを返す
+    users: users[0]!.value ?? 0,
     exclusions: {
-      total: exclusionTotal,
-      manual: exclusionManual,
-      system: exclusionSystem,
-      joinmisskey: exclusionJoinMisskey
-    }
+      total: exclusionTotal[0]!.value,
+      manual: exclusionManual[0]!.value,
+      system: exclusionSystem[0]!.value,
+      joinmisskey: exclusionJoinMisskey[0]!.value,
+    },
   };
 });

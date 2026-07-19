@@ -1,6 +1,7 @@
-import { prisma } from '@mil/core/db';
-import { ExcludedHostSource } from '@mil/core/db';
+import { eq } from 'drizzle-orm';
+import { instances, excludedHosts, isExcludedHostSource } from '@mil/core/db';
 import { validateDomain } from '@mil/core/net';
+import { useDb } from '~~/server/utils/db';
 
 /**
  * 除外ホスト追加API (管理者用)
@@ -18,6 +19,7 @@ import { validateDomain } from '@mil/core/net';
  * @throws 409 Conflict (登録済みの場合)
  */
 export default defineEventHandler(async(event) => {
+  const db = useDb(event);
   const body = await readBody(event);
 
   // ドメインのバリデーション
@@ -26,36 +28,40 @@ export default defineEventHandler(async(event) => {
     throw createError({ statusCode: 400, statusMessage: error });
   }
 
-  const source = body.source || 'manual';
-  
-  try {
-    // 除外リストへ登録
-    const exclusion = await prisma.excludedHost.create({
-      data: {
-        domain: normalized!, // バリデーション済み
-        reason: body.reason,
-        source: source as ExcludedHostSource,
-      },
-    });
-
-    // 既存のインスタンスデータがあれば削除
-    // (除外されたホストはリストに表示すべきではないため)
-    await prisma.instance.deleteMany({
-      where: { id: normalized! },
-    });
-
-    return exclusion;
-  } catch (e: unknown) {
-    // 一意制約違反 (P2002) のハンドリング
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((e as any).code === 'P2002') {
-      throw createError({ statusCode: 409, statusMessage: 'Domain is already excluded' });
-    }
-    // Prisma validation error (e.g. invalid enum value)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((e as any).code === 'P2003' || (e as any).name === 'PrismaClientValidationError') {
-       throw createError({ statusCode: 400, statusMessage: 'Invalid parameters (e.g. invalid source)' });
-    }
-    throw e;
+  // SQLiteはTEXT affinityで数値等を暗黙に文字列化するため, 型もアプリ層で見る
+  if (body.reason !== undefined && body.reason !== null && typeof body.reason !== 'string') {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid parameters (reason must be a string)' });
   }
+
+  const source = body.source || 'manual';
+
+  // 不正なenum値をアプリ層で検証
+  if (!isExcludedHostSource(source)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid parameters (e.g. invalid source)',
+    });
+  }
+
+  // 除外リストへ登録
+  // 一意制約違反は例外ではなく0行で返るため, returningの件数で判定する
+  const [exclusion] = await db
+    .insert(excludedHosts)
+    .values({
+      domain: normalized!, // バリデーション済み
+      reason: body.reason,
+      source,
+    })
+    .onConflictDoNothing({ target: excludedHosts.domain })
+    .returning();
+
+  if (!exclusion) {
+    throw createError({ statusCode: 409, statusMessage: 'Domain is already excluded' });
+  }
+
+  // 既存のインスタンスデータがあれば削除
+  // (除外されたホストはリストに表示すべきではないため)
+  await db.delete(instances).where(eq(instances.id, normalized!));
+
+  return exclusion;
 });

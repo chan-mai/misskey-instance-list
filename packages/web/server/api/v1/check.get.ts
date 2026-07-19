@@ -1,5 +1,6 @@
 import { defineEventHandler, getQuery, createError } from 'h3';
-import { prisma } from '@mil/core/db';
+import { eq } from 'drizzle-orm';
+import { instances, excludedHosts } from '@mil/core/db';
 import { evaluateInstance } from '@mil/core/crawl';
 
 export default defineEventHandler(async(event): Promise<CheckResponse> => {
@@ -50,10 +51,14 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
     });
   }
 
+  const db = useDb(event);
+
   // 既知のインスタンスを確認
-  const existingInstance = await prisma.instance.findUnique({
-    where: { id: domain },
-  });
+  const [existingInstance] = await db
+    .select()
+    .from(instances)
+    .where(eq(instances.id, domain))
+    .limit(1);
 
   if (existingInstance && existingInstance.is_alive && existingInstance.suspension_state === 'none') {
     return {
@@ -72,9 +77,11 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
   }
 
   // 除外ホストを確認
-  const excludedHost = await prisma.excludedHost.findUnique({
-    where: { domain },
-  });
+  const [excludedHost] = await db
+    .select()
+    .from(excludedHosts)
+    .where(eq(excludedHosts.domain, domain))
+    .limit(1);
 
   if (excludedHost) {
     const reason = excludedHost.reason?.toLowerCase() || '';
@@ -142,52 +149,16 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
 });
 
 
-import dns from 'node:dns/promises';
-import { fetch as undiciFetch, Agent } from 'undici';
-import { isValidPublicIp } from '@mil/core/net';
+import { isPubliclyResolvable } from '@mil/core/net';
 
 async function checkEmbeddable(domain: string): Promise<boolean> {
   const timeout = 5000;
 
-  // 1. IP検証と接続ピン留めの設定
-  let targetIp: string;
-  let family: 4 | 6 = 4;
-
-  try {
-    const addresses = await dns.lookup(domain, { all: true });
-    if (addresses.length === 0) return false;
-
-    // 安全性のため、解決されたすべてのIPがパブリックであることを確認 (SSRF対策)
-    const isSafe = addresses.every(addr => isValidPublicIp(addr.address));
-    if (!isSafe) {
-      console.warn(`Blocked access to unsafe IP for host: ${domain}`);
-      return false;
-    }
-
-    // DNSリバインディングを防ぐため、最初の安全なIPに固定
-    const primaryAddress = addresses[0];
-    if (!primaryAddress) return false;
-    targetIp = primaryAddress.address;
-    family = primaryAddress.family as 4 | 6;
-  } catch {
+  // 1. IP検証
+  if (!await isPubliclyResolvable(domain)) {
+    console.warn(`Blocked access to unsafe or unresolvable host: ${domain}`);
     return false;
   }
-
-  // 解決されたIPに固定されたエージェントを作成
-  const dispatcher = new Agent({
-    connect: {
-      timeout,
-      lookup: (hostname, options, callback) => {
-          if (hostname === domain) {
-               callback(null, [{ address: targetIp, family }]);
-          } else {
-               // その他のドメインに対するフォールバックまたはエラー
-               // このロジックでは domain との通信のみを想定
-               callback(new Error('Hostname mismatch in custom lookup'), null as any);
-          }
-      }
-    }
-  });
 
   // 2. ユーザーIDの取得
   let userId: string;
@@ -195,14 +166,13 @@ async function checkEmbeddable(domain: string): Promise<boolean> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
     try {
-      const res = await undiciFetch(`https://${domain}/api/users/show`, {
+      const res = await fetch(`https://${domain}/api/users/show`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)'
         },
         body: JSON.stringify({ username: 'instance.actor' }),
-        dispatcher,
         signal: controller.signal
       });
 
@@ -228,17 +198,16 @@ async function checkEmbeddable(domain: string): Promise<boolean> {
        parsed = new URL(url);
     } catch { return false; }
 
-    // 固定されたディスパッチャーを安全に使用するため、同一ドメインを強制
+    // リダイレクト先が別ホストへ逃げるのを防ぐため, 同一ドメインを強制
     if (parsed.hostname !== domain) return false;
 
     try {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), timeout);
       try {
-        const res = await undiciFetch(url, {
+        const res = await fetch(url, {
           method,
           redirect: 'manual',
-          dispatcher,
           signal: controller.signal,
           headers: method === 'GET' ? {
              'User-Agent': 'MisskeyInstanceList/1.0 (EmbedCheck)',
@@ -267,4 +236,3 @@ async function checkEmbeddable(domain: string): Promise<boolean> {
   if (await checkUrl(embedUrl, 'HEAD')) return true;
   return await checkUrl(embedUrl, 'GET');
 }
-

@@ -24,7 +24,7 @@ export const validateDomain = (domain: string): ValidationResult => {
   }
 
   // ドメイン検証用正規表現 (簡易版)
-  // 英数字、ハイフン、ドットを許可。末尾のセグメントは2文字以上。
+  // 英数字、ハイフン、ドットを許可末尾のセグメントは2文字以上
   const domainRegex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/;
 
   if (!domainRegex.test(normalized)) {

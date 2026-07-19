@@ -3,24 +3,22 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
-    "start": "node dist/index.js",
-    "maintenance": "tsx --env-file-if-exists=../../.env scripts/maintenance.ts",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "dev": "wrangler dev --persist-to ../../.wrangler/state",
+    "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@google-cloud/tasks": "^6.2.2",
-    "@hono/node-server": "^1.15.0",
     "@mil/core": "workspace:*",
+    "drizzle-orm": "catalog:",
     "hono": "^4.6.0",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260714.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.0.0",
-    "tsdown": "^0.15.0",
-    "tsx": "^4.20.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.32.0"
   }
 }

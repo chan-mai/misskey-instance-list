@@ -11,5 +11,6 @@ export {
   type InstanceRejection,
   type FetchError,
 } from './misskey.js';
-export * from './detect-language.js';
+// detect-languageはここから再exportしない
+// eld/largeがバンドルに載りWeb Workerが1.66MB膨らむため, 利用側は@mil/core/langを直接importする
 export * from './calculate-score.js';

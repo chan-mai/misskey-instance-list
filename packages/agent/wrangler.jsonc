@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mil-agent",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mil"
+    }
+  ],
+  "queues": {
+    "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks" }],
+    "consumers": [
+      {
+        "queue": "mil-tasks",
+        "max_batch_size": 1,
+        "max_concurrency": 1,
+        "max_retries": 3,
+        "dead_letter_queue": "mil-tasks-dlq"
+      }
+    ]
+  },
+  "triggers": {
+    "crons": ["0 0 * * *", "0 */6 * * *", "0 */12 * * *"]
+  },
+  "observability": { "enabled": true }
+}

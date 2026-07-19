@@ -1,5 +1,6 @@
-import { prisma } from '@mil/core/db';
-import { ExcludedHostSource } from '@mil/core/db';
+import { and, count, desc, eq, like, or, type SQL } from 'drizzle-orm';
+import { excludedHosts, clampLikeTerm, isExcludedHostSource } from '@mil/core/db';
+import { useDb } from '~~/server/utils/db';
 
 /**
  * 除外ホスト一覧取得API (管理者用)
@@ -16,6 +17,7 @@ import { ExcludedHostSource } from '@mil/core/db';
  * @returns {Promise<Object>} 除外ホスト一覧とページネーション情報
  */
 export default defineEventHandler(async(event) => {
+  const db = useDb(event);
   const query = getQuery(event);
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 20;
@@ -23,33 +25,45 @@ export default defineEventHandler(async(event) => {
 
   // フィルタ設定
   const source = query.source as string || 'all';
-  
+
+  const conditions: (SQL | undefined)[] = [];
+
   // 'all' の場合はソースによる絞り込みを行わない
-  const where = source === 'all' ? {} : { source: source as ExcludedHostSource };
-  
+  if (source !== 'all') {
+    // 不正なenum値をアプリ層で検証
+    if (!isExcludedHostSource(source)) {
+      throw createError({ statusCode: 400, statusMessage: 'Invalid source' });
+    }
+    conditions.push(eq(excludedHosts.source, source));
+  }
+
   // 検索条件の追加 (ドメイン名 または 理由)
   if (query.search) {
-    Object.assign(where, {
-      OR: [
-        { domain: { contains: String(query.search), mode: 'insensitive' } },
-        { reason: { contains: String(query.search), mode: 'insensitive' } },
-      ]
-    });
+    // D1のLIKEパターン長上限(50バイト)に収まるよう切り詰め, ワイルドカードを除去する
+    const term = clampLikeTerm(String(query.search));
+    conditions.push(
+      or(like(excludedHosts.domain, `%${term}%`), like(excludedHosts.reason, `%${term}%`)),
+    );
   }
+
+  // and()は引数0件でundefinedを返す, 無条件時はWHERE句を出さない
+  const where = and(...conditions);
 
   // データ取得と総数カウントを並列実行
   const [total, exclusions] = await Promise.all([
-    prisma.excludedHost.count({ where }),
-    prisma.excludedHost.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { created_at: 'desc' },
-    }),
+    db.select({ value: count() }).from(excludedHosts).where(where),
+    db
+      .select()
+      .from(excludedHosts)
+      .where(where)
+      .orderBy(desc(excludedHosts.created_at))
+      .limit(limit)
+      .offset(skip),
   ]);
 
   return {
-    total,
+    // count()は常に1行返る
+    total: total[0]!.value,
     page,
     limit,
     exclusions,

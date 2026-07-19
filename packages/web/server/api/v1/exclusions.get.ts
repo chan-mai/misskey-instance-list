@@ -1,13 +1,13 @@
-import { prisma } from '@mil/core/db';
+import { excludedHosts } from '@mil/core/db';
 
-export default defineCachedEventHandler(async(_event): Promise<ExclusionResponse[]> => {
+export default defineCachedEventHandler(async(event): Promise<ExclusionResponse[]> => {
   // すべての除外ホストを返す
-  const exclusions = await prisma.excludedHost.findMany({ 
-    select: { 
-      domain: true, 
-      reason: true 
-    } 
-  });
+  const exclusions = await useDb(event)
+    .select({
+      domain: excludedHosts.domain,
+      reason: excludedHosts.reason,
+    })
+    .from(excludedHosts);
   return exclusions;
 }, {
   // sync:exclusionsタスクからの明示的なキャッシュ無効化がなくなったため短めにする

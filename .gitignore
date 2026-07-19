@@ -26,3 +26,6 @@ tsconfig.tsbuildinfo
 
 # ビルド成果物
 dist/
+
+# wranglerのローカル状態 (ローカルD1の実体等)
+.wrangler

@@ -1,4 +1,6 @@
-import { prisma } from '@mil/core/db';
+import { and, asc, eq, gt } from 'drizzle-orm';
+import type { BatchItem } from 'drizzle-orm/batch';
+import { instances } from '@mil/core/db';
 import { calculateRecommendationScore } from '@mil/core/crawl';
 import { defineTask } from '../define.js';
 /**
@@ -7,14 +9,14 @@ import { defineTask } from '../define.js';
 /**
  * タスク: sync:recommendation-scores
  * 説明: インスタンスのおすすめスコアを更新する
- * 冪等性: 冪等。安全にリトライ可能。スコアを再計算して更新します。
+ * 冪等性: 冪等安全にリトライ可能スコアを再計算して更新します
  */
 export default defineTask({
   meta: {
     name: 'sync:recommendation-scores',
     description: 'Update recommendation scores for all active instances',
   },
-  async run() {
+  async run(ctx) {
     console.log('[Task] Starting recommendation score update...');
 
     // 最新バージョンを取得
@@ -26,7 +28,7 @@ export default defineTask({
           'User-Agent': 'MisskeyInstanceList/1.0'
         }
       }).then(res => res.json() as Promise<unknown[]>);
-      
+
       if (Array.isArray(releases)) {
         interface ReleaseItem {
           prerelease: boolean;
@@ -34,8 +36,8 @@ export default defineTask({
         }
         const stableRelease = releases.find((r: unknown) => {
           const release = r as ReleaseItem;
-          return !release.prerelease && 
-            release.tag_name && 
+          return !release.prerelease &&
+            release.tag_name &&
             !release.tag_name.includes('-');
         }) as ReleaseItem | undefined;
 
@@ -58,41 +60,42 @@ export default defineTask({
 
       while (hasMore) {
         // アクティブなインスタンスをバッチで取得
-        const instances = await prisma.instance.findMany({
-          where: {
-            is_alive: true,
-          },
-          select: {
-            id: true,
-            users_count: true,
-            notes_count: true,
-            created_at: true,
-            version: true,
-          },
-          take: BATCH_SIZE,
-          ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-          orderBy: { id: 'asc' },
-        });
+        // Prismaのcursor+skip:1はidが一意なのでキーセット(gt)と等価
+        const rows = await ctx.db
+          .select({
+            id: instances.id,
+            users_count: instances.users_count,
+            notes_count: instances.notes_count,
+            created_at: instances.created_at,
+            version: instances.version,
+          })
+          .from(instances)
+          .where(
+            cursor === undefined
+              ? eq(instances.is_alive, true)
+              : and(eq(instances.is_alive, true), gt(instances.id, cursor)),
+          )
+          .orderBy(asc(instances.id))
+          .limit(BATCH_SIZE);
 
-        if (instances.length === 0) {
+        if (rows.length === 0) {
           hasMore = false;
           continue;
         }
 
-        // バッチ処理
-        const updates = instances.map((instance) => {
-          const score = calculateRecommendationScore(instance, latestVersion);
-          return prisma.instance.update({
-            where: { id: instance.id },
-            data: { recommendation_score: score },
-          });
-        });
+        // D1のbatchは暗黙のトランザクション1文2パラメータ x 50文で上限内
+        const updates: BatchItem<'sqlite'>[] = rows.map((row) =>
+          ctx.db
+            .update(instances)
+            .set({ recommendation_score: calculateRecommendationScore(row, latestVersion) })
+            .where(eq(instances.id, row.id)),
+        );
 
-        await prisma.$transaction(updates);
+        await ctx.db.batch(updates as [BatchItem<'sqlite'>, ...BatchItem<'sqlite'>[]]);
 
-        processed += instances.length;
+        processed += rows.length;
         updated += updates.length;
-        cursor = instances.at(-1)!.id;
+        cursor = rows.at(-1)!.id;
 
         console.log(`[Task] Processed ${processed} instances...`);
       }

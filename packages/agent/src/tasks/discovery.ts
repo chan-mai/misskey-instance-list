@@ -1,11 +1,12 @@
-import { prisma } from '@mil/core/db';
+import { sql, eq } from 'drizzle-orm';
+import { instances, excludedHosts, chunkForD1 } from '@mil/core/db';
 import { validateInstance } from '@mil/core/crawl';
 import { defineTask } from './define.js';
 
 /**
  * タスク: discovery
  * 説明: 既知のインスタンスから新しいMisskeyインスタンスを発見する
- * 冪等性: 冪等。安全にリトライ可能。存在しないインスタンスのみを追加します。
+ * 冪等性: 冪等安全にリトライ可能存在しないインスタンスのみを追加します
  */
 export default defineTask({
   meta: {
@@ -13,22 +14,27 @@ export default defineTask({
     description: 'Discover new Misskey instances from known instances'
   },
   async run(ctx) {
-    const excludedList = await prisma.excludedHost.findMany({ select: { domain: true } });
+    const excludedList = await ctx.db
+      .select({ domain: excludedHosts.domain })
+      .from(excludedHosts);
     const excludedSet = new Set(excludedList.map(r => r.domain));
 
-    const actives = await prisma.$queryRaw<{ id: string }[]>`
-        SELECT id FROM instances WHERE is_alive = true ORDER BY RANDOM() LIMIT 5
-    `;
+    const actives = await ctx.db
+      .select({ id: instances.id })
+      .from(instances)
+      .where(eq(instances.is_alive, true))
+      .orderBy(sql`random()`)
+      .limit(5);
 
     if (!actives || actives.length === 0) {
       return { result: 'No active instances' };
     }
 
-    console.log(`Starting discovery from: ${actives.map((r: { id: string }) => r.id).join(', ')}`);
+    console.log(`Starting discovery from: ${actives.map(r => r.id).join(', ')}`);
 
     let totalDiscovered = 0;
 
-    await Promise.all(actives.map(async(row: { id: string }) => {
+    await Promise.all(actives.map(async(row) => {
       try {
         const res = await validateInstance(ctx, row.id);
         if (!res.info) {
@@ -51,15 +57,15 @@ export default defineTask({
               'Content-Type': 'application/json',
               'User-Agent': 'MisskeyInstanceList/0.1.0'
             },
-            body: JSON.stringify({ 
-              limit, 
-              offset, 
-              sort: '+pubSub' 
+            body: JSON.stringify({
+              limit,
+              offset,
+              sort: '+pubSub'
             }),
             signal: controller.signal
           }).finally(() => clearTimeout(timeoutId));
 
-          if (!res.ok) break; 
+          if (!res.ok) break;
 
           const list = await res.json() as any[];
           if (!Array.isArray(list) || list.length === 0) break;
@@ -72,7 +78,7 @@ export default defineTask({
             }
           }
 
-          if (list.length < limit) break; 
+          if (list.length < limit) break;
           offset += limit;
         }
 
@@ -80,12 +86,15 @@ export default defineTask({
 
         const uniqueHosts = [...new Set(newHosts)];
 
-        const data = uniqueHosts.map(host => ({ id: host }));
-        await prisma.instance.createMany({
-          data,
-          skipDuplicates: true
-        });
-        
+        // D1のバインドパラメータ上限(100)に収まるよう分割する
+        for (const chunk of chunkForD1(uniqueHosts, 1)) {
+          await ctx.db
+            .insert(instances)
+            .values(chunk.map(host => ({ id: host })))
+            .onConflictDoNothing();
+        }
+
+
         totalDiscovered += uniqueHosts.length;
         console.log(`Discovered from ${row.id}: found ${uniqueHosts.length} candidates`);
 

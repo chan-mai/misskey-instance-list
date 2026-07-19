@@ -1,69 +1,43 @@
-import { prisma } from '@mil/core/db';
-import type { CrawlContext } from '@mil/core/crawl';
+import { createDb } from '@mil/core/db';
+import { TASKS, type TaskName } from './tasks/registry.js';
+import type { TaskContext, TaskMessage } from './tasks/define.js';
 
-export interface AgentConfig {
-  taskSecret: string;
-  githubToken?: string;
-  gcpProjectId?: string;
-  gcpRegion: string;
-  /** 自身のCloud RunサービスURL, ワーカーエンドポイントのenqueue先になる */
-  serviceUrl?: string;
-  serviceAccountEmail?: string;
-  serviceName?: string;
-  port: number;
+export interface Env {
+  DB: D1Database;
+  TASK_QUEUE: Queue<TaskMessage>;
+  /** 手動トリガー用の共有シークレット, wrangler secret putで設定する */
+  TASK_SECRET: string;
+  /** GitHub APIのレート制限緩和用トークン */
+  GITHUB_TOKEN?: string;
 }
 
-/** enqueueに必要な項目が揃ったAgentConfig */
-export type EnqueueableConfig = AgentConfig &
-  Required<Pick<AgentConfig, 'gcpProjectId' | 'serviceUrl' | 'serviceName'>>;
+/** Queues sendBatchの1回あたり上限 */
+const SEND_BATCH_LIMIT = 100;
 
-const required = (name: string): string => {
-  const value = process.env[name]?.trim();
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
+// scheduledハンドラはcontroller.cronで式しか渡さないため式ごとに配列で持つ
+export const CRON_TASKS: Record<string, TaskName[]> = {
+  '0 0 * * *': ['discovery', 'sync:exclusions'],
+  '0 */6 * * *': ['sync:stats'],
+  '0 */12 * * *': ['sync:recommendation-scores', 'update'],
 };
 
-/**
- * 環境変数から設定を組み立てる
- *
- * TASK_SECRETは認証に使うため起動時に必須とする。
- * GCP系はenqueue時にのみ必要なので, ローカルでworkersだけ叩く用途では未設定でも起動できる。
- */
-export const loadConfig = (): AgentConfig => ({
-  taskSecret: required('TASK_SECRET'),
-  githubToken: process.env.GITHUB_TOKEN,
-  gcpProjectId: process.env.GCP_PROJECT_ID?.trim(),
-  gcpRegion: process.env.GCP_REGION?.trim() || 'asia-northeast1',
-  serviceUrl: process.env.SERVICE_URL?.trim(),
-  serviceAccountEmail: process.env.SERVICE_ACCOUNT_EMAIL,
-  serviceName: process.env.SERVICE_NAME?.trim(),
-  // Cloud RunはPORTを注入するため, 既定値はローカル用(webの3000と衝突しない番号)
-  port: Number(process.env.PORT) || 3001,
-});
+// D1バインディングはenvにしか無いためイベント毎に組み立てる
+export const buildTaskContext = (env: Env): TaskContext => {
+  const db = createDb(env.DB);
 
-/**
- * enqueueに必要な設定が揃っているか検証する
- *
- * serviceUrlをリクエストから推測するフォールバックは持たない。
- * 設定漏れを隠して誤ったURLへenqueueするより, ここで落とす方が安全なため。
- */
-export const assertEnqueueable = (config: AgentConfig): EnqueueableConfig => {
-  const missing = (['gcpProjectId', 'serviceUrl', 'serviceName'] as const)
-    .filter((key) => !config[key]);
+  const enqueue = async(messages: TaskMessage[]): Promise<void> => {
+    for (let i = 0; i < messages.length; i += SEND_BATCH_LIMIT) {
+      const slice = messages.slice(i, i + SEND_BATCH_LIMIT);
+      await env.TASK_QUEUE.sendBatch(slice.map((body) => ({ body })));
+    }
+  };
 
-  if (missing.length > 0) {
-    const envNames = { gcpProjectId: 'GCP_PROJECT_ID', serviceUrl: 'SERVICE_URL', serviceName: 'SERVICE_NAME' };
-    throw new Error(
-      `Cloud Tasks configuration missing: ${missing.map((k) => envNames[k]).join(', ')}`
-    );
-  }
+  const ctx: TaskContext = {
+    db,
+    githubToken: env.GITHUB_TOKEN,
+    runTask: (name: TaskName) => TASKS[name].run(ctx),
+    enqueue,
+  };
 
-  return config as EnqueueableConfig;
+  return ctx;
 };
-
-export const createCrawlContext = (config?: Pick<AgentConfig, 'githubToken'>): CrawlContext => ({
-  prisma,
-  githubToken: config?.githubToken ?? process.env.GITHUB_TOKEN,
-});

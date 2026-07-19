@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "misskey-instance-list",
+  "main": "./.output/server/index.mjs",
+  "compatibility_date": "2026-07-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./.output/public/",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mil"
+    }
+  ],
+  "kv_namespaces": [
+    { "binding": "CACHE_KV" }
+  ],
+  "observability": { "enabled": true }
+}

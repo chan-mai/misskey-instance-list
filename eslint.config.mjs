@@ -19,6 +19,7 @@ export default tseslint.config(
       '**/.output/**',
       '**/node_modules/**',
       '**/generated/**',
+      '**/.wrangler/**',
     ],
   },
   {

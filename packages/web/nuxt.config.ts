@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld', 'nuxt-security', 'nuxt-oidc-auth'],
+  // nitro-cloudflare-devが無いとdev時にevent.context.cloudflare.envが空になりD1へ届かない
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld', 'nuxt-security', 'nuxt-oidc-auth', 'nitro-cloudflare-dev'],
   components: [
     { path: '~/components', pathPrefix: false },
   ],
@@ -17,11 +18,7 @@ export default defineNuxtConfig({
       contentSecurityPolicy: false,
       strictTransportSecurity: false,
     },
-    rateLimiter: {
-      tokensPerInterval: 1500,
-      interval: 10 * 1000,
-      throwError: true,
-    },
+    rateLimiter: false,
   },
   oidc: {
     enabled: true,
@@ -121,18 +118,25 @@ export default defineNuxtConfig({
       },
     },
   },
-  runtimeConfig: {
-    database_url: process.env.DATABASE_URL,
-  },
   nitro: {
+    preset: 'cloudflare_module',
+    // ローカルD1をパッケージ間で共有する
+    cloudflareDev: {
+      persistDir: '../../.wrangler/state/v3',
+    },
     prerender: {
+      // '/'はindex.vueが/api/v1/statsを引くため除外, ビルド時にD1バインディングが無く500が焼き付く
       routes: [
-        '/',
         '/docs/api/v1',
         '/docs/api/v1/instances',
         '/docs/api/v1/exclusions',
         '/docs/api/v1/stats'
       ]
+    },
+    // 既定のメモリドライバはisolate毎でキャッシュが効かない。
+    // oidcは不要, セッションはsealed cookieでstorageはrefreshToken用(offline_access未要求のため未使用)
+    storage: {
+      cache: { driver: 'cloudflare-kv-binding', binding: 'CACHE_KV' },
     },
     // dev環境ではAPIキャッシュを無効化
     routeRules: process.env.NODE_ENV === 'development'

@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // マイグレーション適用専用の設定。Workerとしてはデプロイしない
+  "name": "mil-migrations",
+  "compatibility_date": "2026-07-15",
+  // database_idは指定しない。ローカルはdatabase_nameで解決される
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mil",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}

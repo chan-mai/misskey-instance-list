@@ -1,6 +1,8 @@
-import { prisma } from '@mil/core/db';
+import { eq } from 'drizzle-orm';
+import { instances, excludedHosts } from '@mil/core/db';
 import { validateInstance, saveInstance } from '@mil/core/crawl';
 import { validateDomain, isPubliclyResolvable } from '@mil/core/net';
+import { useDb } from '~~/server/utils/db';
 import { createCrawlContext } from '~~/server/utils/crawl-context';
 
 /**
@@ -17,6 +19,7 @@ import { createCrawlContext } from '~~/server/utils/crawl-context';
  * @throws 409 Conflict (除外済みホスト)
  */
 export default defineEventHandler(async(event) => {
+  const db = useDb(event);
   const body = await readBody(event);
 
   const { valid, normalized, error } = validateDomain(body?.domain);
@@ -26,7 +29,11 @@ export default defineEventHandler(async(event) => {
   const domain = normalized!; // バリデーション済み
 
   // 除外ホストはクロール対象にしない
-  const excluded = await prisma.excludedHost.findUnique({ where: { domain } });
+  const [excluded] = await db
+    .select({ source: excludedHosts.source })
+    .from(excludedHosts)
+    .where(eq(excludedHosts.domain, domain))
+    .limit(1);
   if (excluded) {
     throw createError({
       statusCode: 409,
@@ -43,36 +50,40 @@ export default defineEventHandler(async(event) => {
   }
 
   // 未登録ドメインはレコードを作ってからクロールする
-  const created = await prisma.instance.createMany({
-    data: [{ id: domain }],
-    skipDuplicates: true,
-  });
+  // 既存なら競合して0行, returningの件数で新規作成かを判定する
+  const created = await db
+    .insert(instances)
+    .values({ id: domain })
+    .onConflictDoNothing({ target: instances.id })
+    .returning({ id: instances.id });
 
-  const ctx = createCrawlContext();
+  const ctx = createCrawlContext(event);
   const result = await validateInstance(ctx, domain);
   await saveInstance(ctx, domain, result, new Date());
 
-  const instance = await prisma.instance.findUnique({
-    where: { id: domain },
-    select: {
-      id: true,
-      node_name: true,
-      version: true,
-      users_count: true,
-      notes_count: true,
-      is_alive: true,
-      suspension_state: true,
-      language: true,
-      repository_url: true,
-      last_check_at: true,
-    },
-  });
+  const [instance] = await db
+    .select({
+      id: instances.id,
+      node_name: instances.node_name,
+      version: instances.version,
+      users_count: instances.users_count,
+      notes_count: instances.notes_count,
+      is_alive: instances.is_alive,
+      suspension_state: instances.suspension_state,
+      language: instances.language,
+      repository_url: instances.repository_url,
+      last_check_at: instances.last_check_at,
+    })
+    .from(instances)
+    .where(eq(instances.id, domain))
+    .limit(1);
 
   return {
     domain,
     ok: !!result.info,
     error: result.error ?? null,
-    created: created.count > 0,
-    instance,
+    created: created.length > 0,
+    // 不在時はundefinedになるが, findUnique相当のnullを保つ
+    instance: instance ?? null,
   };
 });

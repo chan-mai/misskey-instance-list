@@ -1,4 +1,6 @@
-import type { SuspensionState } from '../generated/client.js';
+import { eq } from 'drizzle-orm';
+import { instances, repositories, excludedHosts } from '../db/index.js';
+import type { SuspensionState, RepositoryInsert } from '../db/index.js';
 import { isPubliclyResolvable } from '../net/ip.js';
 import type { CrawlContext } from './context.js';
 
@@ -157,7 +159,7 @@ export async function getInstanceInfo(
     if (typeof ni.openRegistrations === 'boolean') {
       openRegistrations = ni.openRegistrations;
     }
-    
+
     if (metadata && typeof metadata.emailRequiredForSignup === 'boolean') {
       emailRequired = metadata.emailRequiredForSignup;
     }
@@ -181,7 +183,7 @@ export async function getInstanceInfo(
                 notesCount?: number;
                 originalNotesCount?: number;
             };
-            
+
             // ユーザー数: originalUsersCount (ローカル) > usersCount (連合含む)
             if (typeof stats.originalUsersCount === 'number') {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -323,10 +325,10 @@ export async function getInstanceInfo(
 /**
  * インスタンスの同一性と整合性を検査する, DBへの書き込みは行わない
  *
- * bot相当とブラウザ相当の2つのUser-Agentで取得し, 非Misskey・フォーク・偽装を判定する。
- * 不合格の場合は`rejection`に理由を載せて返し, 反映の判断は呼び出し側に委ねる。
+ * bot相当とブラウザ相当の2つのUser-Agentで取得し, 非Misskey・フォーク・偽装を判定する
+ * 不合格の場合は`rejection`に理由を載せて返し, 反映の判断は呼び出し側に委ねる
  *
- * 利用者入力のホストをそのまま接続先にできるため, 冒頭でSSRF対策の名前解決検査を行う。
+ * 利用者入力のホストをそのまま接続先にできるため, 冒頭でSSRF対策の名前解決検査を行う
  *
  * @param host - 検査対象のホスト(ドメイン)
  * @returns 成功時はInstanceInfoを含むEvaluationResult, 到達不能・GONE・不合格時は`info: null`
@@ -438,11 +440,11 @@ export async function evaluateInstance(
 /**
  * インスタンスを検査し, 不合格なら除外リストへの登録とインスタンス削除まで行う
  *
- * 判定自体は`evaluateInstance`に委譲する。書き込みを伴うため, 認証済みの経路
- * (クロールタスク, /api/admin/crawl)からのみ呼ぶこと。認証なしの公開経路では
- * `evaluateInstance`を使う。
+ * 判定自体は`evaluateInstance`に委譲する書き込みを伴うため, 認証済みの経路
+ * (クロールタスク, /api/admin/crawl)からのみ呼ぶこと認証なしの公開経路では
+ * `evaluateInstance`を使う
  *
- * @param ctx - Prismaクライアント等の依存
+ * @param ctx - DBクライアント等の依存
  * @param host - 検査対象のホスト(ドメイン)
  */
 export async function validateInstance(
@@ -452,16 +454,17 @@ export async function validateInstance(
   const { rejection, ...result } = await evaluateInstance(host);
 
   if (rejection) {
-    await ctx.prisma.excludedHost.upsert({
-      where: { domain: host },
-      update: { reason: rejection.reason },
-      create: {
-        domain: host,
-        reason: rejection.reason,
-        source: 'system',
-      },
-    });
-    await ctx.prisma.instance.deleteMany({ where: { id: host } });
+    // updateはreasonのみ, 既存sourceは維持
+    await ctx.db.batch([
+      ctx.db
+        .insert(excludedHosts)
+        .values({ domain: host, reason: rejection.reason, source: 'system' })
+        .onConflictDoUpdate({
+          target: excludedHosts.domain,
+          set: { reason: rejection.reason },
+        }),
+      ctx.db.delete(instances).where(eq(instances.id, host)),
+    ]);
   }
 
   return result;
@@ -597,7 +600,7 @@ export async function saveInstance(
   now: Date,
   language?: string | null
 ) {
-  const { prisma } = ctx;
+  const { db } = ctx;
   const info = res.info;
 
   if (info) {
@@ -605,80 +608,55 @@ export async function saveInstance(
       ? await resolveRepositoryInfo(info.repositoryUrl, ctx.githubToken)
       : null;
 
-    const MAX_RETRIES = 5;
-    let lastError: any;
+    // リポジトリのリレーションを更新
+    if (info.repositoryUrl && repoInfo) {
+      const { repositoryName, repository } = repoInfo;
+      // $onUpdateはonConflictDoUpdate内で発火しないため明示
+      const set: Partial<RepositoryInsert> = { updated_at: new Date() };
+      if (repositoryName) set.name = repositoryName;
+      if (repository?.description) set.description = repository.description;
 
-    for (let i = 0; i < MAX_RETRIES; i++) {
-      try {
-        // リポジトリのリレーションを更新 (connectOrCreate/upsertロジックを使用)
-        // トランザクションから外してロック競合を低減
-        if (info.repositoryUrl && repoInfo) {
-          const { repositoryName, repository } = repoInfo;
-          await prisma.repository.upsert({
-            where: { url: info.repositoryUrl },
-            update: {
-              ...(repositoryName ? { name: repositoryName } : {}),
-              ...(repository?.description
-                ? { description: repository.description }
-                : {}),
-            },
-            create: {
-              url: info.repositoryUrl,
-              name: repositoryName,
-              description: repository?.description || null,
-            },
-          });
-        }
-
-        // インスタンス情報を更新 (一括更新)
-        await prisma.instance.updateMany({
-          where: { id },
-          data: {
-            node_name: info.name,
-            users_count: info.users,
-            notes_count: info.notes,
-            version: info.version,
-            is_alive: true,
-            last_check_at: now,
-            banner_url: info.banner,
-            icon_url: info.icon,
-            suspension_state: 'none' as SuspensionState,
-            language: language,
-            repository_url: info.repositoryUrl && repoInfo ? info.repositoryUrl : null,
-            open_registrations: info.openRegistrations,
-            email_required: info.emailRequired,
-          },
-        });
-
-        // 成功ならループを抜ける
-        break;
-      } catch (e: any) {
-        lastError = e;
-        // P2034 (Write conflict) or P2028 (Transaction timeout) の場合リトライ
-        if ((e.code === 'P2034' || e.code === 'P2028') && i < MAX_RETRIES - 1) {
-          // 指数バックオフ + ランダムジッター (200ms ~ 1000ms程度)
-          const delay = Math.random() * (200 * Math.pow(2, i));
-          await new Promise((r) => setTimeout(r, 200 + delay));
-          continue;
-        }
-        // その他のエラー、またはリトライ上限の場合はthrow
-        throw e;
-      }
+      await db
+        .insert(repositories)
+        .values({
+          url: info.repositoryUrl,
+          name: repositoryName,
+          description: repository?.description || null,
+        })
+        .onConflictDoUpdate({ target: repositories.url, set });
     }
-    // ループ完了後もlastErrorがある場合はthrow（通常到達しないが安全のため）
-    if (lastError) throw lastError;
+
+    // インスタンス情報を更新
+    await db
+      .update(instances)
+      .set({
+        node_name: info.name,
+        users_count: info.users,
+        notes_count: info.notes,
+        version: info.version,
+        is_alive: true,
+        last_check_at: now,
+        banner_url: info.banner,
+        icon_url: info.icon,
+        suspension_state: 'none' as SuspensionState,
+        language: language,
+        repository_url: info.repositoryUrl && repoInfo ? info.repositoryUrl : null,
+        open_registrations: info.openRegistrations,
+        email_required: info.emailRequired,
+      })
+      .where(eq(instances.id, id));
   } else {
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
     const state: SuspensionState = res.error === 'GONE' ? 'gone' : 'suspended';
-    await prisma.instance.updateMany({
-      where: { id },
-      data: {
+    await db
+      .update(instances)
+      .set({
         is_alive: false,
         last_check_at: now,
         suspension_state: state,
-      },
-    });
+      })
+      .where(eq(instances.id, id));
   }
 }
 

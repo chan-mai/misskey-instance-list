@@ -1,5 +1,7 @@
-import { prisma } from '@mil/core/db';
+import { eq } from 'drizzle-orm';
+import { excludedHosts } from '@mil/core/db';
 import { validateDomain } from '@mil/core/net';
+import { useDb } from '~~/server/utils/db';
 
 /**
  * 除外解除API (管理者用)
@@ -15,6 +17,7 @@ import { validateDomain } from '@mil/core/net';
  * @throws 404 Not Found
  */
 export default defineEventHandler(async(event) => {
+  const db = useDb(event);
   const domain = getRouterParam(event, 'domain');
 
   if (!domain) {
@@ -27,18 +30,16 @@ export default defineEventHandler(async(event) => {
   }
   const normalizedDomain = validation.normalized!;
 
-  try {
-    // 削除実行
-    const exclusion = await prisma.excludedHost.delete({
-      where: { domain: normalizedDomain },
-    });
-    return exclusion;
-  } catch (e: unknown) {
-    // レコード不在 (P2025) のハンドリング
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((e as any).code === 'P2025') {
-      throw createError({ statusCode: 404, statusMessage: 'Exclusion not found' });
-    }
-    throw e;
+  // 削除実行
+  // レコード不在でも例外は出ないため, returningの件数で判定する
+  const [exclusion] = await db
+    .delete(excludedHosts)
+    .where(eq(excludedHosts.domain, normalizedDomain))
+    .returning();
+
+  if (!exclusion) {
+    throw createError({ statusCode: 404, statusMessage: 'Exclusion not found' });
   }
+
+  return exclusion;
 });

@@ -1,4 +1,5 @@
-import { prisma } from '@mil/core/db';
+import { and, asc, count, desc, eq, isNotNull, sum } from 'drizzle-orm';
+import { instances, repositories as repositoriesTable, excludedHosts } from '@mil/core/db';
 
 /**
  * GET /api/v1/stats
@@ -13,93 +14,67 @@ import { prisma } from '@mil/core/db';
  *
  * @returns {Promise<StatsResponse>} 統計情報オブジェクト
  */
-export default defineCachedEventHandler(async(): Promise<StatsResponse> => {
-  // 関知済みインスタンス数をカウント (停止中・消滅したものも含む)
-  const known = await prisma.instance.count();
+export default defineCachedEventHandler(async(event): Promise<StatsResponse> => {
+  const db = useDb(event);
 
-  // アクティブなインスタンス数をカウント
-  const active = await prisma.instance.count({
-    where: { is_alive: true }
-  });
-
-  // 除外リストのカウント
-  const exclusionsCount = await prisma.excludedHost.count();
-
-  // ユーザー総数をカウント
-  const usersCount = await prisma.instance.aggregate({
-    where: { is_alive: true },
-    _sum: {
-      users_count: true
-    }
-  });
+  // スカラー4件は1回のbatchにまとめて往復を削減する
+  const [knownRows, activeRows, exclusionRows, usersRows] = await db.batch([
+    // 関知済みインスタンス数をカウント (停止中・消滅したものも含む)
+    db.select({ value: count() }).from(instances),
+    // アクティブなインスタンス数をカウント
+    db.select({ value: count() }).from(instances).where(eq(instances.is_alive, true)),
+    // 除外リストのカウント
+    db.select({ value: count() }).from(excludedHosts),
+    // ユーザー総数をカウント
+    db
+      .select({ value: sum(instances.users_count).mapWith(Number) })
+      .from(instances)
+      .where(eq(instances.is_alive, true)),
+  ]);
 
   // アクティブなインスタンスのリポジトリ使用状況を取得
-  const repoStats = await prisma.instance.groupBy({
-    by: ['repository_url'],
-    where: {
-      is_alive: true,
-      repository_url: { not: null }
-    },
-    _count: {
-      repository_url: true
-    },
-    orderBy: {
-      _count: {
-        repository_url: 'desc'
-      }
-    }
-  });
+  const repoStats = await db
+    .select({
+      url: instances.repository_url,
+      name: repositoriesTable.name,
+      description: repositoriesTable.description,
+      count: count(instances.repository_url),
+    })
+    .from(instances)
+    .leftJoin(repositoriesTable, eq(instances.repository_url, repositoriesTable.url))
+    .where(and(eq(instances.is_alive, true), isNotNull(instances.repository_url)))
+    .groupBy(instances.repository_url, repositoriesTable.name, repositoriesTable.description)
+    // 同数時の順序を固定
+    .orderBy(desc(count(instances.repository_url)), asc(instances.repository_url));
 
-  // リポジトリの詳細情報を取得
-  const repoUrls = repoStats.map(s => s.repository_url as string);
-  const repoDetails = await prisma.repository.findMany({
-    where: {
-      url: { in: repoUrls }
-    }
-  });
-
-  // URLをキーにしたMapを作成し、検索を高速化
-  const repoMap = new Map(repoDetails.map(r => [r.url, r]));
-
-  // リポジトリリストを整形
-  const repositories = repoStats.map(stat => {
-    const detail = repoMap.get(stat.repository_url as string);
-    return {
-      url: stat.repository_url as string,
-      name: detail?.name || null,
-      description: detail?.description || null,
-      count: stat._count.repository_url
-    };
-  });
+  const repositories = repoStats.map(stat => ({
+    url: stat.url as string,
+    // 旧実装に合わせ空文字はnullへ寄せる
+    name: stat.name || null,
+    description: stat.description || null,
+    count: stat.count,
+  }));
 
   // 言語の使用状況を取得
-  const langStats = await prisma.instance.groupBy({
-    by: ['language'],
-    where: {
-      is_alive: true,
-      language: { not: null }
-    },
-    _count: {
-      language: true
-    },
-    orderBy: {
-      _count: {
-        language: 'desc'
-      }
-    }
-  });
+  const langStats = await db
+    .select({ code: instances.language, count: count(instances.language) })
+    .from(instances)
+    .where(and(eq(instances.is_alive, true), isNotNull(instances.language)))
+    .groupBy(instances.language)
+    .orderBy(desc(count(instances.language)), asc(instances.language));
 
   const languages = langStats.map(stat => ({
-    code: stat.language as string,
-    count: stat._count.language
+    code: stat.code as string,
+    count: stat.count,
   }));
 
   return {
     counts: {
-      known,
-      active,
-      exclusions: exclusionsCount,
-      users: usersCount._sum.users_count || 0
+      known: knownRows[0]?.value ?? 0,
+      active: activeRows[0]?.value ?? 0,
+      exclusions: exclusionRows[0]?.value ?? 0,
+      // sumは0行でNULLを返す
+      users: usersRows[0]?.value ?? 0,
     },
     repositories,
     languages
