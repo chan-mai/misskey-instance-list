@@ -86,8 +86,8 @@ export default defineTask({
 
         const uniqueHosts = [...new Set(newHosts)];
 
-        // D1のバインドパラメータ上限(100)に収まるよう分割する
-        for (const chunk of chunkForD1(uniqueHosts, 1)) {
+        // id + default付き4列で1行5パラメータ
+        for (const chunk of chunkForD1(uniqueHosts, 5)) {
           await ctx.db
             .insert(instances)
             .values(chunk.map(host => ({ id: host })))

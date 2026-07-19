@@ -76,8 +76,8 @@ async function seed(db: Database) {
       const uniqueUrls = [...new Set(data.map(d => d.url).filter(u => !!u))];
 
       // joinmisskeyのリストは1000件超, アプリ最大の書き込み
-      // D1のパラメータ上限に収まるよう分割して逐次投入する
-      for (const chunk of chunkForD1(uniqueUrls, 1)) {
+      // id + default付き4列(users_count/notes_count/is_alive/suspension_state)で5パラメータ
+      for (const chunk of chunkForD1(uniqueUrls, 5)) {
         await db
           .insert(instances)
           .values(chunk.map(url => ({ id: url })))

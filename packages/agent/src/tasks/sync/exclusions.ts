@@ -58,7 +58,8 @@ export default defineTask({
       // 古い joinmisskey エントリを削除
       // 以下いずれもD1のバインドパラメータ上限(100)に収まるよう分割する
       if (deletions.length > 0) {
-        for (const chunk of chunkForD1(deletions, 1)) {
+        // domain分 + where句のsource分で余裕を見る
+        for (const chunk of chunkForD1(deletions, 2)) {
           await ctx.db
             .delete(excludedHosts)
             .where(

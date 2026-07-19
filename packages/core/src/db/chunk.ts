@@ -4,6 +4,10 @@ export const D1_MAX_BOUND_PARAMS = 100;
 /**
  * D1のバインドパラメータ上限に収まるよう行を分割する
  *
+ * 注意: drizzleはスカラーのdefault値もクライアント側でバインドするため,
+ * columnsPerRowは明示した列だけでなくdefault付き列も数えること
+ * (sql式のdefaultはインライン展開されるので数えない)
+ *
  * @param rows 分割対象
  * @param columnsPerRow 1行あたりが消費するパラメータ数
  */
