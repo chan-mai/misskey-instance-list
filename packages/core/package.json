@@ -1,0 +1,36 @@
+{
+  "name": "@mil/core",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./dist/index.js",
+    "./db": "./dist/db/index.js",
+    "./crawl": "./dist/crawl/index.js",
+    "./lang": "./dist/lang/index.js",
+    "./net": "./dist/net/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:deploy": "wrangler d1 migrations apply mil-prod --remote --env prod",
+    "db:migrate:stg": "wrangler d1 migrations apply mil-stg --remote --env stg",
+    "db:migrate:local": "wrangler d1 migrations apply mil --local --persist-to ../../.wrangler/state",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "eld": "^2.0.3",
+    "franc": "^6.2.0",
+    "ipaddr.js": "^2.4.0",
+    "iso-639-3": "^3.0.1",
+    "tinyld": "^1.3.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260714.1",
+    "@types/node": "^24.0.0",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.32.0"
+  }
+}

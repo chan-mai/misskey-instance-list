@@ -1,0 +1,24 @@
+{
+  "name": "@mil/agent",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "dev": "wrangler dev --persist-to ../../.wrangler/state",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mil/core": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "hono": "^4.6.0",
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260714.1",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.32.0"
+  }
+}

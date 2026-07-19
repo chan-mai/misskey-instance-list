@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // マイグレーション適用専用。Workerとしてはデプロイしない
+  "name": "mil-migrations",
+  "compatibility_date": "2026-07-15",
+  // 既定(トップレベル)はローカル開発用, database_idはローカルでは使われない
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mil",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "env": {
+    "stg": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "mil-stg",
+          "database_id": "48d33e0b-805d-4d62-82a3-17a9349f96ef",
+          "migrations_dir": "drizzle"
+        }
+      ]
+    },
+    "prod": {
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "mil-prod",
+          "database_id": "386db29e-5c84-45cb-aeb0-15a2b383628e",
+          "migrations_dir": "drizzle"
+        }
+      ]
+    }
+  }
+}

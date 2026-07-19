@@ -1,0 +1,56 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "misskey-instance-list",
+  "main": "./.output/server/index.mjs",
+  "compatibility_date": "2026-07-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./.output/public/",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+
+  // 既定はローカル開発用
+  "d1_databases": [{ "binding": "DB", "database_name": "mil" }],
+  "kv_namespaces": [{ "binding": "CACHE_KV" }],
+
+  "env": {
+    "stg": {
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "assets": { "directory": "./.output/public/", "binding": "ASSETS" },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "mil-stg",
+          "database_id": "48d33e0b-805d-4d62-82a3-17a9349f96ef"
+        }
+      ],
+      "kv_namespaces": [{ "binding": "CACHE_KV", "id": "4c8eb42e4a8c463ba7c679d41d3d8edd" }],
+      // client_idはOIDC仕様上の公開値, 秘匿対象はclient_secretのみ
+      "vars": {
+        "NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI": "https://stg.servers.misskey.ink/auth/zitadel/callback",
+        "NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_ID": "382500899836169407"
+      },
+      "routes": [{ "pattern": "stg.servers.misskey.ink", "custom_domain": true }]
+    },
+    "prod": {
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "assets": { "directory": "./.output/public/", "binding": "ASSETS" },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "mil-prod",
+          "database_id": "386db29e-5c84-45cb-aeb0-15a2b383628e"
+        }
+      ],
+      "kv_namespaces": [{ "binding": "CACHE_KV", "id": "966e372ff50f41c8b1bb626c81384b3f" }],
+      "vars": {
+        "NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI": "https://servers.misskey.ink/auth/zitadel/callback",
+        "NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_ID": "382502852452453567"
+      }
+      // prodのcustom_domainは意図的に未設定, 切替は手動で行う
+    }
+  }
+}

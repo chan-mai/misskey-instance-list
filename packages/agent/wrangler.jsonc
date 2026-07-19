@@ -1,0 +1,69 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mil-agent",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // 既定はローカル開発用
+  "d1_databases": [{ "binding": "DB", "database_name": "mil" }],
+  "queues": {
+    "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks" }],
+    "consumers": [{ "queue": "mil-tasks", "max_batch_size": 1, "max_concurrency": 1, "max_retries": 3 }]
+  },
+
+  "env": {
+    "stg": {
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "mil-stg",
+          "database_id": "48d33e0b-805d-4d62-82a3-17a9349f96ef"
+        }
+      ],
+      "queues": {
+        "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks-stg" }],
+        "consumers": [
+          {
+            "queue": "mil-tasks-stg",
+            // Cloud Tasksのmax_concurrent_dispatches=1 / max_attempts=3 相当
+            "max_batch_size": 1,
+            "max_concurrency": 1,
+            "max_retries": 3,
+            "dead_letter_queue": "mil-tasks-dlq-stg"
+          }
+        ]
+      },
+      // stgはCron無効, 手動トリガーのみ
+      "triggers": { "crons": [] }
+    },
+    "prod": {
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "mil-prod",
+          "database_id": "386db29e-5c84-45cb-aeb0-15a2b383628e"
+        }
+      ],
+      "queues": {
+        "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks-prod" }],
+        "consumers": [
+          {
+            "queue": "mil-tasks-prod",
+            "max_batch_size": 1,
+            "max_concurrency": 1,
+            "max_retries": 3,
+            "dead_letter_queue": "mil-tasks-dlq-prod"
+          }
+        ]
+      },
+      // 式とタスクの対応はsrc/config.tsのCRON_TASKS
+      "triggers": { "crons": ["0 0 * * *", "0 */6 * * *", "0 */12 * * *"] }
+    }
+  }
+}
