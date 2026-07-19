@@ -1,8 +1,19 @@
 <script setup lang="ts">
+const { user, logout } = useOidcAuth();
+
 useHead({
   meta: [
     { name: 'robots', content: 'noindex, nofollow' },
   ],
+});
+
+// userinfoが取れない場合はIDトークンのclaims側にフォールバック
+const displayName = computed(() => {
+  const info = user.value?.userInfo as Record<string, unknown> | undefined;
+  return user.value?.userName
+    || (info?.preferred_username as string | undefined)
+    || (info?.email as string | undefined)
+    || 'Unknown user';
 });
 </script>
 
@@ -16,9 +27,17 @@ useHead({
           </NuxtLink>
         </div>
         <div class="flex items-center gap-4">
+          <span class="text-xs text-gray-500 hidden sm:inline">{{ displayName }}</span>
           <NuxtLink to="/" class="hover:text-primary transition-colors">
             <Icon name="lucide:home" class="w-5 h-5" />
           </NuxtLink>
+          <button
+            @click="logout()"
+            class="p-2 border-none text-gray-500 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+            title="ログアウト"
+          >
+            <Icon name="lucide:log-out" class="w-5 h-5" />
+          </button>
         </div>
       </div>
     </header>

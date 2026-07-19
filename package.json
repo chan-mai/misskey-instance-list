@@ -28,6 +28,7 @@
     "nuxt": "^4.4.5",
     "nuxt-gtag": "4.1.0",
     "nuxt-jsonld": "^2.2.1",
+    "nuxt-oidc-auth": "1.0.0-beta.11",
     "nuxt-security": "^2.6.0",
     "pg": "^8.20.0",
     "prisma": "^7.8.0",

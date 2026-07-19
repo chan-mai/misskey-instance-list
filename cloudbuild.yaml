@@ -16,6 +16,7 @@ steps:
           --build-arg GCP_REGION="$_REGION" \
           --build-arg SERVICE_NAME="$_SERVICE_NAME" \
           --build-arg SERVICE_ACCOUNT_EMAIL="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+          --build-arg NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL="${_ZITADEL_BASE_URL}" \
           .
     secretEnv: ['DATABASE_URL', 'TASK_SECRET']
 
@@ -35,7 +36,8 @@ steps:
           --cpu-boost \
           --memory=1Gi \
           --startup-probe="tcpSocket.port=3000,periodSeconds=30,failureThreshold=20,timeoutSeconds=10" \
-          --update-secrets "DATABASE_URL=${_SECRET_PREFIX}DATABASE_URL:latest,TASK_SECRET=${_SECRET_PREFIX}TASK_SECRET:latest,GITHUB_TOKEN=${_SECRET_PREFIX}GITHUB_TOKEN:latest,NUXT_ADMIN_USER=${_SECRET_PREFIX}ADMIN_USER:latest,NUXT_ADMIN_PASSWORD=${_SECRET_PREFIX}ADMIN_PASSWORD:latest"
+          --update-secrets "DATABASE_URL=${_SECRET_PREFIX}DATABASE_URL:latest,TASK_SECRET=${_SECRET_PREFIX}TASK_SECRET:latest,GITHUB_TOKEN=${_SECRET_PREFIX}GITHUB_TOKEN:latest,NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_ID=${_SECRET_PREFIX}ZITADEL_CLIENT_ID:latest,NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_SECRET=${_SECRET_PREFIX}ZITADEL_CLIENT_SECRET:latest,NUXT_OIDC_SESSION_SECRET=${_SECRET_PREFIX}OIDC_SESSION_SECRET:latest,NUXT_OIDC_TOKEN_KEY=${_SECRET_PREFIX}OIDC_TOKEN_KEY:latest,NUXT_OIDC_AUTH_SESSION_SECRET=${_SECRET_PREFIX}OIDC_AUTH_SESSION_SECRET:latest" \
+          --update-env-vars "NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL=${_ZITADEL_BASE_URL},NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI=${_ZITADEL_REDIRECT_URI}"
 availableSecrets:
   secretManager:
     - versionName: projects/1023578240084/secrets/${_SECRET_PREFIX}DATABASE_URL/versions/latest
@@ -48,5 +50,7 @@ substitutions:
   _AR_REPOSITORY: cloud-run-source-deploy
   _SERVICE_NAME: misskey-instance-list
   _SECRET_PREFIX: "" # Default empty, overridden by trigger
+  _ZITADEL_BASE_URL: "" # ZITADELインスタンスのURL, トリガーで指定
+  _ZITADEL_REDIRECT_URI: "" # https://<service-url>/auth/zitadel/callback, トリガーで指定
 options:
   logging: CLOUD_LOGGING_ONLY

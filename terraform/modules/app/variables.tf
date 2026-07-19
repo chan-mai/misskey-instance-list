@@ -63,14 +63,42 @@ variable "custom_domain" {
   default     = ""
 }
 
-variable "admin_user" {
-  description = "Admin Basic Auth User"
+variable "zitadel_base_url" {
+  description = "ZITADEL instance URL (e.g. https://example.zitadel.cloud)"
+  type        = string
+}
+
+variable "zitadel_redirect_uri" {
+  description = "OIDC callback URL (https://<service-url>/auth/zitadel/callback)"
+  type        = string
+}
+
+variable "zitadel_client_id" {
+  description = "ZITADEL application client ID"
   type        = string
   sensitive   = true
 }
 
-variable "admin_password" {
-  description = "Admin Basic Auth Password"
+variable "zitadel_client_secret" {
+  description = "ZITADEL application client secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "oidc_session_secret" {
+  description = "nuxt-oidc-auth session secret (48 chars or more)"
+  type        = string
+  sensitive   = true
+}
+
+variable "oidc_token_key" {
+  description = "nuxt-oidc-auth token encryption key (base64 encoded AES-256 key)"
+  type        = string
+  sensitive   = true
+}
+
+variable "oidc_auth_session_secret" {
+  description = "nuxt-oidc-auth auth session secret (48 chars or more)"
   type        = string
   sensitive   = true
 }

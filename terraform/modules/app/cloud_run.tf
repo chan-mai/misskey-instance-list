@@ -12,7 +12,7 @@ resource "google_cloud_run_service" "main" {
       containers {
         # Deploy from Artifact Registry
         image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.cloud_run_source_deploy.repository_id}/${var.service_name}:latest"
-        
+
         env {
           name = "DATABASE_URL"
           value_from {
@@ -54,19 +54,54 @@ resource "google_cloud_run_service" "main" {
           value = var.service_name
         }
         env {
-          name = "ADMIN_USER"
+          name  = "NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL"
+          value = var.zitadel_base_url
+        }
+        env {
+          name  = "NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI"
+          value = var.zitadel_redirect_uri
+        }
+        env {
+          name = "NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_ID"
           value_from {
             secret_key_ref {
-              name = google_secret_manager_secret.admin_user.secret_id
+              name = google_secret_manager_secret.zitadel_client_id.secret_id
               key  = "latest"
             }
           }
         }
         env {
-          name = "ADMIN_PASSWORD"
+          name = "NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_SECRET"
           value_from {
             secret_key_ref {
-              name = google_secret_manager_secret.admin_password.secret_id
+              name = google_secret_manager_secret.zitadel_client_secret.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "NUXT_OIDC_SESSION_SECRET"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.oidc_session_secret.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "NUXT_OIDC_TOKEN_KEY"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.oidc_token_key.secret_id
+              key  = "latest"
+            }
+          }
+        }
+        env {
+          name = "NUXT_OIDC_AUTH_SESSION_SECRET"
+          value_from {
+            secret_key_ref {
+              name = google_secret_manager_secret.oidc_auth_session_secret.secret_id
               key  = "latest"
             }
           }
