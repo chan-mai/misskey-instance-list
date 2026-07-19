@@ -1,13 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   // マイグレーション適用専用。Workerとしてはデプロイしない
-  "name": "mil-migrations",
+  "name": "misskey-instance-list-migrations",
   "compatibility_date": "2026-07-15",
-  // 既定(トップレベル)はローカル開発用, database_idはローカルでは使われない
+  // database_idは指定しない。ローカルはdatabase_nameで解決される
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "mil",
+      "database_name": "misskey-instance-list",
       "migrations_dir": "drizzle"
     }
   ],
@@ -16,8 +16,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "mil-stg",
-          "database_id": "48d33e0b-805d-4d62-82a3-17a9349f96ef",
+          "database_name": "misskey-instance-list-stg",
+          "database_id": "aa47f9b6-8bbd-4b75-92a1-8e180884cea6",
           "migrations_dir": "drizzle"
         }
       ]
@@ -26,8 +26,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "mil-prod",
-          "database_id": "386db29e-5c84-45cb-aeb0-15a2b383628e",
+          "database_name": "misskey-instance-list-prod",
+          "database_id": "d0bf79de-822f-4c76-9b4d-c409a06d77aa",
           "migrations_dir": "drizzle"
         }
       ]

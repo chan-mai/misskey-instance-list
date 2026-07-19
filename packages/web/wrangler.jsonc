@@ -11,7 +11,7 @@
   "observability": { "enabled": true },
 
   // 既定はローカル開発用
-  "d1_databases": [{ "binding": "DB", "database_name": "mil" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "misskey-instance-list" }],
   "kv_namespaces": [{ "binding": "CACHE_KV" }],
 
   "env": {
@@ -22,8 +22,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "mil-stg",
-          "database_id": "48d33e0b-805d-4d62-82a3-17a9349f96ef"
+          "database_name": "misskey-instance-list-stg",
+          "database_id": "aa47f9b6-8bbd-4b75-92a1-8e180884cea6"
         }
       ],
       "kv_namespaces": [{ "binding": "CACHE_KV", "id": "4c8eb42e4a8c463ba7c679d41d3d8edd" }],
@@ -43,8 +43,8 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "mil-prod",
-          "database_id": "386db29e-5c84-45cb-aeb0-15a2b383628e"
+          "database_name": "misskey-instance-list-prod",
+          "database_id": "d0bf79de-822f-4c76-9b4d-c409a06d77aa"
         }
       ],
       "kv_namespaces": [{ "binding": "CACHE_KV", "id": "966e372ff50f41c8b1bb626c81384b3f" }],

@@ -53,7 +53,7 @@ pnpm install
 cp .env.example .env
 
 # ローカルD1にマイグレーションを適用
-pnpm --filter @mil/core exec wrangler d1 migrations apply mil --local
+pnpm --filter @mil/core db:migrate:local
 ```
 
 ### Development Server

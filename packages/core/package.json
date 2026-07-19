@@ -13,9 +13,9 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "db:generate": "drizzle-kit generate",
-    "db:migrate:deploy": "wrangler d1 migrations apply mil-prod --remote --env prod",
-    "db:migrate:stg": "wrangler d1 migrations apply mil-stg --remote --env stg",
-    "db:migrate:local": "wrangler d1 migrations apply mil --local --persist-to ../../.wrangler/state",
+    "db:migrate:deploy": "wrangler d1 migrations apply misskey-instance-list-prod --remote --env prod",
+    "db:migrate:stg": "wrangler d1 migrations apply misskey-instance-list-stg --remote --env stg",
+    "db:migrate:local": "wrangler d1 migrations apply misskey-instance-list --local --persist-to ../../.wrangler/state",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -1,16 +1,23 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mil-agent",
+  "name": "misskey-instance-list-agent",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-15",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
 
   // 既定はローカル開発用
-  "d1_databases": [{ "binding": "DB", "database_name": "mil" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "misskey-instance-list" }],
   "queues": {
-    "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks" }],
-    "consumers": [{ "queue": "mil-tasks", "max_batch_size": 1, "max_concurrency": 1, "max_retries": 3 }]
+    "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks" }],
+    "consumers": [
+      {
+        "queue": "misskey-instance-list-tasks",
+        "max_batch_size": 1,
+        "max_concurrency": 1,
+        "max_retries": 3
+      }
+    ]
   },
 
   "env": {
@@ -20,20 +27,20 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "mil-stg",
-          "database_id": "48d33e0b-805d-4d62-82a3-17a9349f96ef"
+          "database_name": "misskey-instance-list-stg",
+          "database_id": "aa47f9b6-8bbd-4b75-92a1-8e180884cea6"
         }
       ],
       "queues": {
-        "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks-stg" }],
+        "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks-stg" }],
         "consumers": [
           {
-            "queue": "mil-tasks-stg",
+            "queue": "misskey-instance-list-tasks-stg",
             // Cloud Tasksのmax_concurrent_dispatches=1 / max_attempts=3 相当
             "max_batch_size": 1,
             "max_concurrency": 1,
             "max_retries": 3,
-            "dead_letter_queue": "mil-tasks-dlq-stg"
+            "dead_letter_queue": "misskey-instance-list-tasks-dlq-stg"
           }
         ]
       },
@@ -46,19 +53,19 @@
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "mil-prod",
-          "database_id": "386db29e-5c84-45cb-aeb0-15a2b383628e"
+          "database_name": "misskey-instance-list-prod",
+          "database_id": "d0bf79de-822f-4c76-9b4d-c409a06d77aa"
         }
       ],
       "queues": {
-        "producers": [{ "binding": "TASK_QUEUE", "queue": "mil-tasks-prod" }],
+        "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks-prod" }],
         "consumers": [
           {
-            "queue": "mil-tasks-prod",
+            "queue": "misskey-instance-list-tasks-prod",
             "max_batch_size": 1,
             "max_concurrency": 1,
             "max_retries": 3,
-            "dead_letter_queue": "mil-tasks-dlq-prod"
+            "dead_letter_queue": "misskey-instance-list-tasks-dlq-prod"
           }
         ]
       },
