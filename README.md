@@ -16,8 +16,9 @@ MisskeyHubのサーバーリストがメンテナンス中のまま復旧しな�
 ## 🚀 Tech Stack
 
 - **Frontend**: Nuxt 4, Vue 3, Tailwind CSS
-- **Backend**: Nitro, Prisma ORM
-- **Database**: CockroachDB (PostgreSQL互換)
+- **Backend**: Nitro (Cloudflare Workers), Hono (Cloudflare Workers), Drizzle ORM
+- **Database**: Cloudflare D1 (SQLite)
+- **Jobs**: Cloudflare Cron Triggers + Queues
 - **Styling**: kiso.css, Tailwind CSS
 
 ## 📖 API Documentation
@@ -40,7 +41,7 @@ APIドキュメントは https://servers.misskey.ink/docs/api/v1 で確認でき
 
 - Node.js 24+
 - pnpm
-- CockroachDB (または PostgreSQL)
+- Cloudflareアカウント (Workers Paidプラン, Queuesに必要)
 
 ### Setup
 
@@ -50,13 +51,9 @@ pnpm install
 
 # 環境変数の設定
 cp .env.example .env
-# .env ファイルを編集して DATABASE_URL を設定
 
-# Prisma クライアントの生成
-pnpm prisma generate
-
-# データベースのマイグレーション
-pnpm prisma migrate deploy
+# ローカルD1にマイグレーションを適用
+pnpm --filter @mil/core db:migrate:local
 ```
 
 ### Development Server
@@ -71,7 +68,31 @@ http://localhost:3000 で開発サーバーが起動します。
 
 ```bash
 pnpm build
-node .output/server/index.mjs
+pnpm --filter @mil/web exec wrangler deploy
+pnpm --filter @mil/agent exec wrangler deploy
+```
+
+### タスクの手動実行
+
+定期実行はCron Triggersが担う。手動で回したい場合はagent Workerのエンドポイントを叩く。
+
+```bash
+# ローカル (実バインディング付きでWorkerを起動)
+pnpm --filter @mil/agent dev
+
+# 別ターミナルから
+curl -X POST http://localhost:8787/api/tasks/update \
+  -H "Authorization: Bearer $TASK_SECRET"
+```
+
+タスク名は`update` / `discovery` / `sync:stats` / `sync:recommendation-scores` / `sync:exclusions`。
+キューに積まれるだけなので, 消費まで含めて確認するなら`wrangler dev`のログを見る。
+
+Cron Triggersの動作確認は`--test-scheduled`を使う。
+
+```bash
+pnpm --filter @mil/agent exec wrangler dev --test-scheduled
+curl "http://localhost:8787/__scheduled?cron=0+*/6+*+*+*"
 ```
 
 ## 🤝 Contributing

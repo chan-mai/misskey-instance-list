@@ -4,23 +4,54 @@ import globals from 'globals';
 import pluginVue from 'eslint-plugin-vue';
 import vueParser from 'vue-eslint-parser';
 
+const sharedTsRules = {
+  'semi': ['error', 'always'],
+  'quotes': [2, 'single'],
+  '@typescript-eslint/no-explicit-any': 'warn',
+  '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+};
+
 export default tseslint.config(
-  { ignores: ['dist', '.nuxt', '.output', 'node_modules', 'generated'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/node_modules/**',
+      '**/generated/**',
+      '**/.wrangler/**',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
     },
     rules: {
-      'semi': ['error', 'always'],
+      ...sharedTsRules,
       'space-before-blocks': [2, 'always'],
       'space-before-function-paren': [2, 'never'],
       'space-in-parens': [2, 'never'],
-      'quotes': [2, 'single'],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+  },
+  // サーバーサイドはNode, クライアントのみbrowser
+  {
+    files: ['packages/core/**/*.ts', 'packages/agent/**/*.ts', 'packages/web/server/**/*.ts'],
+    languageOptions: { globals: globals.node },
+  },
+  {
+    files: ['packages/web/app/**/*.{ts,vue}', 'packages/web/app.vue'],
+    languageOptions: { globals: globals.browser },
+  },
+  // coreはフレームワーク非依存を維持する
+  {
+    files: ['packages/core/**/*.ts'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: ['h3', 'nitropack', 'hono', '#imports', 'nuxt', 'vue'],
+        patterns: ['#*', 'nuxt/*', 'nitropack/*'],
+      }],
     },
   },
   {
@@ -38,10 +69,7 @@ export default tseslint.config(
     },
     rules: {
       ...pluginVue.configs['flat/recommended'].rules,
-      'semi': ['error', 'always'],
-      'quotes': [2, 'single'],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      ...sharedTsRules,
     },
   }
 );

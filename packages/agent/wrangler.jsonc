@@ -1,0 +1,76 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "misskey-instance-list-agent",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // 既定はローカル開発用
+  "d1_databases": [{ "binding": "DB", "database_name": "misskey-instance-list" }],
+  "queues": {
+    "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks" }],
+    "consumers": [
+      {
+        "queue": "misskey-instance-list-tasks",
+        "max_batch_size": 1,
+        "max_concurrency": 1,
+        "max_retries": 3
+      }
+    ]
+  },
+
+  "env": {
+    "stg": {
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "misskey-instance-list-stg",
+          "database_id": "aa47f9b6-8bbd-4b75-92a1-8e180884cea6"
+        }
+      ],
+      "queues": {
+        "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks-stg" }],
+        "consumers": [
+          {
+            "queue": "misskey-instance-list-tasks-stg",
+            // Cloud Tasksのmax_concurrent_dispatches=1 / max_attempts=3 相当
+            "max_batch_size": 1,
+            "max_concurrency": 1,
+            "max_retries": 3,
+            "dead_letter_queue": "misskey-instance-list-tasks-dlq-stg"
+          }
+        ]
+      },
+      // stgはCron無効, 手動トリガーのみ
+      "triggers": { "crons": [] }
+    },
+    "prod": {
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": { "enabled": true },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "misskey-instance-list-prod",
+          "database_id": "d0bf79de-822f-4c76-9b4d-c409a06d77aa"
+        }
+      ],
+      "queues": {
+        "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks-prod" }],
+        "consumers": [
+          {
+            "queue": "misskey-instance-list-tasks-prod",
+            "max_batch_size": 1,
+            "max_concurrency": 1,
+            "max_retries": 3,
+            "dead_letter_queue": "misskey-instance-list-tasks-dlq-prod"
+          }
+        ]
+      },
+      // 式とタスクの対応はsrc/config.tsのCRON_TASKS
+      "triggers": { "crons": ["0 0 * * *", "0 */6 * * *", "0 */12 * * *"] }
+    }
+  }
+}
