@@ -45,8 +45,10 @@
     "eslint-plugin-vue": "^10.9.1",
     "globals": "^17.6.0",
     "jiti": "^2.7.0",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.59.3",
-    "vue-eslint-parser": "^10.4.0"
+    "vue-eslint-parser": "^10.4.0",
+    "vue-tsc": "^3.3.7"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
