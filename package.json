@@ -1,62 +1,27 @@
 {
-  "name": "frontend",
+  "name": "misskey-instance-list",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "build": "prisma generate && nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "start": "node .output/server/index.mjs",
-    "postinstall": "nuxt prepare"
-  },
-  "dependencies": {
-    "@google-cloud/tasks": "^6.2.2",
-    "@nuxt/icon": "^2.2.2",
-    "@nuxtjs/color-mode": "^4.0.0",
-    "@nuxtjs/sitemap": "^8.0.15",
-    "@nuxtjs/tailwindcss": "^6.14.0",
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "eld": "^2.0.3",
-    "franc": "^6.2.0",
-    "ipaddr.js": "^2.4.0",
-    "iso-639-3": "^3.0.1",
-    "js-yaml": "^4.1.1",
-    "kiso.css": "^1.2.4",
-    "nuxt": "^4.4.6",
-    "nuxt-gtag": "4.1.0",
-    "nuxt-jsonld": "^2.2.1",
-    "nuxt-oidc-auth": "1.0.0-beta.11",
-    "nuxt-security": "^2.6.0",
-    "pg": "^8.20.0",
-    "prisma": "^7.8.0",
-    "tinyld": "^1.3.4",
-    "undici": "^8.2.0",
-    "vue": "^3.5.34",
-    "vue-router": "^4.6.4"
+    "dev": "pnpm --filter @mil/core build && concurrently --kill-others --names \"Core,Agent,Web\" -c \"gray,magenta,cyan\" \"pnpm dev:core\" \"pnpm dev:agent\" \"pnpm dev:web\"",
+    "dev:core": "pnpm --filter @mil/core dev",
+    "dev:agent": "pnpm --filter @mil/agent dev",
+    "dev:web": "pnpm --filter @mil/web dev",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "db:generate": "pnpm --filter @mil/core db:generate",
+    "db:migrate": "pnpm --filter @mil/core db:migrate:deploy"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/js-yaml": "^4.0.9",
-    "@types/pg": "^8.20.0",
+    "concurrently": "^10.0.3",
     "eslint": "^10.3.0",
     "eslint-plugin-vue": "^10.9.1",
     "globals": "^17.6.0",
-    "jiti": "^2.7.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.59.3",
-    "vue-eslint-parser": "^10.4.0",
-    "vue-tsc": "^3.3.7"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@prisma/engines",
-      "esbuild",
-      "prisma",
-      "protobufjs"
-    ]
+    "vue-eslint-parser": "^10.4.0"
   }
 }

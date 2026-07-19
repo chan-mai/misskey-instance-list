@@ -1,0 +1,34 @@
+{
+  "name": "@mil/web",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --dotenv ../../.env --port 3000",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "start": "node .output/server/index.mjs",
+    "typecheck": "nuxi typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@mil/core": "workspace:*",
+    "@nuxt/icon": "^2.2.2",
+    "@nuxtjs/color-mode": "^4.0.0",
+    "@nuxtjs/sitemap": "^8.0.15",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "kiso.css": "^1.2.4",
+    "nuxt": "^4.4.6",
+    "nuxt-gtag": "4.1.0",
+    "nuxt-jsonld": "^2.2.1",
+    "nuxt-oidc-auth": "1.0.0-beta.11",
+    "nuxt-security": "^2.6.0",
+    "undici": "^8.2.0",
+    "vue": "^3.5.34",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.7"
+  }
+}

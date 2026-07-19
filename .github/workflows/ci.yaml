@@ -7,14 +7,14 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 9
+          # versionを指定せずルートpackage.jsonのpackageManagerに従わせる
           run_install: false
 
       - name: Setup Node.js
@@ -22,30 +22,22 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
-          
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-          
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-            
+
       - name: Install dependencies
-        run: pnpm install
-        
-      - name: Lint
-        run: pnpm eslint .
-        
-      - name: Typecheck
-        run: pnpm nuxi typecheck
-        
+        run: pnpm install --frozen-lockfile
+
+      # typecheckは@mil/coreのdistを参照するため先にビルドする
+      # coreのbuildがprisma generateも兼ねる
       - name: Build
-        run: pnpm build
+        run: pnpm -r build
         env:
           DATABASE_URL: "postgresql://postgres:password@localhost:5432/mydb"
+
+      - name: Check generated Prisma client is up to date
+        run: git diff --exit-code packages/core/src/generated
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm -r typecheck

@@ -2,43 +2,45 @@
 FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
-COPY . /app
 WORKDIR /app
 
-FROM base AS prod-deps
-RUN pnpm install --prod --frozen-lockfile
-
 FROM base AS build
-RUN pnpm install --frozen-lockfile
+# 依存の変更時だけinstallキャッシュが落ちるようマニフェストだけ先に置く
+# webのpostinstall(nuxt prepare)はソース展開前だと失敗するため--ignore-scriptsで飛ばす
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY packages/core/package.json packages/core/
+COPY packages/agent/package.json packages/agent/
+COPY packages/web/package.json packages/web/
+RUN pnpm install --frozen-lockfile --ignore-scripts
+
+COPY . .
+
+# --ignore-scriptsで飛ばした依存側のビルドスクリプト(prisma, esbuild等)を実行する
+RUN pnpm rebuild -r
 
 ARG DATABASE_URL
-ARG TASK_SECRET
-ARG GCP_PROJECT_ID
-ARG GCP_REGION
-ARG SERVICE_NAME
-ARG SERVICE_ACCOUNT_EMAIL
 # ZITADELのbaseUrlからauthorizationUrl/tokenUrl等がビルド時に導出されるため, ビルド時にも必要
 ARG NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL
 
-ENV NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL=$NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL
 ENV DATABASE_URL=$DATABASE_URL
-ENV TASK_SECRET=$TASK_SECRET
-ENV GCP_PROJECT_ID=$GCP_PROJECT_ID
-ENV GCP_REGION=$GCP_REGION
-ENV SERVICE_NAME=$SERVICE_NAME
-ENV SERVICE_ACCOUNT_EMAIL=$SERVICE_ACCOUNT_EMAIL
+ENV NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL=$NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL
 
-RUN pnpm nuxt prepare && pnpm prisma generate && pnpm build && pnpm prisma migrate deploy
+RUN pnpm --filter @mil/core build \
+ && pnpm --filter @mil/web exec nuxt prepare \
+ && pnpm --filter @mil/web build \
+ && pnpm --filter @mil/core db:migrate:deploy
 
-FROM base
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/.output /app/.output
+# Nitroの.outputは自己完結しているためnode_modulesもpnpmも不要
+FROM node:24-slim
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=build /app/packages/web/.output ./.output
 
 ENV NODE_ENV=production
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3000
 
 EXPOSE 3000
-CMD [ "sh", "-c", "pnpm start" ]
+CMD [ "node", ".output/server/index.mjs" ]
