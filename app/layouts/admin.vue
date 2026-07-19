@@ -62,6 +62,14 @@ const displayName = computed(() => {
             <Icon name="lucide:shield-ban" class="w-5 h-5" />
             Excluded Hosts
           </NuxtLink>
+          <NuxtLink
+            to="/admin/crawl"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            active-class="!bg-primary/10 !text-primary font-medium"
+          >
+            <Icon name="lucide:radar" class="w-5 h-5" />
+            Crawl
+          </NuxtLink>
         </nav>
       </aside>
 
