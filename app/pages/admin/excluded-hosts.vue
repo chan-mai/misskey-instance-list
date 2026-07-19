@@ -197,6 +197,7 @@ import type { ExcludedHostModel as ExcludedHost } from '~~/generated/prisma/mode
 
 definePageMeta({
   layout: 'admin',
+  middleware: 'admin',
 });
 
 const page = ref(1);

@@ -1,4 +1,5 @@
 import ipaddr from 'ipaddr.js';
+import dns from 'node:dns/promises';
 
 
 /**
@@ -59,3 +60,23 @@ export function isValidPublicIp(ip: string): boolean {
   }
 }
 
+
+/**
+ * ホスト名を解決し、全てのIPがパブリックかを確認します (SSRF対策)。
+ *
+ * validateDomainの正規表現は生IPやmetadata.google.internalのような内部名も通すため、
+ * 利用者入力のホストへ接続する前にこの検査を通します。
+ *
+ * @param host 検査対象のホスト名
+ * @returns 解決できて全てパブリックならtrue
+ */
+export async function isPubliclyResolvable(host: string): Promise<boolean> {
+  try {
+    const addresses = await dns.lookup(host, { all: true });
+    if (addresses.length === 0) return false;
+
+    return addresses.every(addr => isValidPublicIp(addr.address));
+  } catch {
+    return false;
+  }
+}
