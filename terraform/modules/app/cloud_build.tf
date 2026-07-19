@@ -7,7 +7,7 @@ resource "google_cloudbuild_trigger" "main" {
   location    = "global"
   name        = var.cloudbuild_trigger_name
   project     = var.project_id
-  
+
   github {
     name  = "misskey-instance-list"
     owner = "chan-mai"
@@ -24,6 +24,9 @@ resource "google_cloudbuild_trigger" "main" {
     "_PLATFORM"      = "managed"
     "_SERVICE_NAME"  = var.service_name
     "_SECRET_PREFIX" = local.secret_prefix
+    # baseUrlはビルド時にauthorizationUrl/tokenUrl等の導出に使われるため, ビルドにも渡す
+    "_ZITADEL_BASE_URL"     = var.zitadel_base_url
+    "_ZITADEL_REDIRECT_URI" = var.zitadel_redirect_uri
   }
 
   service_account    = "projects/${var.project_id}/serviceAccounts/1023578240084-compute@developer.gserviceaccount.com"

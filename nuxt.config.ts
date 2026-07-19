@@ -1,3 +1,5 @@
+import { ZITADEL_ROLES_CLAIM } from './shared/utils/zitadel-roles';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -6,7 +8,7 @@ export default defineNuxtConfig({
     enabled: true,
   },
   css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld', 'nuxt-security'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld', 'nuxt-security', 'nuxt-oidc-auth'],
   components: [
     { path: '~/components', pathPrefix: false },
   ],
@@ -19,6 +21,39 @@ export default defineNuxtConfig({
       tokensPerInterval: 1500,
       interval: 10 * 1000,
       throwError: true,
+    },
+  },
+  oidc: {
+    enabled: true,
+    defaultProvider: 'zitadel',
+    providers: {
+      zitadel: {
+        // baseUrlはビルド時にauthorizationUrl/tokenUrl等の導出に使われるため, build-argで渡す必要がある
+        baseUrl: process.env.NUXT_OIDC_PROVIDERS_ZITADEL_BASE_URL || '',
+        // clientId/clientSecret/redirectUriはNUXT_OIDC_PROVIDERS_ZITADEL_*で実行時に注入
+        clientId: '',
+        clientSecret: '',
+        redirectUri: '',
+        // プリセット既定の'none'はPKCEパブリッククライアント向けでclient_secretを送らない
+        // ZITADEL側の認証方式に合わせる, Basicなら'header' / Postなら'body'
+        authenticationScheme: 'header',
+        // offline_accessを要求しない, 理由はsessionConfigurationのコメント参照
+        scope: ['openid', 'profile', 'email'],
+        // ロールクレームをIDトークンから取り出す(userinfo側に載る場合もあるので判定は両方見る)
+        optionalClaims: [ZITADEL_ROLES_CLAIM],
+        callbackRedirectUrl: '/admin',
+        sessionConfiguration: {
+          // リフレッシュトークンはNitroのメモリストレージに載るため, Cloud Runの複数インスタンス間で共有されない
+          // 取り回しを単純にするためリフレッシュは行わず, 期限切れ時は再ログインさせる
+          automaticRefresh: false,
+          expirationCheck: true,
+          expirationThreshold: 0,
+        },
+      },
+    },
+    middleware: {
+      // 公開ページは認証不要, /adminのみサーバーミドルウェアとルートミドルウェアで保護
+      globalMiddlewareEnabled: false,
     },
   },
   colorMode: {
@@ -40,6 +75,7 @@ export default defineNuxtConfig({
     exclude: [
       '/admin',
       '/admin/**',
+      '/auth/**',
     ],
   },
   app: {
@@ -94,8 +130,6 @@ export default defineNuxtConfig({
     serviceUrl: process.env.SERVICE_URL,
     serviceAccountEmail: process.env.SERVICE_ACCOUNT_EMAIL,
     serviceName: process.env.SERVICE_NAME,
-    adminUser: process.env.ADMIN_USER,
-    adminPassword: process.env.ADMIN_PASSWORD,
   },
   nitro: {
     experimental: { tasks: true },

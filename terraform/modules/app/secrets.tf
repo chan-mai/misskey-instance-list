@@ -8,7 +8,7 @@ resource "google_secret_manager_secret" "database_url" {
   project   = var.project_number
   secret_id = "${local.secret_prefix}DATABASE_URL"
   replication {
-    auto {} 
+    auto {}
   }
 }
 
@@ -68,32 +68,77 @@ resource "google_secret_manager_secret_version" "service_url" {
   secret_data = var.service_url
 }
 
-# --- ADMIN_USER ---
-resource "google_secret_manager_secret" "admin_user" {
+# --- ZITADEL_CLIENT_ID ---
+resource "google_secret_manager_secret" "zitadel_client_id" {
   labels    = { managed-by-cnrm = "true" }
   project   = var.project_number
-  secret_id = "${local.secret_prefix}ADMIN_USER"
+  secret_id = "${local.secret_prefix}ZITADEL_CLIENT_ID"
   replication {
     auto {}
   }
 }
 
-resource "google_secret_manager_secret_version" "admin_user" {
-  secret      = google_secret_manager_secret.admin_user.id
-  secret_data = var.admin_user
+resource "google_secret_manager_secret_version" "zitadel_client_id" {
+  secret      = google_secret_manager_secret.zitadel_client_id.id
+  secret_data = var.zitadel_client_id
 }
 
-# --- ADMIN_PASSWORD ---
-resource "google_secret_manager_secret" "admin_password" {
+# --- ZITADEL_CLIENT_SECRET ---
+resource "google_secret_manager_secret" "zitadel_client_secret" {
   labels    = { managed-by-cnrm = "true" }
   project   = var.project_number
-  secret_id = "${local.secret_prefix}ADMIN_PASSWORD"
+  secret_id = "${local.secret_prefix}ZITADEL_CLIENT_SECRET"
   replication {
     auto {}
   }
 }
 
-resource "google_secret_manager_secret_version" "admin_password" {
-  secret      = google_secret_manager_secret.admin_password.id
-  secret_data = var.admin_password
+resource "google_secret_manager_secret_version" "zitadel_client_secret" {
+  secret      = google_secret_manager_secret.zitadel_client_secret.id
+  secret_data = var.zitadel_client_secret
+}
+
+# --- OIDC_SESSION_SECRET ---
+resource "google_secret_manager_secret" "oidc_session_secret" {
+  labels    = { managed-by-cnrm = "true" }
+  project   = var.project_number
+  secret_id = "${local.secret_prefix}OIDC_SESSION_SECRET"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "oidc_session_secret" {
+  secret      = google_secret_manager_secret.oidc_session_secret.id
+  secret_data = var.oidc_session_secret
+}
+
+# --- OIDC_TOKEN_KEY ---
+resource "google_secret_manager_secret" "oidc_token_key" {
+  labels    = { managed-by-cnrm = "true" }
+  project   = var.project_number
+  secret_id = "${local.secret_prefix}OIDC_TOKEN_KEY"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "oidc_token_key" {
+  secret      = google_secret_manager_secret.oidc_token_key.id
+  secret_data = var.oidc_token_key
+}
+
+# --- OIDC_AUTH_SESSION_SECRET ---
+resource "google_secret_manager_secret" "oidc_auth_session_secret" {
+  labels    = { managed-by-cnrm = "true" }
+  project   = var.project_number
+  secret_id = "${local.secret_prefix}OIDC_AUTH_SESSION_SECRET"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "oidc_auth_session_secret" {
+  secret      = google_secret_manager_secret.oidc_auth_session_secret.id
+  secret_data = var.oidc_auth_session_secret
 }
