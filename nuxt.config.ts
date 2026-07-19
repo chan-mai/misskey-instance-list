@@ -117,8 +117,18 @@ export default defineNuxtConfig({
     id: 'G-3VEDN6VL0W'
   },
   vite: {
-    esbuild: {
-      drop: ['console', 'debugger'],
+    // Vite 8はesbuildでなくoxcを使うため, minifierのcompressでconsole/debuggerを除去
+    build: {
+      rolldownOptions: {
+        output: {
+          minify: {
+            compress: {
+              dropConsole: true,
+              dropDebugger: true,
+            },
+          },
+        },
+      },
     },
   },
 });
