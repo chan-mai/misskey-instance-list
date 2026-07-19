@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "pnpm --filter @mil/core build && nuxt build",
     "dev": "nuxt dev --dotenv ../../.env --port 3000",
     "generate": "nuxt generate",
     "preview": "wrangler dev",

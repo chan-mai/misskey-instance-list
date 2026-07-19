@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "wrangler deploy --dry-run --outdir dist",
+    "build": "pnpm --filter @mil/core build",
     "dev": "wrangler dev --persist-to ../../.wrangler/state",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit"

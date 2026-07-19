@@ -121,6 +121,10 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare_module',
+    cloudflare: {
+      // 生成される.wrangler/deploy/config.jsonはenvを持てず --env stg|prod と両立しない
+      deployConfig: false,
+    },
     // workerdのconsole.createTaskは呼ぶとERR_METHOD_NOT_IMPLEMENTEDで落ちるスタブ
     // hookableが機能検出して掴むためundefinedにして無効化する
     // (ESMのimportは巻き上げられるので全チャンク先頭に注入する必要がある)
