@@ -18,9 +18,13 @@ const USER_AGENT = 'MisskeyInstanceList/1.0 (EmbedCheck)';
  * /embed/*のレスポンスからX-Frame-OptionsとCSP frame-ancestorsを読んで判定する
  */
 export async function checkEmbeddable(domain: string): Promise<boolean> {
+  // 大文字やIDNをparsed.hostnameと同じ表現に揃える, 以降は正規化後の値のみ使う
+  const host = normalizeHost(domain);
+  if (!host) return false;
+
   // SSRF対策
-  if (!await isPubliclyResolvable(domain)) {
-    console.warn(`Blocked access to unsafe or unresolvable host: ${domain}`);
+  if (!await isPubliclyResolvable(host)) {
+    console.warn(`Blocked access to unsafe or unresolvable host: ${host}`);
     return false;
   }
 
@@ -28,14 +32,23 @@ export async function checkEmbeddable(domain: string): Promise<boolean> {
   const timer = setTimeout(() => controller.abort(), TOTAL_TIMEOUT);
 
   try {
-    const userId = await resolveEmbedUserId(domain, controller.signal);
-    const res = await fetchEmbedPage(`https://${domain}/embed/user-timeline/${userId}`, domain, controller.signal);
+    const userId = await resolveEmbedUserId(host, controller.signal);
+    const res = await fetchEmbedPage(`https://${host}/embed/user-timeline/${userId}`, host, controller.signal);
     if (!res) return false;
     return !isFrameBlocked(res.headers);
   } catch {
     return false;
   } finally {
     clearTimeout(timer);
+  }
+}
+
+/** URL解釈でホスト名を正規化する, 不正なら null */
+function normalizeHost(domain: string): string | null {
+  try {
+    return new URL(`https://${domain}`).hostname || null;
+  } catch {
+    return null;
   }
 }
 
@@ -55,7 +68,11 @@ async function resolveEmbedUserId(domain: string, signal: AbortSignal): Promise<
   return PLACEHOLDER_USER_ID;
 }
 
-/** Misskey APIを叩いてユーザーIDを1件取り出す, レスポンスは単体/配列いずれも受ける */
+/**
+ * Misskey APIを叩いてユーザーIDを1件取り出す, レスポンスは単体/配列いずれも受ける
+ *
+ * 転送先はisPubliclyResolvableで再検証できないため, redirect:'manual'で3xxを追従しない
+ */
 async function fetchUserId(
   domain: string,
   endpoint: string,
@@ -65,6 +82,7 @@ async function fetchUserId(
   try {
     const res = await fetch(`https://${domain}/api/${endpoint}`, {
       method: 'POST',
+      redirect: 'manual',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': USER_AGENT,
