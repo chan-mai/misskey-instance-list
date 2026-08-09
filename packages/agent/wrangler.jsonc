@@ -7,7 +7,8 @@
   "observability": { "enabled": true },
 
   "migrations": [
-    { "tag": "v1", "new_sqlite_classes": ["TsumugiJobShard", "TsumugiScheduler"] }
+    { "tag": "v1", "new_sqlite_classes": ["TsumugiJobShard", "TsumugiScheduler"] },
+    { "tag": "v2", "new_sqlite_classes": ["TsumugiRun"] }
   ],
 
   // 既定はローカル開発用
@@ -22,7 +23,7 @@
   "durable_objects": {
     "bindings": [
       { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
-      // flowsは使わないのでRUNは置かない
+      { "name": "RUN", "class_name": "TsumugiRun" },
       { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
     ]
   },
@@ -63,6 +64,7 @@
       "durable_objects": {
         "bindings": [
           { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+          { "name": "RUN", "class_name": "TsumugiRun" },
           { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
         ]
       },
@@ -105,6 +107,7 @@
       "durable_objects": {
         "bindings": [
           { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+          { "name": "RUN", "class_name": "TsumugiRun" },
           { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
         ]
       },

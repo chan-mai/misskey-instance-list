@@ -30,11 +30,9 @@ export const SCHEDULES = {
     maxAttempts: 3,
     timeoutMs: 300_000,
   },
-  'plan-instance-update': {
-    binding: 'PlanInstanceUpdate',
-    payload: ({ scheduledAt }: ScheduleContext) => ({ scheduledAt, limit: 100 }),
+  'update-instances': {
+    flow: 'UPDATE_INSTANCES',
+    input: ({ scheduledAt }: ScheduleContext) => ({ scheduledAt, limit: 100 }),
     cron: '0 */12 * * *',
-    maxAttempts: 3,
-    timeoutMs: 300_000,
   },
 } as const;
