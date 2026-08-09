@@ -12,7 +12,7 @@
     "@mil/core": "workspace:*",
     "drizzle-orm": "catalog:",
     "hono": "^4.12.34",
-    "js-yaml": "^4.1.1"
+    "js-yaml": "^4.3.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260714.1",
