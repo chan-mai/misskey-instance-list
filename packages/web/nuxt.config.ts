@@ -138,7 +138,7 @@ export default defineNuxtConfig({
       persistDir: '../../.wrangler/state/v3',
     },
     prerender: {
-      // '/'はindex.vueが/api/v1/statsを引くため除外, ビルド時にD1バインディングが無く500が焼き付く
+      // '/'はindex.vueが/api/v1/statsを引くため除外, ビルド時にD1bindingが無く500が焼き付く
       routes: [
         '/docs/api/v1',
         '/docs/api/v1/instances',
