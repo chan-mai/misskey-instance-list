@@ -4,7 +4,7 @@ import * as schema from './schema.js';
 
 export type { D1Database };
 
-// D1バインディングはリクエスト時のenvにしか無いためsingletonは持てない
+// D1bindingはリクエスト時のenvにしか無いためsingletonは持てない
 export type Database = DrizzleD1Database<typeof schema>;
 
 export const createDb = (binding: D1Database): Database => drizzle(binding, { schema });
