@@ -19,7 +19,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "drizzle-orm": "catalog:",
     "kiso.css": "^1.2.4",
-    "nuxt": "^4.4.6",
+    "nuxt": "^4.5.1",
     "nuxt-gtag": "4.1.0",
     "nuxt-jsonld": "^2.2.1",
     "nuxt-oidc-auth": "1.0.0-beta.11",
