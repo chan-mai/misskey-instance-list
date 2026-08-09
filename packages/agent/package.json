@@ -6,13 +6,16 @@
     "build": "pnpm --filter @mil/core build",
     "dev": "wrangler dev --persist-to ../../.wrangler/state",
     "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "jobs:migrate:local": "wrangler d1 migrations apply misskey-instance-list-jobs --local --persist-to ../../.wrangler/state",
+    "jobs:migrate:stg": "wrangler d1 migrations apply misskey-instance-list-jobs-stg --remote --env stg",
+    "jobs:migrate:deploy": "wrangler d1 migrations apply misskey-instance-list-jobs-prod --remote --env prod"
   },
   "dependencies": {
     "@mil/core": "workspace:*",
     "drizzle-orm": "catalog:",
-    "hono": "^4.6.0",
-    "js-yaml": "^4.1.1"
+    "js-yaml": "^4.1.1",
+    "tsumugi": "0.6.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260714.1",

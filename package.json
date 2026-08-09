@@ -12,7 +12,12 @@
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck",
     "db:generate": "pnpm --filter @mil/core db:generate",
-    "db:migrate": "pnpm --filter @mil/core db:migrate:deploy"
+    "db:migrate": "pnpm --filter @mil/core db:migrate:deploy",
+    "db:migrate:stg": "pnpm --filter @mil/core db:migrate:stg",
+    "db:migrate:local": "pnpm --filter @mil/core db:migrate:local",
+    "jobs:migrate": "pnpm --filter @mil/agent jobs:migrate:deploy",
+    "jobs:migrate:stg": "pnpm --filter @mil/agent jobs:migrate:stg",
+    "jobs:migrate:local": "pnpm --filter @mil/agent jobs:migrate:local"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
