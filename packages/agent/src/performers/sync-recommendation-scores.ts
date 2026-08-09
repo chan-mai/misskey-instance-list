@@ -13,7 +13,6 @@ export interface SyncRecommendationScoresResult {
 }
 
 interface ReleaseItem {
-  prerelease?: boolean;
   tag_name?: string;
 }
 
@@ -74,16 +73,16 @@ export class SyncRecommendationScores extends Performer<
 // 取得失敗はnullで続行
 async function fetchLatestStableVersion(): Promise<string | null> {
   try {
-    const res = await fetch('https://api.github.com/repos/misskey-dev/misskey/releases?per_page=10', {
-      headers: { 'User-Agent': 'MisskeyInstanceList/1.0' },
+    const res = await fetch('https://api.github.com/repos/misskey-dev/misskey/releases/latest', {
+      headers: {
+        'User-Agent': 'MisskeyInstanceList/1.0',
+        'Accept': 'application/vnd.github+json',
+      },
     });
-    const releases = await res.json();
-    if (!Array.isArray(releases)) return null;
+    if (!res.ok) return null;
 
-    const stable = (releases as ReleaseItem[]).find(
-      (r) => !r.prerelease && r.tag_name && !r.tag_name.includes('-'),
-    );
-    return stable?.tag_name ?? null;
+    const release = await res.json() as ReleaseItem;
+    return release.tag_name ?? null;
   } catch (e) {
     console.error('Failed to fetch latest version:', e);
     return null;

@@ -19,12 +19,13 @@ export class SyncExclusions extends Performer<Record<string, never>, SyncExclusi
       throw new Error(`Failed to fetch ignorehosts.yml: ${res.status}`);
     }
 
-    const upstreamDomains = yaml.load(await res.text());
-    if (!Array.isArray(upstreamDomains)) {
+    const parsed = yaml.load(await res.text());
+    if (!Array.isArray(parsed)) {
       throw new Error('ignorehosts.yml is not an array');
     }
 
-    const upstreamSet = new Set(upstreamDomains as string[]);
+    const upstreamDomains = parsed.filter((d): d is string => typeof d === 'string' && d.length > 0);
+    const upstreamSet = new Set(upstreamDomains);
 
     const joinmisskeyEntries = await db
       .select({ domain: excludedHosts.domain })
@@ -35,7 +36,7 @@ export class SyncExclusions extends Performer<Record<string, never>, SyncExclusi
     const allExisting = await db.select({ domain: excludedHosts.domain }).from(excludedHosts);
     const allExistingSet = new Set(allExisting.map((e) => e.domain));
 
-    const additions = (upstreamDomains as string[]).filter((d) => !allExistingSet.has(d));
+    const additions = upstreamDomains.filter((d) => !allExistingSet.has(d));
     const deletions = joinmisskeyEntries
       .filter((e) => !upstreamSet.has(e.domain))
       .map((e) => e.domain);

@@ -44,7 +44,7 @@ export class SyncInstance extends Performer<
       }
     }
 
-    await saveInstance(ctx, host, res, new Date(scheduledAt), language);
+    await saveInstance(ctx, host, res, new Date(scheduledAt), withLanguage ? language : undefined);
 
     return { host, alive: Boolean(res.info), language };
   }
