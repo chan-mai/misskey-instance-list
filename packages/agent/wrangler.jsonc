@@ -7,7 +7,8 @@
   "observability": { "enabled": true },
 
   "migrations": [
-    { "tag": "v1", "new_sqlite_classes": ["TsumugiJobShard", "TsumugiScheduler"] }
+    { "tag": "v1", "new_sqlite_classes": ["TsumugiJobShard", "TsumugiScheduler"] },
+    { "tag": "v2", "new_sqlite_classes": ["TsumugiRun"] }
   ],
 
   // 既定はローカル開発用
@@ -22,7 +23,7 @@
   "durable_objects": {
     "bindings": [
       { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
-      // flowsは使わないのでRUNは置かない
+      { "name": "RUN", "class_name": "TsumugiRun" },
       { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
     ]
   },
@@ -39,7 +40,7 @@
   },
   "vars": {
     "CF_ACCESS_TEAM_DOMAIN": "nr1q",
-    "CF_ACCESS_AUD": "cc3cb101f0e6adfdddfcf18c377bb08e05cd690e2e9172235f89fd04da743712"
+    "CF_ACCESS_AUD": "7598b6d1608d3033b13c3c1823508a3d15d46e03ca8ae526d66ff17531039527"
   },
   "triggers": { "crons": ["*/15 * * * *"] },
 
@@ -63,6 +64,7 @@
       "durable_objects": {
         "bindings": [
           { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+          { "name": "RUN", "class_name": "TsumugiRun" },
           { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
         ]
       },
@@ -80,7 +82,7 @@
       "analytics_engine_datasets": [{ "binding": "TSUMUGI_METRICS", "dataset": "mil_jobs_stg" }],
       "vars": {
         "CF_ACCESS_TEAM_DOMAIN": "nr1q",
-        "CF_ACCESS_AUD": "cc3cb101f0e6adfdddfcf18c377bb08e05cd690e2e9172235f89fd04da743712"
+        "CF_ACCESS_AUD": "7598b6d1608d3033b13c3c1823508a3d15d46e03ca8ae526d66ff17531039527"
       },
       "triggers": { "crons": ["*/15 * * * *"] },
       "workers_dev": false,
@@ -105,6 +107,7 @@
       "durable_objects": {
         "bindings": [
           { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+          { "name": "RUN", "class_name": "TsumugiRun" },
           { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
         ]
       },

@@ -31,7 +31,7 @@ export class PlanStatsSync extends Performer<PlanStatsSyncPayload, PlanStatsSync
     for (let i = 0; i < hosts.length; i += ENQUEUE_CHUNK) {
       // timeoutMsの起点を最後の報告時刻へ移す
       await ctx.heartbeat(i / hosts.length);
-      await enqueueSyncInstance(this.env, hosts.slice(i, i + ENQUEUE_CHUNK), scheduledAt, true, 'stats');
+      await enqueueSyncInstance(this.env, hosts.slice(i, i + ENQUEUE_CHUNK), scheduledAt);
     }
 
     console.log(`Enqueued ${hosts.length} stats jobs.`);

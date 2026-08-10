@@ -23,7 +23,7 @@ export const BINDINGS = {
 
   // 前回が終わる前に次が始まらないよう同時実行を1に制限する
   PlanStatsSync: { policy: { concurrency: 1 } },
-  PlanInstanceUpdate: { policy: { concurrency: 1 } },
+  ListUpdateTargets: { policy: { concurrency: 1 } },
   DiscoverInstances: { policy: { concurrency: 1 } },
   SyncExclusions: { policy: { concurrency: 1 } },
   SyncRecommendationScores: { policy: { concurrency: 1 } },
@@ -36,16 +36,14 @@ export const enqueueSyncInstance = (
   env: Env,
   hosts: readonly string[],
   scheduledAt: number,
-  withLanguage: boolean,
-  keyPrefix: 'stats' | 'update',
 ): Promise<string[]> => client.enqueueMany(env, hosts.map((host) => ({
   binding: 'SyncInstance',
-  payload: { host, scheduledAt, withLanguage },
+  payload: { host, scheduledAt, withLanguage: true },
   concurrencyKey: host,
   // プランナがリトライされても同じホストのジョブが重複しない
-  uniqueKey: `${keyPrefix}:${scheduledAt}:${host}`,
+  uniqueKey: `stats:${scheduledAt}:${host}`,
   // 次サイクルまでに予約が切れるよう発火間隔より短くする
-  uniqueForMs: keyPrefix === 'stats' ? 5 * 60 * 60 * 1000 : 11 * 60 * 60 * 1000,
+  uniqueForMs: 5 * 60 * 60 * 1000,
 })));
 
 export const enqueuePlanStatsSync =(env: Env, scheduledAt: number): Promise<string> =>

@@ -2,29 +2,29 @@ import yaml from 'js-yaml';
 import { Performer } from 'tsumugi/performer';
 import { and, asc, count, eq, isNull, ne } from 'drizzle-orm';
 import { createDb, instances, excludedHosts, chunkForD1, type Database } from '@mil/core/db';
-import { enqueueSyncInstance, enqueuePlanStatsSync } from '../bindings.js';
+import { enqueuePlanStatsSync } from '../bindings.js';
 import type { Env } from '../env.js';
 
 const DEFAULT_LIMIT = 100;
 
-export interface PlanInstanceUpdatePayload {
+export interface ListUpdateTargetsPayload {
   scheduledAt: number;
   limit?: number;
 }
 
-export interface PlanInstanceUpdateResult {
-  enqueued: number;
+export interface ListUpdateTargetsResult {
+  hosts: string[];
   seeded: number;
 }
 
-// 更新の古い順に再取得をホスト単位のジョブへ分割, DBが空ならシード
-export class PlanInstanceUpdate extends Performer<
-  PlanInstanceUpdatePayload,
-  PlanInstanceUpdateResult,
+// 更新の古い順に再取得対象を返す, DBが空ならシードして統計同期を起こす
+export class ListUpdateTargets extends Performer<
+  ListUpdateTargetsPayload,
+  ListUpdateTargetsResult,
   object,
   Env
 > {
-  async perform({ scheduledAt, limit = DEFAULT_LIMIT }: PlanInstanceUpdatePayload): Promise<PlanInstanceUpdateResult> {
+  async perform({ scheduledAt, limit = DEFAULT_LIMIT }: ListUpdateTargetsPayload): Promise<ListUpdateTargetsResult> {
     const db = createDb(this.env.DB);
 
     const countRows = await db.select({ total: count() }).from(instances);
@@ -32,7 +32,7 @@ export class PlanInstanceUpdate extends Performer<
     if (total === 0) {
       const seeded = await seed(db);
       await enqueuePlanStatsSync(this.env, scheduledAt);
-      return { enqueued: 0, seeded };
+      return { hosts: [], seeded };
     }
 
     const candidates = await db
@@ -43,13 +43,7 @@ export class PlanInstanceUpdate extends Performer<
       .orderBy(asc(instances.last_check_at))
       .limit(limit);
 
-    const hosts = candidates.map((row) => row.id);
-    if (hosts.length > 0) {
-      await enqueueSyncInstance(this.env, hosts, scheduledAt, false, 'update');
-    }
-
-    console.log(`Enqueued ${hosts.length} update jobs.`);
-    return { enqueued: hosts.length, seeded: 0 };
+    return { hosts: candidates.map((row) => row.id), seeded: 0 };
   }
 }
 
