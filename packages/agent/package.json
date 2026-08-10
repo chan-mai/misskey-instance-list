@@ -14,14 +14,14 @@
   "dependencies": {
     "@mil/core": "workspace:*",
     "drizzle-orm": "catalog:",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.1",
     "tsumugi": "0.7.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260714.1",
+    "@cloudflare/workers-types": "^5.20260810.1",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^24.0.0",
+    "@types/node": "^24.13.3",
     "typescript": "^5.9.3",
-    "wrangler": "^4.32.0"
+    "wrangler": "^4.120.1"
   }
 }
