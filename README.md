@@ -18,7 +18,7 @@ MisskeyHubのサーバーリストがメンテナンス中のまま復旧しな�
 - **Frontend**: Nuxt 4, Vue 3, Tailwind CSS
 - **Backend**: Nitro (Cloudflare Workers), Hono (Cloudflare Workers), Drizzle ORM
 - **Database**: Cloudflare D1 (SQLite)
-- **Jobs**: Cloudflare Cron Triggers + Queues
+- **Jobs**: Tsumugi (Cloudflare Durable Objects + Queues + D1)
 - **Styling**: kiso.css, Tailwind CSS
 
 ## 📖 API Documentation
@@ -41,7 +41,8 @@ APIドキュメントは https://servers.misskey.ink/docs/api/v1 で確認でき
 
 - Node.js 24+
 - pnpm
-- Cloudflareアカウント (Workers Paidプラン, Queuesに必要)
+- Cloudflareアカウント(Workers Paid)
+- Cloudflare Zero Trust(ジョブ管理画面の認証に使う)
 
 ### Setup
 
@@ -53,7 +54,10 @@ pnpm install
 cp .env.example .env
 
 # ローカルD1にマイグレーションを適用
-pnpm --filter @mil/core db:migrate:local
+pnpm db:migrate:local
+
+# ジョブの読み取りモデルにマイグレーションを適用
+pnpm jobs:migrate:local
 ```
 
 ### Development Server
@@ -72,27 +76,24 @@ pnpm --filter @mil/web exec wrangler deploy
 pnpm --filter @mil/agent exec wrangler deploy
 ```
 
-### タスクの手動実行
+### ジョブ
 
-定期実行はCron Triggersが担う。手動で回したい場合はagent Workerのエンドポイントを叩く。
+クロールと集計はTsumugiのジョブとして動きます。定期実行の定義は`packages/agent/src/schedules.ts`に記載されています。
 
-```bash
-# ローカル (実バインディング付きでWorkerを起動)
-pnpm --filter @mil/agent dev
+| スケジュール名 | binding | cron(UTC) | 内容 |
+|---|---|---|---|
+| `discover-instances` | `DiscoverInstances` | `0 0 * * *` | 既知インスタンスから未知ホストを発見 |
+| `sync-exclusions` | `SyncExclusions` | `0 0 * * *` | JoinMisskeyのignorehosts.ymlと除外リストを同期 |
+| `plan-stats-sync` | `PlanStatsSync` | `0 */6 * * *` | 全インスタンスの統計同期をホスト単位のジョブへ |
+| `sync-recommendation-scores` | `SyncRecommendationScores` | `0 */12 * * *` | おすすめスコアを再計算 |
+| `plan-instance-update` | `PlanInstanceUpdate` | `0 */12 * * *` | 更新の古い100件の再取得をホスト単位のジョブへ |
 
-# 別ターミナルから
-curl -X POST http://localhost:8787/api/tasks/update \
-  -H "Authorization: Bearer $TASK_SECRET"
-```
 
-タスク名は`update` / `discovery` / `sync:stats` / `sync:recommendation-scores` / `sync:exclusions`。
-キューに積まれるだけなので, 消費まで含めて確認するなら`wrangler dev`のログを見る。
 
-Cron Triggersの動作確認は`--test-scheduled`を使う。
 
 ```bash
 pnpm --filter @mil/agent exec wrangler dev --test-scheduled
-curl "http://localhost:8787/__scheduled?cron=0+*/6+*+*+*"
+curl "http://localhost:8787/__scheduled?cron=*/15+*+*+*+*"
 ```
 
 ## 🤝 Contributing

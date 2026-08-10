@@ -40,15 +40,18 @@
 - 可能な限り、変更内容に関連するスクリーンショットを添付してください。
 - 破壊的な変更が含まれる場合は、その旨を明記してください。
 
-## インフラ構成 (Terraform)
+## インフラ構成
 
-このプロジェクトのインフラは Google Cloud 上で動作しており、Terraform で管理されています。
+このプロジェクトはCloudflare Workers上で動作しています。bindingは各パッケージの`wrangler.jsonc`が持ち、`stg`と`prod`の2環境に分かれています。
 
-- `terraform/environments/stg`: ステージング環境
-- `terraform/environments/prod`: 本番環境
-- `terraform/modules`: 共通モジュール
+| パッケージ | 役割 | 主なbinding |
+|---|---|---|
+| `packages/web` | Nuxtのフロントエンドと公開API | D1, KV |
+| `packages/agent` | クロールと集計のジョブ基盤(Tsumugi) | D1 2本, Queues, Durable Objects, Analytics Engine |
+| `packages/core` | 共通ロジックとスキーマ定義 | D1(マイグレーション適用専用) |
 
-インフラの変更が必要な場合は、`terraform/` ディレクトリ内のファイルを修正し、PRに含めてください。
+インフラ構成の変更が必要な場合は、該当する`wrangler.jsonc`を修正し、PRに含めてください。
+
 
 ## スタイルガイド
 

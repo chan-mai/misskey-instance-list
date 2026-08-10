@@ -6,19 +6,43 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
 
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["TsumugiJobShard", "TsumugiScheduler"] },
+    { "tag": "v2", "new_sqlite_classes": ["TsumugiRun"] }
+  ],
+
   // 既定はローカル開発用
-  "d1_databases": [{ "binding": "DB", "database_name": "misskey-instance-list" }],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "misskey-instance-list" },
+    {
+      "binding": "TSUMUGI_DB",
+      "database_name": "misskey-instance-list-jobs",
+      "migrations_dir": "./node_modules/tsumugi/migrations"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+      { "name": "RUN", "class_name": "TsumugiRun" },
+      { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
+    ]
+  },
   "queues": {
-    "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks" }],
+    "producers": [{ "binding": "TSUMUGI_QUEUE", "queue": "misskey-instance-list-jobs" }],
     "consumers": [
       {
-        "queue": "misskey-instance-list-tasks",
-        "max_batch_size": 1,
-        "max_concurrency": 1,
-        "max_retries": 3
+        "queue": "misskey-instance-list-jobs",
+        "max_batch_size": 5,
+        "max_batch_timeout": 5,
+        "max_retries": 5
       }
     ]
   },
+  "vars": {
+    "CF_ACCESS_TEAM_DOMAIN": "nr1q",
+    "CF_ACCESS_AUD": "7598b6d1608d3033b13c3c1823508a3d15d46e03ca8ae526d66ff17531039527"
+  },
+  "triggers": { "crons": ["*/15 * * * *"] },
 
   "env": {
     "stg": {
@@ -29,23 +53,40 @@
           "binding": "DB",
           "database_name": "misskey-instance-list-stg",
           "database_id": "aa47f9b6-8bbd-4b75-92a1-8e180884cea6"
+        },
+        {
+          "binding": "TSUMUGI_DB",
+          "database_name": "misskey-instance-list-jobs-stg",
+          "database_id": "4a1cf922-886b-4062-a51a-c5e8c846b37b",
+          "migrations_dir": "./node_modules/tsumugi/migrations"
         }
       ],
+      "durable_objects": {
+        "bindings": [
+          { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+          { "name": "RUN", "class_name": "TsumugiRun" },
+          { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
+        ]
+      },
       "queues": {
-        "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks-stg" }],
+        "producers": [{ "binding": "TSUMUGI_QUEUE", "queue": "misskey-instance-list-jobs-stg" }],
         "consumers": [
           {
-            "queue": "misskey-instance-list-tasks-stg",
-            // Cloud Tasksのmax_concurrent_dispatches=1 / max_attempts=3 相当
-            "max_batch_size": 1,
-            "max_concurrency": 1,
-            "max_retries": 3,
-            "dead_letter_queue": "misskey-instance-list-tasks-dlq-stg"
+            "queue": "misskey-instance-list-jobs-stg",
+            "max_batch_size": 5,
+            "max_batch_timeout": 5,
+            "max_retries": 5
           }
         ]
       },
-      // stgはCron無効, 手動トリガーのみ
-      "triggers": { "crons": [] }
+      "analytics_engine_datasets": [{ "binding": "TSUMUGI_METRICS", "dataset": "mil_jobs_stg" }],
+      "vars": {
+        "CF_ACCESS_TEAM_DOMAIN": "nr1q",
+        "CF_ACCESS_AUD": "7598b6d1608d3033b13c3c1823508a3d15d46e03ca8ae526d66ff17531039527"
+      },
+      "triggers": { "crons": ["*/15 * * * *"] },
+      "workers_dev": false,
+      "routes": [{ "pattern": "servers-tsumugi-stg.misskey.ink", "custom_domain": true }]
     },
     "prod": {
       "compatibility_flags": ["nodejs_compat"],
@@ -55,22 +96,40 @@
           "binding": "DB",
           "database_name": "misskey-instance-list-prod",
           "database_id": "d0bf79de-822f-4c76-9b4d-c409a06d77aa"
+        },
+        {
+          "binding": "TSUMUGI_DB",
+          "database_name": "misskey-instance-list-jobs-prod",
+          "database_id": "531f58ad-78b3-4171-a8b0-6ce40064d687",
+          "migrations_dir": "./node_modules/tsumugi/migrations"
         }
       ],
+      "durable_objects": {
+        "bindings": [
+          { "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+          { "name": "RUN", "class_name": "TsumugiRun" },
+          { "name": "SCHEDULER", "class_name": "TsumugiScheduler" }
+        ]
+      },
       "queues": {
-        "producers": [{ "binding": "TASK_QUEUE", "queue": "misskey-instance-list-tasks-prod" }],
+        "producers": [{ "binding": "TSUMUGI_QUEUE", "queue": "misskey-instance-list-jobs-prod" }],
         "consumers": [
           {
-            "queue": "misskey-instance-list-tasks-prod",
-            "max_batch_size": 1,
-            "max_concurrency": 1,
-            "max_retries": 3,
-            "dead_letter_queue": "misskey-instance-list-tasks-dlq-prod"
+            "queue": "misskey-instance-list-jobs-prod",
+            "max_batch_size": 5,
+            "max_batch_timeout": 5,
+            "max_retries": 5
           }
         ]
       },
-      // 式とタスクの対応はsrc/config.tsのCRON_TASKS
-      "triggers": { "crons": ["0 0 * * *", "0 */6 * * *", "0 */12 * * *"] }
+      "analytics_engine_datasets": [{ "binding": "TSUMUGI_METRICS", "dataset": "mil_jobs_prod" }],
+      "vars": {
+        "CF_ACCESS_TEAM_DOMAIN": "nr1q",
+        "CF_ACCESS_AUD": "cc3cb101f0e6adfdddfcf18c377bb08e05cd690e2e9172235f89fd04da743712"
+      },
+      "triggers": { "crons": ["*/15 * * * *"] },
+      "workers_dev": false,
+      "routes": [{ "pattern": "servers-tsumugi.misskey.ink", "custom_domain": true }]
     }
   }
 }

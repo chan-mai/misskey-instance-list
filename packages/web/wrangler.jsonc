@@ -29,12 +29,12 @@
       "kv_namespaces": [{ "binding": "CACHE_KV", "id": "4c8eb42e4a8c463ba7c679d41d3d8edd" }],
       // client_idはOIDC仕様上の公開値, 秘匿対象はclient_secretのみ
       "vars": {
-        "NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI": "https://stg.servers.misskey.ink/auth/zitadel/callback",
+        "NUXT_OIDC_PROVIDERS_ZITADEL_REDIRECT_URI": "https://servers-stg.misskey.ink/auth/zitadel/callback",
         "NUXT_OIDC_PROVIDERS_ZITADEL_CLIENT_ID": "382500899836169407"
       },
       // DNS切替前の確認用にworkers.devも開けておく
       "workers_dev": true,
-      "routes": [{ "pattern": "stg.servers.misskey.ink", "custom_domain": true }]
+      "routes": [{ "pattern": "servers-stg.misskey.ink", "custom_domain": true }]
     },
     "prod": {
       "compatibility_flags": ["nodejs_compat"],
