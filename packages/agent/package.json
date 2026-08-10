@@ -15,7 +15,7 @@
     "@mil/core": "workspace:*",
     "drizzle-orm": "catalog:",
     "js-yaml": "^4.1.1",
-    "tsumugi": "0.6.0"
+    "tsumugi": "0.7.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260714.1",

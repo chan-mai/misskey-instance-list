@@ -51,8 +51,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       tsumugi:
-        specifier: 0.6.0
-        version: 0.6.0(@cloudflare/workers-types@5.20260719.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))
+        specifier: 0.7.0
+        version: 0.7.0(@cloudflare/workers-types@5.20260719.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^5.20260714.1
@@ -5913,8 +5913,8 @@ packages:
     resolution: {integrity: sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==}
     engines: {node: '>=0.6.x'}
 
-  tsumugi@0.6.0:
-    resolution: {integrity: sha512-GizDiuck6fZJWSvZpWhWLf8TDcRvyLkCdQ6jzBBvku5dl/sdb4AAlgItdX3TMIrjJ14I6CDMhsKsnREhTJvoUQ==}
+  tsumugi@0.7.0:
+    resolution: {integrity: sha512-qOCb7EPwxZUcXPTgRG++gQ+GCh+KDn/Sm8/Mlji397mlh8yTVrvUqW6aAVloqfR7fDXESkmR9dJQl07vgkjOfg==}
     hasBin: true
 
   tsx@4.23.1:
@@ -12931,7 +12931,7 @@ snapshots:
 
   tsscmp@1.0.6: {}
 
-  tsumugi@0.6.0(@cloudflare/workers-types@5.20260719.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)):
+  tsumugi@0.7.0(@cloudflare/workers-types@5.20260719.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)):
     dependencies:
       '@paralleldrive/cuid2': 3.3.0
       drizzle-orm: 0.45.2(@cloudflare/workers-types@5.20260719.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.20.0)(mysql2@3.15.3)(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/react@19.2.7)(magicast@0.5.4)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3))
