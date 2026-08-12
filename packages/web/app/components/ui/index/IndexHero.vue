@@ -41,24 +41,24 @@
         <div class="hidden lg:block mt-12 lg:mt-0 w-full">
           <div class="grid grid-cols-2 max-w-lg mx-auto lg:ml-auto lg:mr-0">
             <div class="p-6 sm:p-8 text-center border-r-2 border-b-2 border-neutral-300 dark:border-white/30">
-              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{
+              <p class="font-display text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{
                 formatNumber(stats?.counts?.active) }}</p>
-              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Active</p>
+              <p class="font-display text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Active</p>
             </div>
             <div class="p-6 sm:p-8 text-center border-b-2 border-neutral-300 dark:border-white/30">
-              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{
+              <p class="font-display text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{
                 formatNumber(stats?.counts?.known) }}</p>
-              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Known</p>
+              <p class="font-display text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Known</p>
             </div>
             <div class="p-6 sm:p-8 text-center border-r-2 border-neutral-300 dark:border-white/30">
-              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.repositories?.length
+              <p class="font-display text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.repositories?.length
                 || '-' }}</p>
-              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Software</p>
+              <p class="font-display text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Software</p>
             </div>
             <div class="p-6 sm:p-8 text-center">
-              <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.languages?.length ||
+              <p class="font-display text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.languages?.length ||
                 '-' }}</p>
-              <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Languages</p>
+              <p class="font-display text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Languages</p>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@
     <!-- Scroll Poyon Poyon -->
     <div
       class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400 dark:text-white/40">
-      <span class="text-xs tracking-widest uppercase">Scroll</span>
+      <span class="font-display text-xs tracking-widest uppercase">Scroll</span>
       <div class="w-px h-12 bg-gradient-to-b from-neutral-400 dark:from-white/40 to-transparent animate-bounce"></div>
     </div>
   </section>

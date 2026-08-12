@@ -12,7 +12,7 @@
 
     <div class="relative z-10 container mx-auto max-w-screen-xl px-6 py-24">
       <div class="max-w-3xl">
-        <p v-if="label" class="text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-white/50 mb-6">
+        <p v-if="label" class="font-display text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-white/50 mb-6">
           {{ label }}
         </p>
         <h1
@@ -27,7 +27,7 @@
     </div>
     <div v-if="showScroll"
       class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-400 dark:text-white/30">
-      <span class="text-xs tracking-widest uppercase">Scroll</span>
+      <span class="font-display text-xs tracking-widest uppercase">Scroll</span>
       <div class="w-px h-8 bg-gradient-to-b from-neutral-400 dark:from-white/30 to-transparent animate-bounce"></div>
     </div>
   </section>

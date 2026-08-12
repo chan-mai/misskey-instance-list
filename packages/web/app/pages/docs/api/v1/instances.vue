@@ -12,12 +12,12 @@
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-neutral-200 dark:border-neutral-800">
-                <th class="text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">Parameter
+                <th class="font-display text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">Parameter
                 </th>
-                <th class="text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">Type</th>
-                <th class="text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">Default
+                <th class="font-display text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">Type</th>
+                <th class="font-display text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">Default
                 </th>
-                <th class="text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">
+                <th class="font-display text-left py-4 px-4 font-medium text-xs tracking-widest uppercase text-neutral-400">
                   Description</th>
               </tr>
             </thead>
@@ -113,7 +113,7 @@
         <SectionHeader number="03" title="Example" />
 
         <div class="bg-back-dark p-6 lg:p-8">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">cURL</p>
+          <p class="font-display text-xs font-medium tracking-widest uppercase text-neutral-500 mb-4">cURL</p>
           <pre
             class="text-primary font-mono text-sm overflow-x-auto"><code>curl "https://servers.misskey.ink/api/v1/instances?sort=users&order=desc&limit=10"</code></pre>
         </div>

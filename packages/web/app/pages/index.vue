@@ -10,22 +10,21 @@
           <SectionHeader number="01" title="What is Misskey?" />
           <div class="space-y-6 text-neutral-600 dark:text-neutral-300 leading-relaxed">
             <p>
-              <strong class="text-neutral-900 dark:text-white font-bold">Misskey</strong>は、日本発の分散型SNSプラットフォームです。
+              <NuxtLink to="https://misskey-hub.net/" target="_blank" class="text-primary hover:text-primary/70 transition-colors duration-200">Misskey</NuxtLink>は、日本発の分散型SNSプラットフォームです。
               Twitter(X)のようなタイムライン形式のインターフェースを持ちながら、
-              <span class="text-primary font-medium">リアクション機能</span>や
-              <span class="text-primary font-medium">MFM (Misskey Flavored Markdown)</span>
+              <NuxtLink to="https://misskey-hub.net/ja/docs/for-users/features/reaction/" target="_blank" class="text-primary hover:text-primary/70 transition-colors duration-200">リアクション機能</NuxtLink>や
+              <NuxtLink to="https://misskey-hub.net/ja/docs/for-users/features/mfm/" target="_blank" class="text-primary hover:text-primary/70 transition-colors duration-200">MFM</NuxtLink>
               による豊かな表現力が特徴です。
             </p>
             <p>
-              最大の特徴は「分散型」であることです。
-              一つの巨大なサーバーに全てのユーザーが集まるのではなく、
-              誰でも自由にサーバー(インスタンス)を建てることができ、
-              それらが<strong>ActivityPub</strong>というプロトコルを通じて互いに繋がっています。
-              これを<strong>Fediverse(フェディバース)</strong>と呼びます。
+              Misskeyのサーバーは一つではありません。
+              誰でも自分でサーバー(インスタンス)を建てられて、
+              別のサーバーにいるユーザーともActivityPubというプロトコルを通じてやり取りが可能です。
+              この繋がり全体Fediverseと呼びます。
             </p>
             <p>
-              あなたはこのリストから、自分に合ったサーバーを見つけて、
-              広大なFediverseの世界に参加することができます。
+              基本的に、どのサーバーに登録してもFediverse全体とやり取りできます。
+              まずは気になるサーバーをこのリストから探してみてください。
             </p>
           </div>
         </div>
@@ -40,26 +39,26 @@
         <div class="grid md:grid-cols-3 gap-8">
           <div class="p-8 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800">
             <span class="text-5xl font-bold text-primary/30">01</span>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-3">安全なサーバー探し</h3>
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-3">偽装サーバーの除外</h3>
             <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              CherryPickなどの偽装サーバーを自動的に検出・除外。
-              スパムや悪意のあるサーバーをフィルタリングし、純粋なMisskeyサーバーのみを掲載しています。
+              CherryPickのようなMisskeyを名乗るサーバーを自動で検出して除外しています。
+              スパムや悪質な運営のサーバーも掲載していません。
             </p>
           </div>
           <div class="p-8 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800">
             <span class="text-5xl font-bold text-primary/30">02</span>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-3">常に最新情報</h3>
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-3">情報の更新</h3>
             <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              定期的にサーバー情報を自動取得・更新しています。
-              ユーザー数やノート数、活動状況など、生きた情報をもとにサーバーを選ぶことができます。
+              クローラーが定期的に各サーバーを巡回して情報を取り直しています。
+              表示しているユーザー数やノート数は、今現在のサーバーの状態です。
             </p>
           </div>
           <div class="p-8 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800">
             <span class="text-5xl font-bold text-primary/30">03</span>
-            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-3">高度な検索・比較</h3>
+            <h3 class="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-3">検索と絞り込み</h3>
             <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              言語、キーワード、ユーザー数、機能(登録可否など)で細かく絞り込みが可能。
-              あなたの目的に合ったサーバーがきっと見つかります。
+              言語やキーワード、ユーザー数、新規登録の可否で絞り込むことができます。
+              条件を変えながら、自分にあったサーバーを探してみてください。
             </p>
           </div>
         </div>
@@ -75,30 +74,30 @@
             <div>
               <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-3">1. 雰囲気で選ぶ</h3>
               <p>
-                「汎用(General)」サーバーは雑談や日常の投稿が多い傾向にあります。
-                特定の趣味(ゲーム、技術、創作など)に特化したサーバーもあります。
-                各サーバーの説明文や、実際のタイムラインを覗いてみるのがおすすめです。
+                汎用サーバーには雑談や日常の投稿が多く、
+                ゲームや技術、創作など特定の話題に人が集まっているサーバーもあります。
+                説明文だけでは分かりにくいので、公開タイムラインを実際に見てみるのもいいかもしれません。
               </p>
             </div>
             <div>
               <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-3">2. 規模で選ぶ</h3>
               <p>
-                <strong>大規模サーバー (io, misskey.designなど)</strong>: ユーザーが多く、タイムラインの流れが速いです。常に誰かが居る安心感があります。<br>
-                <strong>小・中規模サーバー</strong>: コミュニティの結束が強く、アットホームな雰囲気の場合が多いです。顔なじみを作りやすいでしょう。
+                大規模サーバ: ユーザーが多く、タイムラインの流れが速いです。常に誰かが居る安心感があります。<br>
+                小・中規模サーバ: コミュニティの結束が強く、アットホームな雰囲気の場合が多いです。顔なじみを作りやすいでしょう。
               </p>
             </div>
             <div>
               <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-3">3. ルールを確認する</h3>
               <p>
                 サーバーごとに利用規約が異なります。
-                NSFW(閲覧注意)コンテンツの取扱いや、公用語、禁止事項などを事前に確認しましょう。
+                NSFWコンテンツの取扱いや、公用語、禁止事項などを事前に確認しましょう。
               </p>
             </div>
           </div>
         </div>
       </div>
     </section>
-    
+
     <!-- Background Section -->
     <section class="py-24 bg-neutral-50 dark:bg-black">
       <div class="container mx-auto max-w-screen-xl px-6">
@@ -109,24 +108,23 @@
           <!-- Content -->
           <div class="space-y-6 text-neutral-600 dark:text-neutral-300 leading-relaxed">
             <p>
-              公式のMisskeyHubに掲載されていたサーバーリストが突如メンテナンス状態となり、長期間にわたって復旧する気配がありませんでした。
+              公式のMisskeyHubにあったサーバーリストがメンテナンス状態になったまま、長いあいだ戻ってきませんでした。
             </p>
             <p>
-              開発者は「混乱を避けるため」と説明していましたが、おそらく
-              <NuxtLink class="text-primary hover:text-primary/70 transition-colors"
+              開発者は「混乱を避けるため」と説明していましたが、実際には
+              <NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200"
                 to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432"
                 target="_blank">CherryPickの実装変更</NuxtLink>
-              が原因と思われます。
+              が原因かと言われています。
             </p>
             <p>
-              CherryPickは、Misskeyの派生プロジェクトの一つですが、現行のCherryPickは、
-              <NuxtLink class="text-primary hover:text-primary/70 transition-colors"
+              CherryPickはMisskeyの派生プロジェクトでした。現在のCherryPickは、
+              <NuxtLink class="text-primary hover:text-primary/70 transition-colors duration-200"
                 to="https://github.com/yunfie-twitter/cherrypick/commit/98ae8b5d869bac470aad2b8f025318f2c222e432#diff-c99e10daaf6c2db57012b73a31a76d7e3bbbf9e2599ed226e2f1651cdff40c20"
-                target="_blank">特定のUAに対し、メタデータで自身をMisskeyのように偽って返す仕組み</NuxtLink>
-              になっています。
+                target="_blank">特定のUser-Agentに対してのみ、自身をMisskeyだと偽ったメタデータをレスポンスしています</NuxtLink>。
             </p>
             <p>
-              このリストでは、CherryPickのようなスプーフィングを自動的に除外し、純粋なMisskeyサーバーのみを掲載しています。
+              このリストでは、こうした偽装を検出して除外し、Misskeyと軽微なフォークのみを掲載しています。
             </p>
           </div>
         </div>
@@ -143,28 +141,16 @@
               <span class="text-primary">01.</span> Safe & Clean
             </h3>
             <p>
-              このリストは、独自のクローラーが定期的にFediverseを巡回し、以下の基準で厳格なフィルタリングを行っています。
+              クローラーは各サーバーからメタデータを収集し、独自の検証プロセスを経て掲載されています。
+              Misskeyではないソフトウェアと、CherryPickやSharkey等の軽微ではないフォークは掲載されません。
             </p>
-            <ul class="list-disc list-inside space-y-2 ml-4">
-              <li>
-                <strong>リポジトリ/ソフトウェア検証:</strong>
-                <span class="text-sm">
-                  NodeInfoおよびAPIメタデータを照合し、Misskey (およびその正当なフォーク) 以外のソフトウェアを自動的に除外します。
-                </span>
-              </li>
-              <li>
-                <strong>スプーフィング検出:</strong>
-                <span class="text-sm">
-                  複数の異なるUser-Agentを用いてサーバーにアクセスし、特定のUAに対してのみMisskeyを偽装する"CherryPick"のような挙動を検知・ブロックします。
-                </span>
-              </li>
-              <li>
-                <strong>除外リスト:</strong>
-                <span class="text-sm">
-                  スパム、違法コンテンツ、悪意のある運営者が管理するサーバーは自動的にリストから排除されます。
-                </span>
-              </li>
-            </ul>
+            <p>
+              自身をMisskeyだと偽るホストがあるため、取得条件を変えた複数回の取得結果の整合性を確認しています。
+            </p>
+            <p>
+              除外したホストは理由とともに記録し、明示的に除外しています。
+              スパムや悪質な運営のサーバーも同様に除外されている可能性があります。
+            </p>
           </div>
 
           <div class="space-y-6 text-neutral-600 dark:text-neutral-300 leading-relaxed">
@@ -172,28 +158,15 @@
               <span class="text-primary">02.</span> Discovery & Ranking
             </h3>
             <p>
-              「あなたにぴったりのサーバー」を見つけやすくするために、単なるリストアップ以上の工夫を行っています。
+              掲載対象は連合をたどって探索しています。
+              稼働中のインスタンスから無作為に数件を選び、それぞれの連合先を候補に追加しています。管理者やモデレータによる申請は原則として不要です。
             </p>
-            <ul class="list-disc list-inside space-y-2 ml-4">
-              <li>
-                <strong>連合検出 (Federation Crawling):</strong>
-                <span class="text-sm">
-                  既知のサーバーから繋がっている別のサーバーを再帰的に・自動的に発見します。管理者が手動で登録しなくても、コミュニティの一部であれば自動的に掲載されます。
-                </span>
-              </li>
-              <li>
-                <strong>アクティブ指標:</strong>
-                <span class="text-sm">
-                  単なる登録者数だけでなく、「今、どれくらい活発か」(ノート数やアクティブユーザー数) を重視して表示順を調整しています。
-                </span>
-              </li>
-              <li>
-                <strong>言語解析:</strong>
-                <span class="text-sm">
-                  サーバーのメタデータだけでなく、実際のタイムライン(公開投稿)の一部をサンプリング・解析し、主要言語を自動判定しています。
-                </span>
-              </li>
-            </ul>
+            <p>
+              並び順に使うスコアは、投稿数、ユーザー数、1日あたりの投稿数、バージョンの新しさ等が加味され、独自のアルゴリズムにより算出されています。
+            </p>
+            <p>
+              主要言語は、サーバー内で利用されている言語を元に判定されるため、公開タイムラインやサーバーのブランディング設定の影響を受けることがあります。
+            </p>
           </div>
         </div>
       </div>
@@ -209,14 +182,14 @@
             <div class="bg-neutral-50 dark:bg-neutral-950 p-6 rounded-lg">
               <h4 class="font-bold text-lg text-neutral-900 dark:text-white mb-2">Q. 利用にお金はかかりますか？</h4>
               <p class="text-neutral-600 dark:text-neutral-400">
-                A. 多くのサーバーは有志によって運営されており、無料で利用できます。
-                ただし、サーバー維持費の支援(寄付)を募っている場合や、一部機能が有料の場合もあります。
+                A. ほとんどのサーバーは無料で使えます。
+                運営費の寄付を募っているサーバーや、一部の機能だけ有料にしているサーバーもあります。
               </p>
             </div>
             <div class="bg-neutral-50 dark:bg-neutral-950 p-6 rounded-lg">
               <h4 class="font-bold text-lg text-neutral-900 dark:text-white mb-2">Q. 複数のサーバーに登録できますか？</h4>
               <p class="text-neutral-600 dark:text-neutral-400">
-                A. はい、可能です。趣味用、実況用、技術用など、用途に合わせて複数のサーバーを使い分けるユーザーも多くいます。
+                A. できます。趣味用と技術用でアカウントを分けている人もよく見かけます。
               </p>
             </div>
           </div>
@@ -224,14 +197,14 @@
             <div class="bg-neutral-50 dark:bg-neutral-950 p-6 rounded-lg">
               <h4 class="font-bold text-lg text-neutral-900 dark:text-white mb-2">Q. 他のサーバーの人と話せますか？</h4>
               <p class="text-neutral-600 dark:text-neutral-400">
-                A. はい。ActivityPubに対応しているため、他のMisskeyサーバーやMastodonなどのユーザーともフォロー・リプライ等のやり取りが可能です。
+                A. 基本的には可能です。サーバーの設定にもよりますが、ActivityPubに対応しているため、他のMisskeyサーバーはもちろん、Mastodonなどのユーザーもフォローしたりリプライしたりできます。
               </p>
             </div>
             <div class="bg-neutral-50 dark:bg-neutral-950 p-6 rounded-lg">
               <h4 class="font-bold text-lg text-neutral-900 dark:text-white mb-2">Q. 自分のサーバーを掲載したいです</h4>
               <p class="text-neutral-600 dark:text-neutral-400">
-                A. このリストは自動的にFediverseを巡回してサーバーを発見しています。
-                他の主要なサーバーと連合(Federation)していれば、自動的に掲載される可能性が高いです。
+                A. 掲載の申請は受け付けていません。
+                クローラーがFediverseを巡回しているので自動で掲載されます。規模の大きいサーバーと連合することで、より掲載されやすくなる可能性があります。
               </p>
             </div>
           </div>
@@ -283,7 +256,7 @@ useJsonld(() => [
         name: '利用にお金はかかりますか？',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: '多くのサーバーは有志によって運営されており、無料で利用できます。ただし、サーバー維持費の支援（寄付）を募っている場合や、一部機能が有料の場合もあります。'
+          text: 'ほとんどのサーバーは無料で使えます。運営費の寄付を募っているサーバーや、一部の機能だけ有料にしているサーバーもあります。'
         }
       },
       {
@@ -291,7 +264,7 @@ useJsonld(() => [
         name: '複数のサーバーに登録できますか？',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'はい、可能です。趣味用、実況用、技術用など、用途に合わせて複数のサーバーを使い分けるユーザーも多くいます。'
+          text: 'できます。趣味用と技術用でアカウントを分けている人もよく見かけます。'
         }
       },
       {
@@ -299,7 +272,7 @@ useJsonld(() => [
         name: '他のサーバーの人と話せますか？',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'はい。ActivityPubに対応しているため、他のMisskeyサーバーやMastodonなどのユーザーともフォロー・リプライ等のやり取りが可能です。'
+          text: '話せます。ActivityPubに対応しているので、他のMisskeyサーバーはもちろん、Mastodonなどのユーザーもフォローしたりリプライしたりできます。'
         }
       },
       {
@@ -307,7 +280,7 @@ useJsonld(() => [
         name: '自分のサーバーを掲載したいです',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'このリストは自動的にFediverseを巡回してサーバーを発見しています。他の主要なサーバーと連合（Federation）していれば、自動的に掲載される可能性が高いです。'
+          text: '掲載の申請は受け付けていません。クローラーがFediverseを巡回しているので、規模の大きいサーバーと連合していれば、そのうち見つかって掲載されます。'
         }
       }
     ]

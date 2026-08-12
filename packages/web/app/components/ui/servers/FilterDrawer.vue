@@ -19,7 +19,7 @@
           <!-- Result count -->
           <div class="flex items-baseline justify-center gap-2 py-2">
             <p class="text-3xl font-bold text-primary">{{ totalCount }}</p>
-            <p class="text-xs text-neutral-500 dark:text-neutral-400 tracking-wide uppercase">servers</p>
+            <p class="font-display text-xs text-neutral-500 dark:text-neutral-400 tracking-wide uppercase">servers</p>
           </div>
 
           <div>

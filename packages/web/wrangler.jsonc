@@ -6,7 +6,8 @@
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./.output/public/",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "html_handling": "drop-trailing-slash"
   },
   "observability": { "enabled": true },
 
@@ -18,7 +19,7 @@
     "stg": {
       "compatibility_flags": ["nodejs_compat"],
       "observability": { "enabled": true },
-      "assets": { "directory": "./.output/public/", "binding": "ASSETS" },
+      "assets": { "directory": "./.output/public/", "binding": "ASSETS", "html_handling": "drop-trailing-slash" },
       "d1_databases": [
         {
           "binding": "DB",
@@ -39,7 +40,7 @@
     "prod": {
       "compatibility_flags": ["nodejs_compat"],
       "observability": { "enabled": true },
-      "assets": { "directory": "./.output/public/", "binding": "ASSETS" },
+      "assets": { "directory": "./.output/public/", "binding": "ASSETS", "html_handling": "drop-trailing-slash" },
       "d1_databases": [
         {
           "binding": "DB",

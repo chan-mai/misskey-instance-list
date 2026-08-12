@@ -6,7 +6,7 @@
         <div class="flex items-center gap-4 overflow-hidden flex-1">
           <div v-if="totalCount" class="flex items-baseline gap-2 whitespace-nowrap flex-shrink-0">
             <span class="text-lg font-bold text-neutral-900 dark:text-white">{{ totalCount }}</span>
-            <span class="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">servers</span>
+            <span class="font-display text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest">servers</span>
           </div>
           <div class="flex-1"></div>
         </div>
@@ -32,7 +32,7 @@
             class="h-10 flex items-center gap-2 px-4 text-xs font-medium tracking-widest uppercase transition-colors flex-shrink-0"
             :class="(activeFiltersCount ?? 0) > 0 ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border border-neutral-900 dark:border-white' : 'text-neutral-500 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'">
             <Icon name="lucide:sliders-horizontal" class="w-4 h-4" />
-            <span class="hidden sm:inline">FILTERS</span>
+            <span class="font-display hidden sm:inline">FILTERS</span>
           </button>
         </div>
       </div>

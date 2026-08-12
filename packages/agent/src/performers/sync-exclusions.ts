@@ -1,4 +1,4 @@
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import { Performer } from 'tsumugi/performer';
 import { and, eq, inArray } from 'drizzle-orm';
 import { createDb, instances, excludedHosts, chunkForD1 } from '@mil/core/db';

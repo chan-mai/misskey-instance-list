@@ -10,6 +10,7 @@ export default defineNuxtConfig({
   css: ['kiso.css', '~/assets/css/fonts.css', '~/assets/css/style.css'],
   // nitro-cloudflare-devが無いとdev時にevent.context.cloudflare.envが空になりD1へ届かない
   modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag', '@nuxtjs/color-mode', '@nuxt/icon', '@nuxtjs/sitemap', 'nuxt-jsonld', 'nuxt-security', 'nuxt-oidc-auth', 'nitro-cloudflare-dev'],
+  plugins: ['~/plugins/typekit.client'],
   components: [
     { path: '~/components', pathPrefix: false },
   ],
@@ -98,6 +99,8 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'preconnect', href: 'https://use.typekit.net' },
+        { rel: 'preconnect', href: 'https://p.typekit.net', crossorigin: '' },
       ],
       htmlAttrs: {
         lang: 'ja',
@@ -114,6 +117,10 @@ export default defineNuxtConfig({
             accent: '#f57aa5',
             back: '#ffffff',
             'back-dark': '#0a0a0a',
+          },
+          fontFamily: {
+            base: 'var(--font-base)',
+            display: 'var(--font-display)',
           },
         },
       },
@@ -151,10 +158,11 @@ export default defineNuxtConfig({
     storage: {
       cache: { driver: 'cloudflare-kv-binding', binding: 'CACHE_KV' },
     },
-    // dev環境ではAPIキャッシュを無効化
-    routeRules: process.env.NODE_ENV === 'development'
-      ? { '/api/**': { cache: false, headers: { 'Cache-Control': 'no-cache, no-store' } } }
-      : {}
+    routeRules: {
+      '/api/**': process.env.NODE_ENV === 'development'
+        ? { cache: false, headers: { 'Cache-Control': 'no-cache, no-store', 'X-Robots-Tag': 'noindex' } }
+        : { headers: { 'X-Robots-Tag': 'noindex' } },
+    }
   },
   gtag: {
     id: 'G-3VEDN6VL0W'

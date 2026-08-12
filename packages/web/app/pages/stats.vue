@@ -7,7 +7,7 @@
 
     <div v-else-if="error" class="py-32 text-center bg-neutral-50 dark:bg-black">
       <div class="inline-block bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-8">
-        <p class="text-xs tracking-widest uppercase mb-2">Error</p>
+        <p class="font-display text-xs tracking-widest uppercase mb-2">Error</p>
         <p class="font-medium">{{ error.message }}</p>
       </div>
     </div>
@@ -22,10 +22,10 @@
             <!-- Active -->
             <button @click="openModal('active')"
               class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
-              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Active
+              <p class="font-display text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Active
                 Servers</p>
-              <p class="text-3xl lg:text-5xl font-bold text-primary mb-2">
-                {{ formatNumber(stats?.counts?.active) }}
+              <p class="font-display text-3xl lg:text-5xl font-bold text-primary mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.active, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-green-500 flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
@@ -36,20 +36,20 @@
 
             <!-- Total Users -->
             <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
-              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Users
+              <p class="font-display text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Users
               </p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.users) }}
+              <p class="font-display text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.users, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-neutral-500">Across active servers</p>
             </div>
 
             <!-- Known -->
             <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
-              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Known
+              <p class="font-display text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Known
               </p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.known) }}
+              <p class="font-display text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.known, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-neutral-500">All discovered</p>
             </div>
@@ -57,9 +57,9 @@
             <!-- Excluded -->
             <button @click="openModal('excluded')"
               class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
-              <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Excluded</p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.exclusions) }}
+              <p class="font-display text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Excluded</p>
+              <p class="font-display text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.exclusions, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-red-500">Blocked / Ignored</p>
               <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>
@@ -81,9 +81,9 @@
           <!-- Header (Desktop) -->
           <div
             class="hidden lg:grid grid-cols-12 gap-4 text-[10px] font-medium tracking-widest uppercase text-neutral-400 px-6 py-3">
-            <div class="col-span-1">#</div>
-            <div class="col-span-7">Software</div>
-            <div class="col-span-4 text-right">Instances</div>
+            <div class="font-display col-span-1">#</div>
+            <div class="font-display col-span-7">Software</div>
+            <div class="font-display col-span-4 text-right">Instances</div>
           </div>
 
           <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
@@ -141,7 +141,7 @@
           <!-- Load More Button -->
           <div v-if="hasMoreSoftware" class="mt-8 lg:mt-12 text-center">
             <button @click="loadMoreSoftware"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs tracking-widest uppercase font-medium hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-colors">
+              class="font-display inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs tracking-widest uppercase font-medium hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-colors">
               Load More
               <Icon name="lucide:chevron-down" class="h-3.5 w-3.5" />
             </button>
@@ -168,6 +168,7 @@ useHead({
     { name: 'description', content: 'Statistics about Misskey instances and software usage distribution.' },
     { property: 'og:title', content: 'Network Statistics - (Unofficial) Misskey Server List' },
     { property: 'og:description', content: 'Statistics about Misskey instances and software usage distribution.' },
+    { property: 'og:url', content: 'https://servers.misskey.ink/stats' },
   ]
 });
 
