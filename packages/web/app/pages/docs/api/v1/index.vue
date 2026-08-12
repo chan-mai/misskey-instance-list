@@ -8,7 +8,7 @@
     <section class="py-24 bg-neutral-50 dark:bg-black">
       <div class="container mx-auto max-w-screen-xl px-6">
         <div class="mb-16">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">01</p>
+          <p class="font-display text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">01</p>
           <h2 class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-6">Endpoints</h2>
           <div class="w-16 h-px bg-primary"></div>
         </div>
@@ -76,7 +76,7 @@
     <section class="py-24 bg-neutral-50 dark:bg-neutral-950">
       <div class="container mx-auto max-w-screen-xl px-6">
         <div class="mb-16">
-          <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">02</p>
+          <p class="font-display text-xs font-medium tracking-widest uppercase text-neutral-400 mb-4">02</p>
           <h2 class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-6">Base URL</h2>
           <div class="w-16 h-px bg-primary"></div>
         </div>
@@ -87,15 +87,15 @@
 
         <div class="mt-8 grid lg:grid-cols-3 gap-px bg-neutral-200 dark:bg-neutral-800">
           <div class="bg-back dark:bg-back-dark p-6">
-            <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Format</p>
+            <p class="font-display text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Format</p>
             <p class="text-lg font-medium text-neutral-900 dark:text-white">JSON</p>
           </div>
           <div class="bg-back dark:bg-back-dark p-6">
-            <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Authentication</p>
+            <p class="font-display text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Authentication</p>
             <p class="text-lg font-medium text-neutral-900 dark:text-white">Not Required</p>
           </div>
           <div class="bg-back dark:bg-back-dark p-6">
-            <p class="text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Rate Limit</p>
+            <p class="font-display text-xs font-medium tracking-widest uppercase text-neutral-400 mb-2">Rate Limit</p>
             <p class="text-lg font-medium text-neutral-900 dark:text-white">150 requests / min</p>
           </div>
         </div>

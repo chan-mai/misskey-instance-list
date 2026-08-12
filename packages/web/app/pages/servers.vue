@@ -311,7 +311,7 @@ useJsonld(() => ({
           <StateError v-else-if="errorMessage && instances.length === 0" :message="errorMessage">
             <template #action>
               <button @click="fetchInstances(true)"
-                class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
+                class="font-display px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
                 Retry
               </button>
             </template>
@@ -323,7 +323,7 @@ useJsonld(() => ({
             sub-message="検索条件を変更してみてください">
             <template #action>
               <button v-if="f_query || f_repository || f_language" @click="handleReset"
-                class="px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
+                class="font-display px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
                 Reset Filters
               </button>
             </template>
@@ -342,12 +342,12 @@ useJsonld(() => ({
           <div v-else-if="errorMessage" class="text-center">
             <p class="text-red-600 mb-2">{{ errorMessage }}</p>
             <button @click="fetchInstances(false)"
-              class="px-4 py-2 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors border border-neutral-900 dark:border-white">
+              class="font-display px-4 py-2 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors border border-neutral-900 dark:border-white">
               Retry
             </button>
           </div>
 
-          <p v-else-if="!hasMore" class="text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
+          <p v-else-if="!hasMore" class="font-display text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
             — All {{ formatNumber(total) }} servers —
           </p>
         </div>

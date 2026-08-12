@@ -1,5 +1,15 @@
+:root {
+  --font-base: hiragino-kaku-gothic-pron, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", "Noto Sans JP", "Yu Gothic Medium", 游ゴシック体, 游ゴシック, "Yu Gothic", メイリオ, Meiryo, "ＭＳ Ｐゴシック", sans-serif;
+  --font-display: futura-pt, var(--font-base);
+}
+
 * {
-  font-family: "Noto Sans JP", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "ヒラギノ角ゴ ProN W3", "Yu Gothic Medium", 游ゴシック体, 游ゴシック, "Yu Gothic", メイリオ, Meiryo, "ＭＳ Ｐゴシック", sans-serif;
+  font-family: var(--font-base);
   font-optical-sizing: auto;
   font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6,
+h1 *, h2 *, h3 *, h4 *, h5 *, h6 * {
+  font-family: var(--font-display);
 }
