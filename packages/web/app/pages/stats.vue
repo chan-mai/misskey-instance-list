@@ -24,8 +24,8 @@
               class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
               <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Active
                 Servers</p>
-              <p class="text-3xl lg:text-5xl font-bold text-primary mb-2">
-                {{ formatNumber(stats?.counts?.active) }}
+              <p class="text-3xl lg:text-5xl font-bold text-primary mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.active, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-green-500 flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
@@ -38,8 +38,8 @@
             <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
               <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Users
               </p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.users) }}
+              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.users, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-neutral-500">Across active servers</p>
             </div>
@@ -48,8 +48,8 @@
             <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
               <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Total Known
               </p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.known) }}
+              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.known, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-neutral-500">All discovered</p>
             </div>
@@ -58,8 +58,8 @@
             <button @click="openModal('excluded')"
               class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
               <p class="text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Excluded</p>
-              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2">
-                {{ formatNumber(stats?.counts?.exclusions) }}
+              <p class="text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.counts?.exclusions, true) }}
               </p>
               <p class="text-[10px] lg:text-xs text-red-500">Blocked / Ignored</p>
               <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>

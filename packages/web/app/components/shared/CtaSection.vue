@@ -28,31 +28,29 @@ defineProps<Props>();
                 </div>
 
                 <div class="hidden lg:block lg:w-1/2 w-full max-w-lg">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-white dark:bg-neutral-900 p-8 rounded-2xl shadow-sm">
-                            <p class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">{{
-                                formatNumber(stats?.counts?.active) }}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 tracking-widest uppercase">Active
-                            </p>
+                    <div class="hidden lg:block mt-12 lg:mt-0 w-full">
+                      <div class="grid grid-cols-2 max-w-lg mx-auto lg:ml-auto lg:mr-0">
+                        <div class="p-6 sm:p-8 text-center border-r-2 border-b-2 border-neutral-300 dark:border-white/30">
+                          <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{
+                            formatNumber(stats?.counts?.active) }}</p>
+                          <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Active</p>
                         </div>
-                        <div class="bg-white dark:bg-neutral-900 p-8 rounded-2xl shadow-sm">
-                            <p class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">{{
-                                formatNumber(stats?.counts?.known) }}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 tracking-widest uppercase">Known
-                            </p>
+                        <div class="p-6 sm:p-8 text-center border-b-2 border-neutral-300 dark:border-white/30">
+                          <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{
+                            formatNumber(stats?.counts?.known) }}</p>
+                          <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Known</p>
                         </div>
-                        <div class="bg-white dark:bg-neutral-900 p-8 rounded-2xl shadow-sm">
-                            <p class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">{{
-                                stats?.repositories?.length ?? '-' }}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 tracking-widest uppercase">Software
-                            </p>
+                        <div class="p-6 sm:p-8 text-center border-r-2 border-neutral-300 dark:border-white/30">
+                          <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.repositories?.length
+                            || '-' }}</p>
+                          <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Software</p>
                         </div>
-                        <div class="bg-white dark:bg-neutral-900 p-8 rounded-2xl shadow-sm">
-                            <p class="text-4xl font-bold text-neutral-900 dark:text-white mb-2">{{
-                                stats?.languages?.length ?? '-' }}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 tracking-widest uppercase">
-                                Languages</p>
+                        <div class="p-6 sm:p-8 text-center">
+                          <p class="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white">{{ stats?.languages?.length ||
+                            '-' }}</p>
+                          <p class="text-xs text-neutral-500 dark:text-white/50 tracking-widest uppercase mt-2">Languages</p>
                         </div>
+                      </div>
                     </div>
                 </div>
             </div>
