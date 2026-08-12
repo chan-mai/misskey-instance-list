@@ -168,6 +168,7 @@ useHead({
     { name: 'description', content: 'Statistics about Misskey instances and software usage distribution.' },
     { property: 'og:title', content: 'Network Statistics - (Unofficial) Misskey Server List' },
     { property: 'og:description', content: 'Statistics about Misskey instances and software usage distribution.' },
+    { property: 'og:url', content: 'https://servers.misskey.ink/stats' },
   ]
 });
 

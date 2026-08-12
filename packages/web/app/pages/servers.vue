@@ -3,23 +3,30 @@ import { STORAGE_KEY } from '~/utils/constants';
 
 const { formatNumber } = useFormat();
 
-let savedSettings: FilterSettings | null = null;
-if (import.meta.client) {
-  savedSettings = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null') as FilterSettings | null;
-}
-
 const route = useRoute();
 const f_query = ref<string>(route.query.q ? String(route.query.q) : '');
 const f_repository = ref<string>('');
 const f_language = ref<string>('');
 
-const f_orderBy = ref<FilterSettings['f_orderBy']>(savedSettings?.f_orderBy ?? 'recommendedScore');
-const f_order = ref<FilterSettings['f_order']>(savedSettings?.f_order ?? 'desc');
-const v_view = ref<FilterSettings['v_view']>(savedSettings?.v_view ?? 'grid');
-const f_openRegistrations = ref<boolean | null>(savedSettings?.f_openRegistrations ?? null);
-const f_emailRequired = ref<boolean | null>(savedSettings?.f_emailRequired ?? null);
-const f_minUsers = ref<number | null>(savedSettings?.f_minUsers ?? null);
-const f_maxUsers = ref<number | null>(savedSettings?.f_maxUsers ?? null);
+const f_orderBy = ref<FilterSettings['f_orderBy']>('recommendedScore');
+const f_order = ref<FilterSettings['f_order']>('desc');
+const v_view = ref<FilterSettings['v_view']>('grid');
+const f_openRegistrations = ref<boolean | null>(null);
+const f_emailRequired = ref<boolean | null>(null);
+const f_minUsers = ref<number | null>(null);
+const f_maxUsers = ref<number | null>(null);
+
+onMounted(() => {
+  const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null') as FilterSettings | null;
+  if (!saved) return;
+  f_orderBy.value = saved.f_orderBy ?? f_orderBy.value;
+  f_order.value = saved.f_order ?? f_order.value;
+  v_view.value = saved.v_view ?? v_view.value;
+  f_openRegistrations.value = saved.f_openRegistrations ?? null;
+  f_emailRequired.value = saved.f_emailRequired ?? null;
+  f_minUsers.value = saved.f_minUsers ?? null;
+  f_maxUsers.value = saved.f_maxUsers ?? null;
+});
 
 
 const PAGE_SIZE = 30;
@@ -73,15 +80,12 @@ const getQueryParams = (currentOffset: number = 0) => ({
   ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
 });
 
-const { data: initialResponse, status: initialStatus, error: initialError } = useLazyAsyncData(
+
+const requestFetch = useRequestFetch();
+
+const { data: initialResponse, status: initialStatus } = await useAsyncData(
   'servers-list',
-  () => {
-    const headers = useRequestHeaders(['host', 'cookie']);
-    return $fetch<InstancesResponse>('/api/v1/instances', {
-      params: getQueryParams(0),
-      headers
-    });
-  }
+  () => requestFetch<InstancesResponse>('/api/v1/instances', { params: getQueryParams(0) })
 );
 
 watch(initialStatus, (status) => {
@@ -153,7 +157,7 @@ watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_m
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 // Statsの取得もuseAsyncDataに統一
-const { data: stats } = useLazyAsyncData('stats', () => $fetch<StatsResponse>('/api/v1/stats'));
+const { data: stats } = useLazyAsyncData('stats', () => requestFetch<StatsResponse>('/api/v1/stats'));
 
 watch(loadMoreTrigger, (el) => {
   if (import.meta.client && el) {
@@ -174,12 +178,12 @@ useHead({
   title: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
   meta: [
     { name: 'keywords', content: 'Misskey,Server List,Instance List,Misskeyサーバー,インスタンス,Fediverse,ActivityPub,サーバー検索' },
-    { name: 'description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
+    { name: 'description', content: '稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。' },
     { property: 'og:title', content: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
-    { property: 'og:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
+    { property: 'og:description', content: '稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。' },
     { property: 'og:url', content: 'https://servers.misskey.ink/servers' },
     { name: 'twitter:title', content: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
-    { name: 'twitter:description', content: 'あなたにぴったりのMisskeyサーバーを見つけよう。登録数、ノート数、活動率などで検索できる非公式のMisskeyサーバーリスト(インスタンスリスト)です。' },
+    { name: 'twitter:description', content: '稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。' },
   ]
 });
 
@@ -333,7 +337,7 @@ useJsonld(() => ({
         <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center flex-col items-center gap-4">
           <div v-if="isLoading"
             class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
-          
+
           <!-- Pagination Error -->
           <div v-else-if="errorMessage" class="text-center">
             <p class="text-red-600 mb-2">{{ errorMessage }}</p>

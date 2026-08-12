@@ -151,10 +151,11 @@ export default defineNuxtConfig({
     storage: {
       cache: { driver: 'cloudflare-kv-binding', binding: 'CACHE_KV' },
     },
-    // dev環境ではAPIキャッシュを無効化
-    routeRules: process.env.NODE_ENV === 'development'
-      ? { '/api/**': { cache: false, headers: { 'Cache-Control': 'no-cache, no-store' } } }
-      : {}
+    routeRules: {
+      '/api/**': process.env.NODE_ENV === 'development'
+        ? { cache: false, headers: { 'Cache-Control': 'no-cache, no-store', 'X-Robots-Tag': 'noindex' } }
+        : { headers: { 'X-Robots-Tag': 'noindex' } },
+    }
   },
   gtag: {
     id: 'G-3VEDN6VL0W'
