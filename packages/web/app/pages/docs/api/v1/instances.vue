@@ -26,7 +26,7 @@
                 <td class="py-4 px-4 font-mono text-primary">sort</td>
                 <td class="py-4 px-4 text-neutral-500">string</td>
                 <td class="py-4 px-4 text-neutral-400">"users"</td>
-                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ソート項目。<code
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ソート項目<code
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">users</code>, <code
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">notes</code>, <code
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">createdAt</code>, <code
@@ -38,13 +38,13 @@
                 <td class="py-4 px-4 text-neutral-500">string</td>
                 <td class="py-4 px-4 text-neutral-400">なし</td>
                 <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">言語コード (ISO
-                  639-1)。自動検出のため、実際の主要言語と異なる場合があります。</td>
+                  639-1)。自動検出のため、実際の主要言語と異なる場合があります</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">order</td>
                 <td class="py-4 px-4 text-neutral-500">string</td>
                 <td class="py-4 px-4 text-neutral-400">"desc"</td>
-                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ソート順。<code
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ソート順<code
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">asc</code> または <code
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">desc</code></td>
               </tr>
@@ -52,13 +52,13 @@
                 <td class="py-4 px-4 font-mono text-primary">limit</td>
                 <td class="py-4 px-4 text-neutral-500">number</td>
                 <td class="py-4 px-4 text-neutral-400">30</td>
-                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">取得件数 (最大100)</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">取得件数 (1以上100以下)</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">offset</td>
                 <td class="py-4 px-4 text-neutral-500">number</td>
                 <td class="py-4 px-4 text-neutral-400">0</td>
-                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ページネーションのオフセット</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">ページネーションのオフセット (0以上)</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">search</td>
@@ -70,11 +70,46 @@
                 <td class="py-4 px-4 font-mono text-primary">repository</td>
                 <td class="py-4 px-4 text-neutral-500">string</td>
                 <td class="py-4 px-4 text-neutral-400">-</td>
-                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">リポジトリURL (完全一致)</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">リポジトリURL (完全一致)<code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">official</code> は本家リポジトリを指します</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">open_registrations</td>
+                <td class="py-4 px-4 text-neutral-500">boolean</td>
+                <td class="py-4 px-4 text-neutral-400">-</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">登録開放状況<code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">true</code> または <code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">false</code></td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">email_required</td>
+                <td class="py-4 px-4 text-neutral-500">boolean</td>
+                <td class="py-4 px-4 text-neutral-400">-</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">メールアドレス必須かどうか<code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">true</code> または <code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">false</code></td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">min_users</td>
+                <td class="py-4 px-4 text-neutral-500">number</td>
+                <td class="py-4 px-4 text-neutral-400">-</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">最小ユーザー数 (0以上)</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">max_users</td>
+                <td class="py-4 px-4 text-neutral-500">number</td>
+                <td class="py-4 px-4 text-neutral-400">-</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">最大ユーザー数 (0以上)</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <p class="text-neutral-600 dark:text-neutral-300 text-sm mt-8">
+          許容値の範囲外や型の異なる値を渡した場合は <code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">400 Bad Request</code>
+          を返します。同じパラメータを複数回指定した場合も同様です。
+        </p>
       </div>
     </section>
 

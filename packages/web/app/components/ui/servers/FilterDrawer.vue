@@ -302,20 +302,27 @@ watch(localEmailRequired, (val) => {
 });
 
 
+// min属性は値の設定を制限しない
+const normalizeUserCount = (val: number | string | null): number | null => {
+  if (val === null || val === '') return null;
+  const parsed = Number(val);
+  return Number.isFinite(parsed) ? Math.max(0, Math.trunc(parsed)) : null;
+};
+
 const minUsersValue = computed({
   get: () => localMinUsers.value,
   set: (val: number | string | null) => {
-    const v = val === '' ? null : val as number | null;
-    localMinUsers.value = v;
-    emit('update:minUsers', v);
+    const count = normalizeUserCount(val);
+    localMinUsers.value = count;
+    emit('update:minUsers', count);
   }
 });
 const maxUsersValue = computed({
   get: () => localMaxUsers.value,
   set: (val: number | string | null) => {
-    const v = val === '' ? null : val as number | null;
-    localMaxUsers.value = v;
-    emit('update:maxUsers', v);
+    const count = normalizeUserCount(val);
+    localMaxUsers.value = count;
+    emit('update:maxUsers', count);
   }
 });
 

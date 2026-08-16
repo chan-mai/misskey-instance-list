@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { STORAGE_KEY } from '~/utils/constants';
+import { loadFilterSettings } from '~/utils/filter-settings';
 
 const { formatNumber } = useFormat();
 
@@ -17,15 +18,15 @@ const f_minUsers = ref<number | null>(null);
 const f_maxUsers = ref<number | null>(null);
 
 onMounted(() => {
-  const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null') as FilterSettings | null;
+  const saved = loadFilterSettings(window.localStorage.getItem(STORAGE_KEY));
   if (!saved) return;
-  f_orderBy.value = saved.f_orderBy ?? f_orderBy.value;
-  f_order.value = saved.f_order ?? f_order.value;
-  v_view.value = saved.v_view ?? v_view.value;
-  f_openRegistrations.value = saved.f_openRegistrations ?? null;
-  f_emailRequired.value = saved.f_emailRequired ?? null;
-  f_minUsers.value = saved.f_minUsers ?? null;
-  f_maxUsers.value = saved.f_maxUsers ?? null;
+  f_orderBy.value = saved.f_orderBy;
+  f_order.value = saved.f_order;
+  v_view.value = saved.v_view;
+  f_openRegistrations.value = saved.f_openRegistrations;
+  f_emailRequired.value = saved.f_emailRequired;
+  f_minUsers.value = saved.f_minUsers;
+  f_maxUsers.value = saved.f_maxUsers;
 });
 
 
