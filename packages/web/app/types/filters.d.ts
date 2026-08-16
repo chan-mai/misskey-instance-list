@@ -1,5 +1,4 @@
-type SortField = 'recommendedScore' | 'notesCount' | 'usersCount' | 'createdAt';
-type SortOrder = 'asc' | 'desc';
+type SortField = import('~/utils/filter-settings').SortField;
+type SortOrder = import('~/utils/filter-settings').SortOrder;
 
-type ViewMode = 'grid' | 'list';
-
+type ViewMode = import('~/utils/filter-settings').ViewMode;

@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm';
-import { instances, excludedHosts, isExcludedHostSource } from '@mil/core/db';
-import { validateDomain } from '@mil/core/net';
+import { instances, excludedHosts } from '@mil/core/db';
+import { exclusionCreateBodySchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
+import { parseOrThrow } from '~~/server/utils/validate';
 
 /**
  * 除外ホスト追加API (管理者用)
@@ -20,38 +21,13 @@ import { useDb } from '~~/server/utils/db';
  */
 export default defineEventHandler(async(event) => {
   const db = useDb(event);
-  const body = await readBody(event);
-
-  // ドメインのバリデーション
-  const { valid, normalized, error } = validateDomain(body.domain);
-  if (!valid) {
-    throw createError({ statusCode: 400, statusMessage: error });
-  }
-
-  // SQLiteはTEXT affinityで数値等を暗黙に文字列化するため, 型もアプリ層で見る
-  if (body.reason !== undefined && body.reason !== null && typeof body.reason !== 'string') {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid parameters (reason must be a string)' });
-  }
-
-  const source = body.source || 'manual';
-
-  // 不正なenum値をアプリ層で検証
-  if (!isExcludedHostSource(source)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid parameters (e.g. invalid source)',
-    });
-  }
+  // SQLiteは暗黙変換するため型もアプリ層で
+  const { domain, reason, source } = parseOrThrow(exclusionCreateBodySchema, await readBody(event));
 
   // 除外リストへ登録
-  // 一意制約違反は例外ではなく0行で返るため, returningの件数で判定する
   const [exclusion] = await db
     .insert(excludedHosts)
-    .values({
-      domain: normalized!, // バリデーション済み
-      reason: body.reason,
-      source,
-    })
+    .values({ domain, reason, source })
     .onConflictDoNothing({ target: excludedHosts.domain })
     .returning();
 
@@ -60,8 +36,7 @@ export default defineEventHandler(async(event) => {
   }
 
   // 既存のインスタンスデータがあれば削除
-  // (除外されたホストはリストに表示すべきではないため)
-  await db.delete(instances).where(eq(instances.id, normalized!));
+  await db.delete(instances).where(eq(instances.id, domain));
 
   return exclusion;
 });

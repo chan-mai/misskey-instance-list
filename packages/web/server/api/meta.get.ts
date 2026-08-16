@@ -1,14 +1,7 @@
+import { metaQuerySchema } from '@mil/core/validation';
 
 export default defineEventHandler(async(event) => {
-  const query = getQuery(event);
-  const host = query.host as string;
-
-  if (!host) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Host is required',
-    });
-  }
+  const { host } = parseOrThrow(metaQuerySchema, getQuery(event));
 
   try {
     const controller = new AbortController();
