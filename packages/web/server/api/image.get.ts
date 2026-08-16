@@ -1,29 +1,9 @@
 
 import { sendStream } from 'h3';
+import { imageQuerySchema } from '@mil/core/validation';
 
 export default defineEventHandler(async(event) => {
-  const query = getQuery(event);
-  const url = query.url as string;
-
-  if (!url) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'URL is required',
-    });
-  }
-
-  try {
-    // Validate URL scheme
-    const parsed = new URL(url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-       throw new Error('Invalid protocol');
-    }
-  } catch {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid URL',
-    });
-  }
+  const { url } = parseOrThrow(imageQuerySchema, getQuery(event));
 
   try {
     const res = await fetch(url, {

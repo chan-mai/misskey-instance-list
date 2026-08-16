@@ -1,6 +1,8 @@
 import { and, count, desc, eq, like, or, type SQL } from 'drizzle-orm';
-import { excludedHosts, clampLikeTerm, isExcludedHostSource } from '@mil/core/db';
+import { excludedHosts } from '@mil/core/db';
+import { adminExclusionsQuerySchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
+import { parseOrThrow } from '~~/server/utils/validate';
 
 /**
  * 除外ホスト一覧取得API (管理者用)
@@ -9,40 +11,31 @@ import { useDb } from '~~/server/utils/db';
  * ページネーション、検索、ソースによるフィルタリングをサポートします。
  *
  * クエリパラメータ:
- * - page: ページ番号 (デフォルト: 1)
- * - limit: 1ページあたりの件数 (デフォルト: 20)
+ * - page: ページ番号 (1以上) (デフォルト: 1)
+ * - limit: 1ページあたりの件数 (1-100) (デフォルト: 20)
  * - search: ドメインまたは理由の部分一致検索
  * - source: 除外ソース ('manual' | 'system' | 'joinmisskey' | 'all') (デフォルト: 'all')
  *
+ * @throws 400 Bad Request (パラメータが許容値の範囲外)
  * @returns {Promise<Object>} 除外ホスト一覧とページネーション情報
  */
 export default defineEventHandler(async(event) => {
   const db = useDb(event);
-  const query = getQuery(event);
-  const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 20;
+  const { page, limit, search, source } = parseOrThrow(adminExclusionsQuerySchema, getQuery(event));
   const skip = (page - 1) * limit;
-
-  // フィルタ設定
-  const source = query.source as string || 'all';
 
   const conditions: (SQL | undefined)[] = [];
 
   // 'all' の場合はソースによる絞り込みを行わない
   if (source !== 'all') {
-    // 不正なenum値をアプリ層で検証
-    if (!isExcludedHostSource(source)) {
-      throw createError({ statusCode: 400, statusMessage: 'Invalid source' });
-    }
     conditions.push(eq(excludedHosts.source, source));
   }
 
   // 検索条件の追加 (ドメイン名 または 理由)
-  if (query.search) {
-    // D1のLIKEパターン長上限(50バイト)に収まるよう切り詰め, ワイルドカードを除去する
-    const term = clampLikeTerm(String(query.search));
+  // 切り詰め後に空になる検索語はフィルタしない
+  if (search) {
     conditions.push(
-      or(like(excludedHosts.domain, `%${term}%`), like(excludedHosts.reason, `%${term}%`)),
+      or(like(excludedHosts.domain, `%${search}%`), like(excludedHosts.reason, `%${search}%`)),
     );
   }
 

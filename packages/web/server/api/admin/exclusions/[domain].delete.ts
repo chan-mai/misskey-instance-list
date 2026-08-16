@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm';
 import { excludedHosts } from '@mil/core/db';
-import { validateDomain } from '@mil/core/net';
+import { domainParamSchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
+import { parseOrThrow } from '~~/server/utils/validate';
 
 /**
  * 除外解除API (管理者用)
@@ -18,23 +19,13 @@ import { useDb } from '~~/server/utils/db';
  */
 export default defineEventHandler(async(event) => {
   const db = useDb(event);
-  const domain = getRouterParam(event, 'domain');
-
-  if (!domain) {
-    throw createError({ statusCode: 400, statusMessage: 'Domain is required' });
-  }
-
-  const validation = validateDomain(domain);
-  if (!validation.valid) {
-    throw createError({ statusCode: 400, statusMessage: validation.error });
-  }
-  const normalizedDomain = validation.normalized!;
+  const { domain } = parseOrThrow(domainParamSchema, getRouterParams(event));
 
   // 削除実行
-  // レコード不在でも例外は出ないため, returningの件数で判定する
+  // レコード不在でも死なないためreturning件数で判定
   const [exclusion] = await db
     .delete(excludedHosts)
-    .where(eq(excludedHosts.domain, normalizedDomain))
+    .where(eq(excludedHosts.domain, domain))
     .returning();
 
   if (!exclusion) {

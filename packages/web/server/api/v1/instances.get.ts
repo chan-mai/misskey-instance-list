@@ -1,21 +1,22 @@
 import { and, asc, count, desc, eq, gte, like, lte, notExists, or, sql, type SQL } from 'drizzle-orm';
-import { instances, excludedHosts, clampLikeTerm } from '@mil/core/db';
+import { instances, excludedHosts } from '@mil/core/db';
+import { instancesQuerySchema } from '@mil/core/validation';
 
 /**
  * インスタンス一覧取得API
  *
  * クエリパラメータ:
- * - sort: ソート項目 ('notes' | 'users')
- * - order: ソート順序 ('asc' | 'desc')
- * - limit: 1ページあたりの件数 (デフォルト: 30)
- * - offset: オフセット (デフォルト: 0)
+ * - sort: ソート項目 ('notes' | 'users' | 'createdAt' | 'recommended' | 'repository') (デフォルト: 'users')
+ * - order: ソート順序 ('asc' | 'desc') (デフォルト: 'desc')
+ * - limit: 1ページあたりの件数 (1-100) (デフォルト: 30)
+ * - offset: オフセット (0以上) (デフォルト: 0)
  * - search: 検索クエリ (オプション)
  * - language: 言語コード (ISO 639-1) (オプション)
  * - repository: リポジトリURL (オプション)
  * - open_registrations: 登録開放状況 (true/false) (オプション)
  * - email_required: メールアドレス必須 (true/false) (オプション)
- * - min_users: 最小ユーザー数 (オプション)
- * - max_users: 最大ユーザー数 (オプション)
+ * - min_users: 最小ユーザー数 (0以上) (オプション)
+ * - max_users: 最大ユーザー数 (0以上) (オプション)
  *
  * レスポンス:
  * - items: インスタンス配列
@@ -23,35 +24,27 @@ import { instances, excludedHosts, clampLikeTerm } from '@mil/core/db';
  * - limit: 1ページあたりの件数
  * - offset: 現在のオフセット
  *
+ * @throws 400 Bad Request (パラメータが許容値の範囲外)
  * @returns {Promise<InstancesResponse>} インスタンス一覧
  */
 export default defineCachedEventHandler(async(event): Promise<InstancesResponse> => {
-  const query = getQuery(event);
-
-  // クエリパラメータを取得
-  const sort = (query.sort as string) || 'users';
-  const order = (query.order as string) === 'asc' ? 'asc' : 'desc';
-  const limit = Math.min(
-    Math.max(parseInt(query.limit as string) || 30, 1),
-    100
-  );
-  const offset = Math.max(parseInt(query.offset as string) || 0, 0);
-  const search = (query.search as string) || '';
+  const query = parseOrThrow(instancesQuerySchema, getQuery(event));
 
   const db = useDb(event);
 
   // SQLiteのNULL順序はPostgresと逆のため, is nullを第1キーに置いて末尾固定する
-  const sortColumn = {
+  const sortColumns = {
     notes: instances.notes_count,
     users: instances.users_count,
     createdAt: instances.created_at,
     recommended: instances.recommendation_score,
     repository: instances.repository_url,
-  }[sort] ?? instances.users_count;
+  };
+  const sortColumn = sortColumns[query.sort];
 
   const orderBy = [
     sql`(${sortColumn} is null) asc`,
-    order === 'asc' ? asc(sortColumn) : desc(sortColumn),
+    query.order === 'asc' ? asc(sortColumn) : desc(sortColumn),
     // ページングを安定
     asc(instances.id),
   ];
@@ -69,55 +62,42 @@ export default defineCachedEventHandler(async(event): Promise<InstancesResponse>
     ),
   );
 
-  // 検索クエリがある場合はフィルタを追加, D1のLIKEパターン50バイト上限に切り詰める
-  if (search) {
-    const term = clampLikeTerm(search);
-    if (term) {
-      conditions.push(
-        or(like(instances.id, `%${term}%`), like(instances.node_name, `%${term}%`)),
-      );
-    }
+  // 切り詰め後に空になる検索語はフィルタしない
+  if (query.search) {
+    conditions.push(
+      or(like(instances.id, `%${query.search}%`), like(instances.node_name, `%${query.search}%`)),
+    );
   }
 
   // リポジトリフィルタ
-  const repository = query.repository as string | undefined;
-  if (repository) {
+  if (query.repository) {
     conditions.push(eq(
       instances.repository_url,
-      repository === 'official' ? 'https://github.com/misskey-dev/misskey' : repository,
+      query.repository === 'official' ? 'https://github.com/misskey-dev/misskey' : query.repository,
     ));
   }
 
   // 言語フィルタ
-  const language = query.language as string | undefined;
-  if (language) {
-    conditions.push(eq(instances.language, language));
+  if (query.language) {
+    conditions.push(eq(instances.language, query.language));
   }
 
   // 登録開放状況フィルタ
-  const openRegistrations = query.open_registrations as string | undefined;
-  if (openRegistrations === 'true') {
-    conditions.push(eq(instances.open_registrations, true));
-  } else if (openRegistrations === 'false') {
-    conditions.push(eq(instances.open_registrations, false));
+  if (query.open_registrations !== undefined) {
+    conditions.push(eq(instances.open_registrations, query.open_registrations));
   }
 
   // メールアドレス必須フィルタ
-  const emailRequired = query.email_required as string | undefined;
-  if (emailRequired === 'true') {
-    conditions.push(eq(instances.email_required, true));
-  } else if (emailRequired === 'false') {
-    conditions.push(eq(instances.email_required, false));
+  if (query.email_required !== undefined) {
+    conditions.push(eq(instances.email_required, query.email_required));
   }
 
   // ユーザー数フィルタ
-  const minUsers = parseInt(query.min_users as string);
-  const maxUsers = parseInt(query.max_users as string);
-  if (!isNaN(minUsers) && minUsers >= 0) {
-    conditions.push(gte(instances.users_count, minUsers));
+  if (query.min_users !== undefined) {
+    conditions.push(gte(instances.users_count, query.min_users));
   }
-  if (!isNaN(maxUsers) && maxUsers >= 0) {
-    conditions.push(lte(instances.users_count, maxUsers));
+  if (query.max_users !== undefined) {
+    conditions.push(lte(instances.users_count, query.max_users));
   }
 
   const where = and(...conditions);
@@ -132,8 +112,8 @@ export default defineCachedEventHandler(async(event): Promise<InstancesResponse>
     .from(instances)
     .where(where)
     .orderBy(...orderBy)
-    .limit(limit)
-    .offset(offset);
+    .limit(query.limit)
+    .offset(query.offset);
 
   // レスポンス用に整形。
   // timestamp_ms列はDateで返るためNumber()でepoch msになる
@@ -160,8 +140,8 @@ export default defineCachedEventHandler(async(event): Promise<InstancesResponse>
   return {
     items,
     total,
-    limit,
-    offset,
+    limit: query.limit,
+    offset: query.offset,
   };
 }, {
   maxAge: 60 * 60, // 1時間間キャッシュ

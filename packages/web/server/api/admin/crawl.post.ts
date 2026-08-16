@@ -1,8 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { instances, excludedHosts } from '@mil/core/db';
 import { validateInstance, saveInstance } from '@mil/core/crawl';
-import { validateDomain, isPubliclyResolvable } from '@mil/core/net';
+import { isPubliclyResolvable } from '@mil/core/net';
+import { crawlBodySchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
+import { parseOrThrow } from '~~/server/utils/validate';
 import { createCrawlContext } from '~~/server/utils/crawl-context';
 
 /**
@@ -20,13 +22,7 @@ import { createCrawlContext } from '~~/server/utils/crawl-context';
  */
 export default defineEventHandler(async(event) => {
   const db = useDb(event);
-  const body = await readBody(event);
-
-  const { valid, normalized, error } = validateDomain(body?.domain);
-  if (!valid) {
-    throw createError({ statusCode: 400, statusMessage: error });
-  }
-  const domain = normalized!; // バリデーション済み
+  const { domain } = parseOrThrow(crawlBodySchema, await readBody(event));
 
   // 除外ホストはクロール対象にしない
   const [excluded] = await db
@@ -41,7 +37,7 @@ export default defineEventHandler(async(event) => {
     });
   }
 
-  // validateDomainは生IPや内部名も通すため, 接続前にSSRF検査を行う
+  // 接続前にSSRF検査
   if (!await isPubliclyResolvable(domain)) {
     throw createError({
       statusCode: 400,
@@ -49,8 +45,7 @@ export default defineEventHandler(async(event) => {
     });
   }
 
-  // 未登録ドメインはレコードを作ってからクロールする
-  // 既存なら競合して0行, returningの件数で新規作成かを判定する
+  // 未登録ドメインはレコードを作ってからクロールす
   const created = await db
     .insert(instances)
     .values({ id: domain })
@@ -83,7 +78,6 @@ export default defineEventHandler(async(event) => {
     ok: !!result.info,
     error: result.error ?? null,
     created: created.length > 0,
-    // 不在時はundefinedになるが, findUnique相当のnullを保つ
     instance: instance ?? null,
   };
 });

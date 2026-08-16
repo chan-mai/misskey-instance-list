@@ -1,55 +1,11 @@
-import { defineEventHandler, getQuery, createError } from 'h3';
+import { defineEventHandler, getQuery } from 'h3';
 import { eq } from 'drizzle-orm';
 import { instances, excludedHosts } from '@mil/core/db';
 import { evaluateInstance } from '@mil/core/crawl';
+import { checkQuerySchema } from '@mil/core/validation';
 
 export default defineEventHandler(async(event): Promise<CheckResponse> => {
-  const query = getQuery(event);
-  let domain = query.domain;
-
-  if (Array.isArray(domain)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Multiple domain parameters are not allowed',
-    });
-  }
-
-  if (!domain || typeof domain !== 'string') {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Domain parameter is required',
-    });
-  }
-
-  domain = domain.trim().toLowerCase();
-
-  // URLが入力された場合、ホスト名を抽出する
-  if (domain.includes('://') || domain.startsWith('http://') || domain.startsWith('https://')) {
-    try {
-      const url = new URL(domain);
-      domain = url.hostname;
-    } catch {
-       throw createError({
-          statusCode: 400,
-          statusMessage: 'Invalid URL format',
-       });
-    }
-  }
-
-  if (!/^[a-z0-9.-]+$/.test(domain)) {
-     throw createError({
-      statusCode: 400,
-      statusMessage: 'Domain parameter contains invalid characters',
-    });
-  }
-
-  const loopbackList = ['localhost', '127.0.0.1', '::1'];
-  if (loopbackList.includes(domain)) {
-     throw createError({
-      statusCode: 400,
-      statusMessage: 'Localhost addresses are not allowed',
-    });
-  }
+  const { domain } = parseOrThrow(checkQuerySchema, getQuery(event));
 
   const db = useDb(event);
 
