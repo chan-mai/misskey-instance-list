@@ -1,5 +1,5 @@
 <template>
-  <section class="relative min-h-[80vh] lg:min-h-screen flex items-center justify-center overflow-hidden">
+  <section class="relative min-h-[min(80vh,48rem)] lg:min-h-[min(100vh,60rem)] flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 bg-neutral-100 dark:bg-black">
       <div class="absolute inset-0 opacity-30 dark:opacity-50">
         <div

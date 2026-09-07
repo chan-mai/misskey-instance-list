@@ -1,5 +1,5 @@
 <template>
-  <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+  <section class="relative min-h-[min(60vh,36rem)] flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 bg-neutral-100 dark:bg-black">
       <GeometricGraphic />
       <div class="absolute inset-0 opacity-20">
