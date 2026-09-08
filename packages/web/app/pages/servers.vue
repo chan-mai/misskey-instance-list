@@ -1,32 +1,28 @@
 <script setup lang="ts">
 import { STORAGE_KEY } from '~/utils/constants';
-import { loadFilterSettings } from '~/utils/filter-settings';
+import { loadViewMode, parseFilterQuery, toFilterQuery } from '~/utils/filter-settings';
 
 const { formatNumber } = useFormat();
 
 const route = useRoute();
-const f_query = ref<string>(route.query.q ? String(route.query.q) : '');
-const f_repository = ref<string>('');
-const f_language = ref<string>('');
+const router = useRouter();
+const initialConditions = parseFilterQuery(route.query);
 
-const f_orderBy = ref<FilterSettings['f_orderBy']>('recommendedScore');
-const f_order = ref<FilterSettings['f_order']>('desc');
-const v_view = ref<FilterSettings['v_view']>('grid');
-const f_openRegistrations = ref<boolean | null>(null);
-const f_emailRequired = ref<boolean | null>(null);
-const f_minUsers = ref<number | null>(null);
-const f_maxUsers = ref<number | null>(null);
+const f_query = ref<string>(initialConditions.q);
+const f_repository = ref<string>(initialConditions.repository);
+const f_language = ref<string>(initialConditions.language);
+
+const f_orderBy = ref<SortField>(initialConditions.orderBy);
+const f_order = ref<SortOrder>(initialConditions.order);
+const v_view = ref<ViewMode>('grid');
+const f_openRegistrations = ref<boolean | null>(initialConditions.openRegistrations);
+const f_emailRequired = ref<boolean | null>(initialConditions.emailRequired);
+const f_minUsers = ref<number | null>(initialConditions.minUsers);
+const f_maxUsers = ref<number | null>(initialConditions.maxUsers);
 
 onMounted(() => {
-  const saved = loadFilterSettings(window.localStorage.getItem(STORAGE_KEY));
-  if (!saved) return;
-  f_orderBy.value = saved.f_orderBy;
-  f_order.value = saved.f_order;
-  v_view.value = saved.v_view;
-  f_openRegistrations.value = saved.f_openRegistrations;
-  f_emailRequired.value = saved.f_emailRequired;
-  f_minUsers.value = saved.f_minUsers;
-  f_maxUsers.value = saved.f_maxUsers;
+  const saved = loadViewMode(window.localStorage.getItem(STORAGE_KEY));
+  if (saved) v_view.value = saved;
 });
 
 
@@ -39,18 +35,25 @@ const hasMore = computed(() => offset.value + instances.value.length < total.val
 const initialLoading = ref(true);
 const errorMessage = ref<string | null>(null);
 
-watch([f_orderBy, f_order, v_view, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], (to) => {
-  const newSettings: FilterSettings = {
-    f_orderBy: to[0] as FilterSettings['f_orderBy'],
-    f_order: to[1] as FilterSettings['f_order'],
-    v_view: to[2] as FilterSettings['v_view'],
-    f_openRegistrations: to[3] as boolean | null,
-    f_emailRequired: to[4] as boolean | null,
-    f_minUsers: to[5] as number | null,
-    f_maxUsers: to[6] as number | null,
-  };
+const filterConditions = computed<FilterConditions>(() => ({
+  q: f_query.value,
+  repository: f_repository.value,
+  language: f_language.value,
+  orderBy: f_orderBy.value,
+  order: f_order.value,
+  openRegistrations: f_openRegistrations.value,
+  emailRequired: f_emailRequired.value,
+  minUsers: f_minUsers.value,
+  maxUsers: f_maxUsers.value,
+}));
+
+watch(filterConditions, (conditions) => {
+  router.replace({ query: toFilterQuery(conditions) });
+});
+
+watch(v_view, (view) => {
   if (import.meta.client) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ v_view: view }));
   }
 });
 
@@ -244,11 +247,11 @@ function handleReset() {
 }
 
 function handleOrderByChange(val: any) {
-  f_orderBy.value = val as FilterSettings['f_orderBy'];
+  f_orderBy.value = val as SortField;
 }
 
 function handleOrderChange(val: any) {
-  f_order.value = val as FilterSettings['f_order'];
+  f_order.value = val as SortOrder;
 }
 // ローカルでの拡張型定義
 type InstanceWithDescription = Instance & {
