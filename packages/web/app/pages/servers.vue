@@ -51,6 +51,30 @@ watch(filterConditions, (conditions) => {
   router.replace({ query: toFilterQuery(conditions) });
 });
 
+// 正規化後クエリで比較
+const isSameConditions = (a: FilterConditions, b: FilterConditions) =>
+  JSON.stringify(toFilterQuery(a)) === JSON.stringify(toFilterQuery(b));
+
+function applyConditions(conditions: FilterConditions) {
+  f_query.value = conditions.q;
+  f_repository.value = conditions.repository;
+  f_language.value = conditions.language;
+  f_orderBy.value = conditions.orderBy;
+  f_order.value = conditions.order;
+  f_openRegistrations.value = conditions.openRegistrations;
+  f_emailRequired.value = conditions.emailRequired;
+  f_minUsers.value = conditions.minUsers;
+  f_maxUsers.value = conditions.maxUsers;
+}
+
+// クエリのみの遷移を反映, 自身のreplace由来は除外
+watch(() => route.query, (query) => {
+  const conditions = parseFilterQuery(query);
+  if (isSameConditions(conditions, filterConditions.value)) return;
+  applyConditions(conditions);
+  fetchInstances(true);
+});
+
 watch(v_view, (view) => {
   if (import.meta.client) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ v_view: view }));
