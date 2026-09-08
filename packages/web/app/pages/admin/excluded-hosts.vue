@@ -1,3 +1,122 @@
+<script setup lang="ts">
+import type { ExcludedHost } from '@mil/core/db';
+
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+});
+
+const page = ref(1);
+const limit = 20;
+const search = ref('');
+const sourceFilter = ref('all');
+const debouncedSearchKey = ref('');
+
+let timeout: NodeJS.Timeout | null = null;
+
+const debouncedSearch = () => {
+  if (timeout) clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    debouncedSearchKey.value = search.value;
+    page.value = 1;
+  }, 300);
+};
+
+onBeforeUnmount(() => {
+  if (timeout) clearTimeout(timeout);
+});
+
+// データ取得
+const { data, pending, error, refresh } = await useFetch('/api/admin/exclusions', {
+  query: computed(() => ({
+    page: page.value,
+    limit,
+    search: debouncedSearchKey.value,
+    source: sourceFilter.value,
+  })),
+});
+
+watch(sourceFilter, () => {
+  page.value = 1;
+});
+
+// モーダルとフォームのロジック
+const showModal = ref(false);
+const dialogRef = ref<HTMLDialogElement | null>(null);
+const isEditing = ref(false);
+const submitting = ref(false);
+const formError = ref('');
+const form = reactive({
+  domain: '',
+  reason: '',
+  source: 'manual'
+});
+
+const openAddModal = async () => {
+  isEditing.value = false;
+  form.domain = '';
+  form.reason = '';
+  form.source = 'manual';
+  formError.value = '';
+  showModal.value = true;
+  await nextTick();
+  dialogRef.value?.showModal();
+};
+
+const editItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
+  isEditing.value = true;
+  form.domain = item.domain;
+  form.reason = item.reason || '';
+  form.source = item.source; // Not editable, but good for state
+  formError.value = '';
+  showModal.value = true;
+  await nextTick();
+  dialogRef.value?.showModal();
+};
+
+const closeModal = () => {
+  dialogRef.value?.close();
+  showModal.value = false;
+};
+
+const submitForm = async () => {
+  submitting.value = true;
+  formError.value = '';
+
+  try {
+    if (isEditing.value) {
+      await $fetch(`/api/admin/exclusions/${encodeURIComponent(form.domain)}`, {
+        method: 'PATCH',
+        body: { reason: form.reason },
+      });
+    } else {
+      await $fetch('/api/admin/exclusions', {
+        method: 'POST',
+        body: { ...form },
+      });
+    }
+    closeModal();
+    refresh();
+  } catch (e: any) {
+    formError.value = e.statusMessage || e.message || 'エラーが発生しました';
+  } finally {
+    submitting.value = false;
+  }
+};
+
+const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
+  if (!confirm(`${item.domain} を削除してもよろしいですか？`)) return;
+
+  try {
+    await $fetch(`/api/admin/exclusions/${encodeURIComponent(item.domain)}`, {
+      method: 'DELETE',
+    });
+    refresh();
+  } catch (e: any) {
+    alert(e.statusMessage || '削除に失敗しました');
+  }
+};
+</script>
 <template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
@@ -131,7 +250,7 @@
         @close="closeModal"
       >
         <h2 class="text-xl font-bold mb-4">{{ isEditing ? '除外理由の編集' : '除外ホストの追加' }}</h2>
-        
+
         <form @submit.prevent="submitForm" class="space-y-4">
           <div>
             <label class="block text-sm font-bold mb-1">ドメイン</label>
@@ -144,7 +263,7 @@
               placeholder="example.com"
             />
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold mb-1">理由</label>
             <textarea
@@ -191,123 +310,3 @@
     </Teleport>
   </div>
 </template>
-
-<script setup lang="ts">
-import type { ExcludedHost } from '@mil/core/db';
-
-definePageMeta({
-  layout: 'admin',
-  middleware: 'admin',
-});
-
-const page = ref(1);
-const limit = 20;
-const search = ref('');
-const sourceFilter = ref('all');
-const debouncedSearchKey = ref('');
-
-let timeout: NodeJS.Timeout | null = null;
-
-const debouncedSearch = () => {
-  if (timeout) clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    debouncedSearchKey.value = search.value;
-    page.value = 1;
-  }, 300);
-};
-
-onBeforeUnmount(() => {
-  if (timeout) clearTimeout(timeout);
-});
-
-// データ取得
-const { data, pending, error, refresh } = await useFetch('/api/admin/exclusions', {
-  query: computed(() => ({
-    page: page.value,
-    limit,
-    search: debouncedSearchKey.value,
-    source: sourceFilter.value,
-  })),
-});
-
-watch(sourceFilter, () => {
-  page.value = 1;
-});
-
-// モーダルとフォームのロジック
-const showModal = ref(false);
-const dialogRef = ref<HTMLDialogElement | null>(null);
-const isEditing = ref(false);
-const submitting = ref(false);
-const formError = ref('');
-const form = reactive({
-  domain: '',
-  reason: '',
-  source: 'manual'
-});
-
-const openAddModal = async () => {
-  isEditing.value = false;
-  form.domain = '';
-  form.reason = '';
-  form.source = 'manual';
-  formError.value = '';
-  showModal.value = true;
-  await nextTick();
-  dialogRef.value?.showModal();
-};
-
-const editItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
-  isEditing.value = true;
-  form.domain = item.domain;
-  form.reason = item.reason || '';
-  form.source = item.source; // Not editable, but good for state
-  formError.value = '';
-  showModal.value = true;
-  await nextTick();
-  dialogRef.value?.showModal();
-};
-
-const closeModal = () => {
-  dialogRef.value?.close();
-  showModal.value = false;
-};
-
-const submitForm = async () => {
-  submitting.value = true;
-  formError.value = '';
-
-  try {
-    if (isEditing.value) {
-      await $fetch(`/api/admin/exclusions/${encodeURIComponent(form.domain)}`, {
-        method: 'PATCH',
-        body: { reason: form.reason },
-      });
-    } else {
-      await $fetch('/api/admin/exclusions', {
-        method: 'POST',
-        body: { ...form },
-      });
-    }
-    closeModal();
-    refresh();
-  } catch (e: any) {
-    formError.value = e.statusMessage || e.message || 'エラーが発生しました';
-  } finally {
-    submitting.value = false;
-  }
-};
-
-const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
-  if (!confirm(`${item.domain} を削除してもよろしいですか？`)) return;
-  
-  try {
-    await $fetch(`/api/admin/exclusions/${encodeURIComponent(item.domain)}`, {
-      method: 'DELETE',
-    });
-    refresh();
-  } catch (e: any) {
-    alert(e.statusMessage || '削除に失敗しました');
-  }
-};
-</script>

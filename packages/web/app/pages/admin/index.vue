@@ -1,7 +1,20 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+});
+
+const { data, pending, error } = await useFetch('/api/admin/stats');
+
+const formatNumber = (num: number | undefined) => {
+  if (num === undefined) return '-';
+  return new Intl.NumberFormat('en-US').format(num);
+};
+</script>
 <template>
   <div class="space-y-6">
     <h1 class="text-2xl font-bold">Dashboard</h1>
-    
+
     <div v-if="error" class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg">
       failed to fetch stats: {{ error.message }}
     </div>
@@ -53,22 +66,8 @@
 
     <div class="p-6 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
       <p class="text-gray-600 dark:text-gray-400">
-        管理コンソールへようこそ。サーバーの統計情報や設定をここで確認・管理できます。
+        管理コンソール
       </p>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  layout: 'admin',
-  middleware: 'admin',
-});
-
-const { data, pending, error } = await useFetch('/api/admin/stats');
-
-const formatNumber = (num: number | undefined) => {
-  if (num === undefined) return '-';
-  return new Intl.NumberFormat('en-US').format(num);
-};
-</script>
