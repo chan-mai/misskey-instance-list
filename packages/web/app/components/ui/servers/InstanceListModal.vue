@@ -125,7 +125,7 @@ function toggleReason(domain: string) {
 
                 <div v-if="hasMore" class="p-4 text-center bg-back dark:bg-back-dark">
                     <button @click="$emit('load-more')" :disabled="loadingMore"
-                        class="text-sm text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:underline transition-colors">
+                        class="text-sm text-primary border-none disabled:opacity-50 disabled:cursor-not-allowed hover:underline transition-colors">
                         <span v-if="loadingMore">読み込み中...</span>
                         <span v-else>もっと見る →</span>
                     </button>
