@@ -65,6 +65,8 @@ export const statsRepositorySchema = v.object({
 });
 export type StatsRepository = v.InferOutput<typeof statsRepositorySchema>;
 
+const statsIpStackSchema = v.object({ count: v.number(), users: v.number() });
+
 export const statsResponseSchema = v.object({
   counts: v.object({
     known: v.number(),
@@ -74,5 +76,12 @@ export const statsResponseSchema = v.object({
   }),
   repositories: v.array(statsRepositorySchema),
   languages: v.array(v.object({ code: v.string(), count: v.number() })),
+  // アクティブなインスタンスのみ, unknownは未判定
+  ip_stacks: v.object({
+    dual: statsIpStackSchema,
+    v6: statsIpStackSchema,
+    v4: statsIpStackSchema,
+    unknown: statsIpStackSchema,
+  }),
 });
 export type StatsResponse = v.InferOutput<typeof statsResponseSchema>;

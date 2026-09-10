@@ -4,7 +4,7 @@ const { formatNumber } = useFormat();
 interface Props {
     modelValue: boolean;
     title: string;
-    type: 'active' | 'excluded';
+    type: 'active' | 'excluded' | IpStackFilter;
     loading: boolean;
     items: { domain: string; reason: string | null }[];
     instances: Instance[];
@@ -39,7 +39,7 @@ function toggleReason(domain: string) {
     <BaseModal v-model="isOpen" @close="isOpen = false">
         <template #title>
             {{ title }}
-            <span v-if="type === 'active' && instances.length > 0" class="ml-2 text-sm font-normal text-neutral-500">
+            <span v-if="type !== 'excluded' && instances.length > 0" class="ml-2 text-sm font-normal text-neutral-500">
                 ({{ formatNumber(instances.length) }})
             </span>
             <span v-else-if="items.length > 0" class="ml-2 text-sm font-normal text-neutral-500">

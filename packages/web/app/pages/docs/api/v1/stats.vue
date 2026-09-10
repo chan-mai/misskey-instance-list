@@ -38,7 +38,13 @@
       "code": "ja",
       "count": 750
     }
-  ]
+  ],
+  "ip_stacks": {
+    "dual": { "count": 500, "users": 100000 },
+    "v6": { "count": 5, "users": 200 },
+    "v4": { "count": 250, "users": 15000 },
+    "unknown": { "count": 45, "users": 4800 }
+  }
 }</code></pre>
 
         <div class="mb-8">
@@ -93,6 +99,18 @@
           <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
             <code class="text-primary font-mono text-sm shrink-0">languages[].count</code>
             <p class="text-neutral-600 dark:text-neutral-300">この言語が主要言語のインスタンス数</p>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono text-sm shrink-0">ip_stacks</code>
+            <p class="text-neutral-600 dark:text-neutral-300">IPスタック種別ごとの集計(アクティブなインスタンスのみ)。dual: A/AAAA両方, v6: AAAAのみ, v4: Aのみ, unknown: 未判定</p>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono text-sm shrink-0">ip_stacks.*.count</code>
+            <p class="text-neutral-600 dark:text-neutral-300">この種別のインスタンス数</p>
+          </div>
+          <div class="bg-back dark:bg-back-dark p-6 flex items-start gap-4">
+            <code class="text-primary font-mono text-sm shrink-0">ip_stacks.*.users</code>
+            <p class="text-neutral-600 dark:text-neutral-300">この種別のインスタンスの総ユーザー数</p>
           </div>
         </div>
       </div>

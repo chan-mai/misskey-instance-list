@@ -11,6 +11,7 @@ import { instances, repositories as repositoriesTable, excludedHosts } from '@mi
  * - 総ユーザー数 (アクティブなインスタンスのみ)
  * - リポジトリ使用状況 (アクティブなインスタンスのみ)
  * - 言語使用状況 (アクティブなインスタンスのみ)
+ * - IPスタック種別ごとの件数とユーザー数 (アクティブなインスタンスのみ)
  *
  * @returns {Promise<StatsResponse>} 統計情報オブジェクト
  */
@@ -68,6 +69,27 @@ export default defineCachedEventHandler(async(event): Promise<StatsResponse> => 
     count: stat.count,
   }));
 
+  // IPスタック種別ごとの集計, NULLは未判定
+  const ipStackStats = await db
+    .select({
+      stack: instances.ip_stack,
+      count: count(),
+      users: sum(instances.users_count).mapWith(Number),
+    })
+    .from(instances)
+    .where(eq(instances.is_alive, true))
+    .groupBy(instances.ip_stack);
+
+  const ipStacks: StatsResponse['ip_stacks'] = {
+    dual: { count: 0, users: 0 },
+    v6: { count: 0, users: 0 },
+    v4: { count: 0, users: 0 },
+    unknown: { count: 0, users: 0 },
+  };
+  for (const stat of ipStackStats) {
+    ipStacks[stat.stack ?? 'unknown'] = { count: stat.count, users: stat.users ?? 0 };
+  }
+
   return {
     counts: {
       known: knownRows[0]?.value ?? 0,
@@ -77,7 +99,8 @@ export default defineCachedEventHandler(async(event): Promise<StatsResponse> => 
       users: usersRows[0]?.value ?? 0,
     },
     repositories,
-    languages
+    languages,
+    ip_stacks: ipStacks,
   };
 }, {
   maxAge: 60 * 60
