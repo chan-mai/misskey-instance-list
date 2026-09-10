@@ -5,6 +5,7 @@ import {
   domainSchema,
   excludedHostSourceSchema,
   integerParam,
+  ipStackSchema,
   likeTermSchema,
 } from './primitives.js';
 
@@ -29,6 +30,7 @@ export const instancesQuerySchema = v.object({
   language: v.optional(v.pipe(v.string(), v.maxLength(32))),
   open_registrations: v.optional(booleanParam),
   email_required: v.optional(booleanParam),
+  ip_stack: v.optional(ipStackSchema),
   min_users: v.optional(integerParam({ min: 0 })),
   max_users: v.optional(integerParam({ min: 0 })),
 });

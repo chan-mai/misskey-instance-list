@@ -47,6 +47,7 @@ export const checkResponseSchema = v.object({
       banner: v.nullable(v.string()),
       softwareName: v.nullable(v.string()),
       description: v.nullable(v.string()),
+      ipStack: v.nullable(ipStackSchema),
     }),
   ),
   is_embeddable: v.optional(v.boolean()),

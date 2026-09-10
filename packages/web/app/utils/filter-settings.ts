@@ -4,16 +4,19 @@ import type { LocationQuery } from 'vue-router';
 export const SORT_FIELDS = ['recommendedScore', 'notesCount', 'usersCount', 'createdAt'] as const;
 export const SORT_ORDERS = ['asc', 'desc'] as const;
 export const VIEW_MODES = ['grid', 'list'] as const;
+export const IP_STACK_FILTERS = ['v4', 'v6', 'dual'] as const;
 
 export type SortField = (typeof SORT_FIELDS)[number];
 export type SortOrder = (typeof SORT_ORDERS)[number];
 export type ViewMode = (typeof VIEW_MODES)[number];
+export type IpStackFilter = (typeof IP_STACK_FILTERS)[number];
 
 const textParam = v.fallback(v.optional(v.string(), ''), '');
 const boolParam = v.fallback(
   v.nullish(v.pipe(v.picklist(['true', 'false']), v.transform((s) => s === 'true')), null),
   null
 );
+const ipStackParam = v.fallback(v.nullish(v.picklist(IP_STACK_FILTERS), null), null);
 const userCountParam = v.fallback(
   v.nullish(v.pipe(v.string(), v.nonEmpty(), v.transform(Number), v.number(), v.integer(), v.minValue(0)), null),
   null
@@ -28,6 +31,7 @@ export const filterConditionsSchema = v.object({
   order: v.fallback(v.optional(v.picklist(SORT_ORDERS), 'desc'), 'desc'),
   openRegistrations: boolParam,
   emailRequired: boolParam,
+  ipStack: ipStackParam,
   minUsers: userCountParam,
   maxUsers: userCountParam,
 });
@@ -51,6 +55,7 @@ export const toFilterQuery = (conditions: FilterConditions): Record<string, stri
   if (conditions.order !== 'desc') query.order = conditions.order;
   if (conditions.openRegistrations !== null) query.openRegistrations = String(conditions.openRegistrations);
   if (conditions.emailRequired !== null) query.emailRequired = String(conditions.emailRequired);
+  if (conditions.ipStack !== null) query.ipStack = conditions.ipStack;
   if (conditions.minUsers !== null) query.minUsers = String(conditions.minUsers);
   if (conditions.maxUsers !== null) query.maxUsers = String(conditions.maxUsers);
   return query;

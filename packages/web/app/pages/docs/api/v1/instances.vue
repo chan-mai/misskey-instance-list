@@ -90,6 +90,15 @@
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">false</code></td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">ip_stack</td>
+                <td class="py-4 px-4 text-neutral-500">string</td>
+                <td class="py-4 px-4 text-neutral-400">-</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">IPスタック種別<code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v4</code>, <code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v6</code>, <code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">dual</code>のいずれか</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">min_users</td>
                 <td class="py-4 px-4 text-neutral-500">number</td>
                 <td class="py-4 px-4 text-neutral-400">-</td>

@@ -15,6 +15,7 @@ import { instancesQuerySchema } from '@mil/core/validation';
  * - repository: リポジトリURL (オプション)
  * - open_registrations: 登録開放状況 (true/false) (オプション)
  * - email_required: メールアドレス必須 (true/false) (オプション)
+ * - ip_stack: IPスタック種別 ('v4' | 'v6' | 'dual') (オプション)
  * - min_users: 最小ユーザー数 (0以上) (オプション)
  * - max_users: 最大ユーザー数 (0以上) (オプション)
  *
@@ -90,6 +91,11 @@ export default defineCachedEventHandler(async(event): Promise<InstancesResponse>
   // メールアドレス必須フィルタ
   if (query.email_required !== undefined) {
     conditions.push(eq(instances.email_required, query.email_required));
+  }
+
+  // IPスタックフィルタ
+  if (query.ip_stack !== undefined) {
+    conditions.push(eq(instances.ip_stack, query.ip_stack));
   }
 
   // ユーザー数フィルタ
