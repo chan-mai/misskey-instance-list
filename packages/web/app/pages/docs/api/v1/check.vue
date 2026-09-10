@@ -49,7 +49,8 @@
     "icon": "https://media.example.com/assets/icon.png",
     "banner": "https://media.example.com/assets/banner.jpg",
     "softwareName": "misskey",
-    "description": "Misskey Example"
+    "description": "Misskey Example",
+    "ipStack": "dual"
   },
   "is_embeddable": true,
   "source": "database"
@@ -115,6 +116,11 @@
                 <td class="py-4 px-4 font-mono text-primary pl-8">.description</td>
                 <td class="py-4 px-4 text-neutral-500">string | null</td>
                 <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">インスタンス説明</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary pl-8">.ipStack</td>
+                <td class="py-4 px-4 text-neutral-500">string | null</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">IPスタック種別(v4, v6, dual)。未判定はnull</td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">reason</td>
