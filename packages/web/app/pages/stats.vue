@@ -271,8 +271,9 @@ const ipv6ReachableUserShare = computed(() =>
 );
 
 // Software Pagination State
-const visibleSoftwareCount = ref(50);
+const SOFTWARE_INITIAL_COUNT = 5;
 const SOFTWARE_PAGE_SIZE = 50;
+const visibleSoftwareCount = ref(SOFTWARE_INITIAL_COUNT);
 
 const visibleRepositories = computed(() => {
   return (stats.value?.repositories || []).slice(0, visibleSoftwareCount.value);
