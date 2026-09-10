@@ -135,6 +135,7 @@ export default defineCachedEventHandler(async(event): Promise<InstancesResponse>
     language: i.language ?? null,
     open_registrations: i.open_registrations ?? null,
     email_required: i.email_required ?? null,
+    ip_stack: i.ip_stack ?? null,
   }));
 
   return {

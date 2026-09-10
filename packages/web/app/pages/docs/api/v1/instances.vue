@@ -132,13 +132,23 @@
       "last_check_at": 1704153600000,
       "banner_url": "https://example.com/banner.jpg",
       "icon_url": "https://example.com/icon.png",
-      "language": "ja"
+      "language": "ja",
+      "ip_stack": "dual"
     }
   ],
   "total": 500,
   "limit": 30,
   "offset": 0
 }</code></pre>
+
+        <p class="text-neutral-600 dark:text-neutral-300 text-sm mt-8">
+          <code class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">ip_stack</code>
+          はDNSレコードから判定したIPスタック種別です。<code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v4</code>, <code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v6</code>, <code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">dual</code>(両対応)のいずれかで、未判定の場合は<code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">null</code>です。
+        </p>
       </div>
     </section>
 

@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { suspensionStateSchema } from './primitives.js';
+import { suspensionStateSchema, ipStackSchema } from './primitives.js';
 
 export const apiInstanceSchema = v.object({
   host: v.string(),
@@ -19,6 +19,7 @@ export const apiInstanceSchema = v.object({
   email_required: v.nullable(v.boolean()),
   repository_url: v.nullable(v.string()),
   language: v.nullable(v.string()),
+  ip_stack: v.nullable(ipStackSchema),
 });
 export type ApiInstance = v.InferOutput<typeof apiInstanceSchema>;
 
