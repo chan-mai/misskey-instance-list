@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { instances, repositories, excludedHosts } from '../db/index.js';
-import type { SuspensionState, RepositoryInsert } from '../db/index.js';
-import { isPubliclyResolvable } from '../net/ip.js';
+import type { SuspensionState, RepositoryInsert, IpStack } from '../db/index.js';
+import { resolvePublicAddresses, toIpStack } from '../net/ip.js';
 import type { CrawlContext } from './context.js';
 
 export interface InstanceInfo {
@@ -18,6 +18,7 @@ export interface InstanceInfo {
   description?: string;
   openRegistrations?: boolean | null;
   emailRequired?: boolean | null;
+  ipStack?: IpStack | null;
 }
 
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
@@ -337,7 +338,8 @@ export async function evaluateInstance(
   host: string
 ): Promise<EvaluationResult> {
   // 生IPや内部名(metadata.google.internal等)への接続を防ぐ
-  if (!await isPubliclyResolvable(host)) {
+  const addresses = await resolvePublicAddresses(host);
+  if (!addresses) {
     return { info: null, error: 'UNKNOWN' };
   }
 
@@ -434,7 +436,7 @@ export async function evaluateInstance(
   }
 
   // 問題なければBotの情報を返す
-  return botRes;
+  return { ...botRes, info: { ...botRes.info, ipStack: toIpStack(addresses) } };
 }
 
 /**
@@ -643,6 +645,7 @@ export async function saveInstance(
         repository_url: info.repositoryUrl && repoInfo ? info.repositoryUrl : null,
         open_registrations: info.openRegistrations,
         email_required: info.emailRequired,
+        ip_stack: info.ipStack ?? null,
       })
       .where(eq(instances.id, id));
   } else {

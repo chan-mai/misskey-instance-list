@@ -149,6 +149,11 @@
             </div>
             <div>
               <label
+                class="block text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-1">IPスタック</label>
+              <BaseSegmentedControl v-model="localIpStack" :options="ipStackOptions" />
+            </div>
+            <div>
+              <label
                 class="block text-xs font-medium tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-1">
                 ソフトウェア (Repository)
               </label>
@@ -214,6 +219,13 @@ const emailOptions = [
   { label: '必須', value: true }
 ];
 
+const ipStackOptions: { label: string; value: IpStackFilter | null }[] = [
+  { label: 'すべて', value: null },
+  { label: 'IPv4', value: 'v4' },
+  { label: 'IPv6', value: 'v6' },
+  { label: 'IPv4 / IPv6', value: 'dual' }
+];
+
 const props = defineProps<{
   isOpen: boolean;
   totalCount: string;
@@ -226,6 +238,7 @@ const props = defineProps<{
   repositoryFilter: string;
   openRegistrations?: boolean | null;
   emailRequired?: boolean | null;
+  ipStack?: IpStackFilter | null;
   minUsers?: number | null;
   maxUsers?: number | null;
 }>();
@@ -239,6 +252,7 @@ const emit = defineEmits<{
   'update:repositoryFilter': [value: string];
   'update:openRegistrations': [value: boolean | null];
   'update:emailRequired': [value: boolean | null];
+  'update:ipStack': [value: IpStackFilter | null];
   'update:minUsers': [value: number | null];
   'update:maxUsers': [value: number | null];
   'reset': [];
@@ -271,6 +285,7 @@ const localLanguage = ref(props.languageFilter);
 const localRepository = ref(props.repositoryFilter);
 const localOpenRegistrations = ref(props.openRegistrations ?? null);
 const localEmailRequired = ref(props.emailRequired ?? null);
+const localIpStack = ref<IpStackFilter | null>(props.ipStack ?? null);
 const localMinUsers = ref(props.minUsers ?? null);
 const localMaxUsers = ref(props.maxUsers ?? null);
 
@@ -281,6 +296,7 @@ watch(() => props.languageFilter, (val) => localLanguage.value = val);
 watch(() => props.repositoryFilter, (val) => localRepository.value = val);
 watch(() => props.openRegistrations, (val) => localOpenRegistrations.value = val ?? null);
 watch(() => props.emailRequired, (val) => localEmailRequired.value = val ?? null);
+watch(() => props.ipStack, (val) => localIpStack.value = val ?? null);
 watch(() => props.minUsers, (val) => localMinUsers.value = val ?? null);
 watch(() => props.maxUsers, (val) => localMaxUsers.value = val ?? null);
 
@@ -299,6 +315,9 @@ watch(localOpenRegistrations, (val) => {
 });
 watch(localEmailRequired, (val) => {
   if (val !== (props.emailRequired ?? null)) emit('update:emailRequired', val);
+});
+watch(localIpStack, (val) => {
+  if (val !== (props.ipStack ?? null)) emit('update:ipStack', val);
 });
 
 

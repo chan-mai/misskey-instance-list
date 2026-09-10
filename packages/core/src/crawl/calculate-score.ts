@@ -1,21 +1,24 @@
+import type { IpStack } from '../db/schema.js';
+
 /**
  * おすすめスコアの重みと設定
  */
 const SCORING_CONFIG = {
   WEIGHTS: {
-    POST_VOLUME: 0.3,
-    USER_COUNT: 0.2,
-    ACTIVITY_RATE: 0.3,
-    VERSION: 0.2
+    USER_COUNT: 0.35,
+    POST_VOLUME: 0.35,
+    VERSION: 0.2,
+    IP_STACK: 0.1
   },
-  // 正規化の上限 (0-1スケーリングのための95パーセンタイル推定値)
+  // 対数正規化の上限
   CAPS: {
-    POSTS: 1000000,
-    USERS: 10000,
-    NOTES_PER_DAY: 1000
+    USERS: 1_000_000,
+    POSTS: 200_000_000
   },
   // バージョン新鮮さの減衰係数 (月数)
-  VERSION_DECAY_MONTHS: 3
+  VERSION_DECAY_MONTHS: 3,
+  // IPスタック種別の点数 (0-1)
+  IP_STACK_SCORES: { v4: 0.25, v6: 0.5, dual: 1 } satisfies Record<IpStack, number>
 };
 
 /**
@@ -57,6 +60,11 @@ export function getVersionScore(instanceVersion: string | null, latestVersion: s
   return Math.exp(-diffMonths / SCORING_CONFIG.VERSION_DECAY_MONTHS);
 }
 
+// 対数正規化 (0-1)
+function normalizeLog(value: number, cap: number): number {
+  return Math.min(Math.log10(1 + Math.max(value, 0)) / Math.log10(1 + cap), 1);
+}
+
 /**
  * インスタンスのおすすめスコアを計算する
  * スコアは0から100の間
@@ -64,36 +72,21 @@ export function getVersionScore(instanceVersion: string | null, latestVersion: s
 export function calculateRecommendationScore(instance: {
   users_count: number | null;
   notes_count: number | null;
-  created_at: Date;
   version: string | null;
+  ip_stack: IpStack | null;
 }, latestVersion: string | null): number {
-  const users = instance.users_count || 0;
-  const posts = instance.notes_count || 0;
-  
-  // 1. 正規化された投稿数 (0-1)
-  const normalizedPosts = Math.min(posts / SCORING_CONFIG.CAPS.POSTS, 1);
-  
-  // 2. 正規化されたユーザー数 (0-1)
-  const normalizedUsers = Math.min(users / SCORING_CONFIG.CAPS.USERS, 1);
-  
-  // 3. 活動率ヒューリスティック (1日あたりのノート数)
-  const daysSinceCreation = Math.max(
-    (Date.now() - new Date(instance.created_at).getTime()) / (1000 * 60 * 60 * 24),
-    1 // ゼロ除算を回避
-  );
-  const notesPerDay = posts / daysSinceCreation;
-  const normalizedActivity = Math.min(notesPerDay / SCORING_CONFIG.CAPS.NOTES_PER_DAY, 1);
-  
-  // 4. バージョン新鮮さ
+  const normalizedUsers = normalizeLog(instance.users_count ?? 0, SCORING_CONFIG.CAPS.USERS);
+  const normalizedPosts = normalizeLog(instance.notes_count ?? 0, SCORING_CONFIG.CAPS.POSTS);
   const versionScore = getVersionScore(instance.version, latestVersion);
+  // 未判定は0
+  const ipStackScore = instance.ip_stack ? SCORING_CONFIG.IP_STACK_SCORES[instance.ip_stack] : 0;
 
-  // 加重和を計算
-  const totalScore = 
-    (normalizedPosts * SCORING_CONFIG.WEIGHTS.POST_VOLUME) +
+  const totalScore =
     (normalizedUsers * SCORING_CONFIG.WEIGHTS.USER_COUNT) +
-    (normalizedActivity * SCORING_CONFIG.WEIGHTS.ACTIVITY_RATE) +
-    (versionScore * SCORING_CONFIG.WEIGHTS.VERSION);
-    
+    (normalizedPosts * SCORING_CONFIG.WEIGHTS.POST_VOLUME) +
+    (versionScore * SCORING_CONFIG.WEIGHTS.VERSION) +
+    (ipStackScore * SCORING_CONFIG.WEIGHTS.IP_STACK);
+
   // スケーリングされたスコアを返す (0-100)
   return Number((totalScore * 100).toFixed(2));
 }

@@ -90,6 +90,15 @@
                     class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">false</code></td>
               </tr>
               <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
+                <td class="py-4 px-4 font-mono text-primary">ip_stack</td>
+                <td class="py-4 px-4 text-neutral-500">string</td>
+                <td class="py-4 px-4 text-neutral-400">-</td>
+                <td class="py-4 px-4 text-neutral-600 dark:text-neutral-300">IPスタック種別<code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v4</code>, <code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v6</code>, <code
+                    class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">dual</code>のいずれか</td>
+              </tr>
+              <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900">
                 <td class="py-4 px-4 font-mono text-primary">min_users</td>
                 <td class="py-4 px-4 text-neutral-500">number</td>
                 <td class="py-4 px-4 text-neutral-400">-</td>
@@ -132,13 +141,23 @@
       "last_check_at": 1704153600000,
       "banner_url": "https://example.com/banner.jpg",
       "icon_url": "https://example.com/icon.png",
-      "language": "ja"
+      "language": "ja",
+      "ip_stack": "dual"
     }
   ],
   "total": 500,
   "limit": 30,
   "offset": 0
 }</code></pre>
+
+        <p class="text-neutral-600 dark:text-neutral-300 text-sm mt-8">
+          <code class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">ip_stack</code>
+          はDNSレコードから判定したIPスタック種別です。<code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v4</code>, <code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">v6</code>, <code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">dual</code>(両対応)のいずれかで、未判定の場合は<code
+            class="bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5">null</code>です。
+        </p>
       </div>
     </section>
 

@@ -17,6 +17,7 @@ const f_order = ref<SortOrder>(initialConditions.order);
 const v_view = ref<ViewMode>('grid');
 const f_openRegistrations = ref<boolean | null>(initialConditions.openRegistrations);
 const f_emailRequired = ref<boolean | null>(initialConditions.emailRequired);
+const f_ipStack = ref<IpStackFilter | null>(initialConditions.ipStack);
 const f_minUsers = ref<number | null>(initialConditions.minUsers);
 const f_maxUsers = ref<number | null>(initialConditions.maxUsers);
 
@@ -43,6 +44,7 @@ const filterConditions = computed<FilterConditions>(() => ({
   order: f_order.value,
   openRegistrations: f_openRegistrations.value,
   emailRequired: f_emailRequired.value,
+  ipStack: f_ipStack.value,
   minUsers: f_minUsers.value,
   maxUsers: f_maxUsers.value,
 }));
@@ -63,6 +65,7 @@ function applyConditions(conditions: FilterConditions) {
   f_order.value = conditions.order;
   f_openRegistrations.value = conditions.openRegistrations;
   f_emailRequired.value = conditions.emailRequired;
+  f_ipStack.value = conditions.ipStack;
   f_minUsers.value = conditions.minUsers;
   f_maxUsers.value = conditions.maxUsers;
 }
@@ -104,6 +107,7 @@ const getQueryParams = (currentOffset: number = 0) => ({
   ...(f_language.value && { language: f_language.value }),
   ...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
   ...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
+  ...(f_ipStack.value !== null && { ip_stack: f_ipStack.value }),
   ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
   ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
 });
@@ -178,7 +182,7 @@ async function fetchInstances(reset = false) {
   }
 }
 
-watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_minUsers, f_maxUsers], () => {
+watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_ipStack, f_minUsers, f_maxUsers], () => {
   fetchInstances(true);
 });
 
@@ -236,6 +240,7 @@ const activeFiltersCount = computed(() => {
   if (f_orderBy.value !== 'recommendedScore') count++;
   if (f_openRegistrations.value !== null) count++;
   if (f_emailRequired.value !== null) count++;
+  if (f_ipStack.value !== null) count++;
   if (f_minUsers.value !== null) count++;
   if (f_maxUsers.value !== null) count++;
   if (f_repository.value) count++;
@@ -265,6 +270,7 @@ function handleReset() {
   f_repository.value = '';
   f_openRegistrations.value = null;
   f_emailRequired.value = null;
+  f_ipStack.value = null;
   f_minUsers.value = null;
   f_maxUsers.value = null;
   fetchInstances(true);
@@ -312,11 +318,12 @@ useJsonld(() => ({
     <FilterDrawer :is-open="isFilterDrawerOpen" :total-count="formatNumber(total)" :search-query="f_query"
       :order-by="f_orderBy" :order="f_order" :language-filter="f_language" :languages="stats?.languages"
       :repository-filter="f_repository" :repositories="repositories" :open-registrations="f_openRegistrations"
-      :email-required="f_emailRequired" :min-users="f_minUsers" :max-users="f_maxUsers"
+      :email-required="f_emailRequired" :ip-stack="f_ipStack" :min-users="f_minUsers" :max-users="f_maxUsers"
       @close="isFilterDrawerOpen = false" @search="handleSearch" @update:order-by="handleOrderByChange"
       @update:order="handleOrderChange" @update:language-filter="handleLanguageChange"
       @update:repository-filter="handleRepoChange" @update:open-registrations="(v) => f_openRegistrations = v"
-      @update:email-required="(v) => f_emailRequired = v" @update:min-users="(v) => f_minUsers = v"
+      @update:email-required="(v) => f_emailRequired = v" @update:ip-stack="(v) => f_ipStack = v"
+      @update:min-users="(v) => f_minUsers = v"
       @update:max-users="(v) => f_maxUsers = v" @reset="handleReset" />
 
     <!-- Server Grid -->

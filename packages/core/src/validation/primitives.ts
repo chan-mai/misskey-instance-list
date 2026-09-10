@@ -1,10 +1,11 @@
 import * as v from 'valibot';
-import { SUSPENSION_STATES, EXCLUDED_HOST_SOURCES } from '../db/schema.js';
+import { SUSPENSION_STATES, EXCLUDED_HOST_SOURCES, IP_STACKS } from '../db/schema.js';
 import { clampLikeTerm } from '../db/chunk.js';
 import { validateDomain } from '../net/domain-validation.js';
 
 export const suspensionStateSchema = v.picklist(SUSPENSION_STATES);
 export const excludedHostSourceSchema = v.picklist(EXCLUDED_HOST_SOURCES);
+export const ipStackSchema = v.picklist(IP_STACKS);
 
 // validateDomainによる検証/正規化
 export const domainSchema = v.pipe(

@@ -7,10 +7,13 @@ export { instances, repositories, excludedHosts } from './schema.js';
 export {
   SuspensionState,
   ExcludedHostSource,
+  IpStack,
   SUSPENSION_STATES,
   EXCLUDED_HOST_SOURCES,
+  IP_STACKS,
   isSuspensionState,
   isExcludedHostSource,
+  isIpStack,
 } from './schema.js';
 
 export type {

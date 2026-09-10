@@ -1,19 +1,18 @@
 import { Performer } from 'tsumugi/performer';
 import { and, asc, eq, gt } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
-import { createDb, instances } from '@mil/core/db';
-import { calculateRecommendationScore } from '@mil/core/crawl';
+import { createDb, instances, type Database } from '@mil/core/db';
+import { calculateRecommendationScore, parseVersionToMonths } from '@mil/core/crawl';
 import type { Env } from '../env.js';
 
 const BATCH_SIZE = 50;
+const OFFICIAL_REPOSITORY_URL = 'https://github.com/misskey-dev/misskey';
+// 安定版のみ (プレリリース接尾辞なし)
+const RELEASE_VERSION_PATTERN = /^\d{4}\.\d{1,2}\.\d+$/;
 
 export interface SyncRecommendationScoresResult {
   updated: number;
   latestVersion: string | null;
-}
-
-interface ReleaseItem {
-  tag_name?: string;
 }
 
 // アクティブなインスタンスのスコアを再計算
@@ -25,7 +24,10 @@ export class SyncRecommendationScores extends Performer<
 > {
   async perform(): Promise<SyncRecommendationScoresResult> {
     const db = createDb(this.env.DB);
-    const latestVersion = await fetchLatestStableVersion();
+    const latestVersion = (await fetchLatestStableVersion()) ?? (await findLatestVersionFromDb(db));
+    if (latestVersion === null) {
+      console.warn('Latest version unavailable, version score will be 0 for all instances');
+    }
     console.log(`Latest Misskey version: ${latestVersion}`);
 
     let updated = 0;
@@ -38,8 +40,8 @@ export class SyncRecommendationScores extends Performer<
           id: instances.id,
           users_count: instances.users_count,
           notes_count: instances.notes_count,
-          created_at: instances.created_at,
           version: instances.version,
+          ip_stack: instances.ip_stack,
         })
         .from(instances)
         .where(
@@ -70,21 +72,43 @@ export class SyncRecommendationScores extends Performer<
   }
 }
 
-// 取得失敗はnullで続行
+// releases/latestのリダイレクト先URLからタグ取得, REST APIのレート制限回避
 async function fetchLatestStableVersion(): Promise<string | null> {
   try {
-    const res = await fetch('https://api.github.com/repos/misskey-dev/misskey/releases/latest', {
-      headers: {
-        'User-Agent': 'MisskeyInstanceList/1.0',
-        'Accept': 'application/vnd.github+json',
-      },
+    const res = await fetch(`${OFFICIAL_REPOSITORY_URL}/releases/latest`, {
+      redirect: 'manual',
+      headers: { 'User-Agent': 'MisskeyInstanceList/1.0' },
     });
-    if (!res.ok) return null;
-
-    const release = await res.json() as ReleaseItem;
-    return release.tag_name ?? null;
+    const location = res.headers.get('location');
+    const tag = location?.match(/\/releases\/tag\/([^/?#]+)$/)?.[1];
+    if (!tag) {
+      console.warn(`Failed to resolve latest release tag: status=${res.status}`);
+      return null;
+    }
+    return decodeURIComponent(tag);
   } catch (e) {
     console.error('Failed to fetch latest version:', e);
     return null;
   }
+}
+
+// 取得失敗時の代替, 公式レポジトリ稼働中インスタンスの最大CalVer
+async function findLatestVersionFromDb(db: Database): Promise<string | null> {
+  const rows = await db
+    .selectDistinct({ version: instances.version })
+    .from(instances)
+    .where(and(eq(instances.is_alive, true), eq(instances.repository_url, OFFICIAL_REPOSITORY_URL)));
+
+  let latest: { version: string; months: number } | null = null;
+  for (const { version } of rows) {
+    if (!version || !RELEASE_VERSION_PATTERN.test(version)) continue;
+    const months = parseVersionToMonths(version);
+    if (months !== null && (latest === null || months > latest.months)) {
+      latest = { version, months };
+    }
+  }
+  if (latest !== null) {
+    console.warn(`Using latest version from database: ${latest.version}`);
+  }
+  return latest?.version ?? null;
 }

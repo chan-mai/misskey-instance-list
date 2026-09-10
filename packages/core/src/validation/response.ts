@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { suspensionStateSchema } from './primitives.js';
+import { suspensionStateSchema, ipStackSchema } from './primitives.js';
 
 export const apiInstanceSchema = v.object({
   host: v.string(),
@@ -19,6 +19,7 @@ export const apiInstanceSchema = v.object({
   email_required: v.nullable(v.boolean()),
   repository_url: v.nullable(v.string()),
   language: v.nullable(v.string()),
+  ip_stack: v.nullable(ipStackSchema),
 });
 export type ApiInstance = v.InferOutput<typeof apiInstanceSchema>;
 
@@ -46,6 +47,7 @@ export const checkResponseSchema = v.object({
       banner: v.nullable(v.string()),
       softwareName: v.nullable(v.string()),
       description: v.nullable(v.string()),
+      ipStack: v.nullable(ipStackSchema),
     }),
   ),
   is_embeddable: v.optional(v.boolean()),
@@ -63,6 +65,8 @@ export const statsRepositorySchema = v.object({
 });
 export type StatsRepository = v.InferOutput<typeof statsRepositorySchema>;
 
+const statsIpStackSchema = v.object({ count: v.number(), users: v.number() });
+
 export const statsResponseSchema = v.object({
   counts: v.object({
     known: v.number(),
@@ -72,5 +76,12 @@ export const statsResponseSchema = v.object({
   }),
   repositories: v.array(statsRepositorySchema),
   languages: v.array(v.object({ code: v.string(), count: v.number() })),
+  // アクティブなインスタンスのみ, unknownは未判定
+  ip_stacks: v.object({
+    dual: statsIpStackSchema,
+    v6: statsIpStackSchema,
+    v4: statsIpStackSchema,
+    unknown: statsIpStackSchema,
+  }),
 });
 export type StatsResponse = v.InferOutput<typeof statsResponseSchema>;

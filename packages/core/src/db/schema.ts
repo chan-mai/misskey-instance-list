@@ -4,6 +4,8 @@ import { sqliteTable, text, integer, real, index, check } from 'drizzle-orm/sqli
 // SQLiteにenum型は無いのでtext({enum})だが型レベルの制約でしかない, DB層はCHECKで守る
 export const SUSPENSION_STATES = ['none', 'suspended', 'gone'] as const;
 export const EXCLUDED_HOST_SOURCES = ['joinmisskey', 'manual', 'system'] as const;
+// DNSレコードから判定したIPスタック種別
+export const IP_STACKS = ['v4', 'v6', 'dual'] as const;
 
 // CHECKはDDLに埋まりバインドパラメータを使えないためリテラル展開
 const sqlLiteralList = (values: readonly string[]) =>
@@ -26,11 +28,21 @@ export const ExcludedHostSource = {
 } as const;
 export type ExcludedHostSource = (typeof EXCLUDED_HOST_SOURCES)[number];
 
+export const IpStack = {
+  v4: 'v4',
+  v6: 'v6',
+  dual: 'dual',
+} as const;
+export type IpStack = (typeof IP_STACKS)[number];
+
 export const isSuspensionState = (v: unknown): v is SuspensionState =>
   typeof v === 'string' && (SUSPENSION_STATES as readonly string[]).includes(v);
 
 export const isExcludedHostSource = (v: unknown): v is ExcludedHostSource =>
   typeof v === 'string' && (EXCLUDED_HOST_SOURCES as readonly string[]).includes(v);
+
+export const isIpStack = (v: unknown): v is IpStack =>
+  typeof v === 'string' && (IP_STACKS as readonly string[]).includes(v);
 
 export const repositories = sqliteTable('repositories', {
   url: text('url').primaryKey(),
@@ -71,6 +83,8 @@ export const instances = sqliteTable(
       onUpdate: 'cascade',
     }),
     language: text('language'),
+    // nullは未判定
+    ip_stack: text('ip_stack', { enum: IP_STACKS }),
   },
   (t) => [
     index('instances_repository_url_idx').on(t.repository_url),
@@ -79,6 +93,8 @@ export const instances = sqliteTable(
       'instances_suspension_state_check',
       sql`${t.suspension_state} in (${sqlLiteralList(SUSPENSION_STATES)})`,
     ),
+    // NULLはCHECK通過
+    check('instances_ip_stack_check', sql`${t.ip_stack} in (${sqlLiteralList(IP_STACKS)})`),
   ],
 );
 

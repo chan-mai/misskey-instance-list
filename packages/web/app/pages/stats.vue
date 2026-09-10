@@ -73,10 +73,70 @@
         :items="modalItems" :instances="modalInstances" :has-more="hasMore" :loading-more="loadingMore"
         @load-more="loadMore" />
 
-      <!-- Software Section -->
+      <!-- IPv6 Section -->
       <section class="py-16 lg:py-24 bg-neutral-50 dark:bg-neutral-950">
         <div class="container mx-auto max-w-screen-xl px-4 lg:px-6">
-          <SectionHeader number="02" title="Software Distribution" />
+          <SectionHeader number="02" title="IPv6 Readiness" />
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-neutral-200 dark:bg-neutral-800">
+            <button v-for="tile in ipStackTiles" :key="tile.key" @click="openModal(tile.key)"
+              class="border-none bg-white dark:bg-neutral-900 p-6 lg:p-8 text-left hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group">
+              <p class="font-display text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">
+                {{ tile.label }}</p>
+              <p class="font-display text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.ip_stacks?.[tile.key]?.count, true) }}
+              </p>
+              <p class="text-[10px] lg:text-xs flex items-center gap-2" :class="tile.textClass">
+                <span class="w-1.5 h-1.5" :class="tile.barClass"></span>
+                {{ calculateShare(stats?.ip_stacks?.[tile.key]?.count ?? 0, stats?.counts?.active) }}% · {{ tile.description }}
+              </p>
+              <p class="mt-3 text-[10px] text-neutral-400 group-hover:text-primary transition-colors">View List →</p>
+            </button>
+
+            <!-- Unknown -->
+            <div class="bg-white dark:bg-neutral-900 p-6 lg:p-8">
+              <p class="font-display text-[10px] lg:text-xs font-medium tracking-widest uppercase text-neutral-400 mb-3">Unknown</p>
+              <p class="font-display text-3xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-2 whitespace-nowrap">
+                {{ formatNumber(stats?.ip_stacks?.unknown?.count, true) }}
+              </p>
+              <p class="text-[10px] lg:text-xs text-neutral-500 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-700"></span>
+                {{ calculateShare(stats?.ip_stacks?.unknown?.count ?? 0, stats?.counts?.active) }}% · Not checked yet
+              </p>
+            </div>
+          </div>
+
+          <!-- Share bar -->
+          <div class="mt-8">
+            <div class="flex h-2 w-full overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+              <div v-for="tile in ipStackTiles" :key="tile.key" class="h-full" :class="tile.barClass"
+                :style="{ width: `${calculateShare(stats?.ip_stacks?.[tile.key]?.count ?? 0, stats?.counts?.active)}%` }"></div>
+            </div>
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-4">
+              <div class="flex flex-wrap items-center gap-4 text-[10px] lg:text-xs text-neutral-500">
+                <span v-for="tile in ipStackTiles" :key="tile.key" class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5" :class="tile.barClass"></span>{{ tile.label }}
+                </span>
+                <span class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-700"></span>Unknown
+                </span>
+              </div>
+              <p class="text-[10px] lg:text-xs text-neutral-500">
+                IPv6 reachable users:
+                <span class="font-bold text-primary">{{ ipv6ReachableUserShare }}%</span>
+                <span class="text-neutral-400">({{ formatNumber(ipv6ReachableUsers, true) }} / {{ formatNumber(stats?.counts?.users, true) }})</span>
+              </p>
+            </div>
+          </div>
+
+          <p class="mt-6 text-xs text-neutral-500">* DNSレコードに基づく判定です。プロキシ配下のサーバーはオリジンの対応状況に関わらずデュアルスタックとして扱われている可能性があります。</p>
+        </div>
+      </section>
+
+      <!-- Software Section -->
+      <section class="py-16 lg:py-24 bg-neutral-50 dark:bg-black">
+        <div class="container mx-auto max-w-screen-xl px-4 lg:px-6">
+          <SectionHeader number="03" title="Software Distribution" />
 
           <!-- Header (Desktop) -->
           <div
@@ -196,9 +256,24 @@ useJsonld(() => ({
   }
 }));
 
+const ipStackTiles = [
+  { key: 'dual', label: 'Dual Stack', description: 'IPv4 + IPv6', textClass: 'text-green-500', barClass: 'bg-green-500' },
+  { key: 'v6', label: 'IPv6', description: 'IPv6 only', textClass: 'text-blue-500', barClass: 'bg-blue-500' },
+  { key: 'v4', label: 'IPv4', description: 'IPv4 only', textClass: 'text-amber-500', barClass: 'bg-amber-500' },
+] as const;
+
+// デュアルスタックとIPv6のみのサーバーのユーザー数合計
+const ipv6ReachableUsers = computed(() =>
+  (stats.value?.ip_stacks?.dual?.users ?? 0) + (stats.value?.ip_stacks?.v6?.users ?? 0)
+);
+const ipv6ReachableUserShare = computed(() =>
+  calculateShare(ipv6ReachableUsers.value, stats.value?.counts?.users)
+);
+
 // Software Pagination State
-const visibleSoftwareCount = ref(50);
+const SOFTWARE_INITIAL_COUNT = 5;
 const SOFTWARE_PAGE_SIZE = 50;
+const visibleSoftwareCount = ref(SOFTWARE_INITIAL_COUNT);
 
 const visibleRepositories = computed(() => {
   return (stats.value?.repositories || []).slice(0, visibleSoftwareCount.value);
@@ -214,9 +289,17 @@ const loadMoreSoftware = () => {
 
 
 // Modal State
+type ModalType = 'active' | 'excluded' | IpStackFilter;
+const MODAL_TITLES: Record<ModalType, string> = {
+  active: 'Active Servers',
+  excluded: 'Excluded Domains',
+  dual: 'Dual Stack Servers',
+  v6: 'IPv6 Only Servers',
+  v4: 'IPv4 Only Servers',
+};
 const isModalOpen = ref(false);
 const modalTitle = ref('');
-const modalType = ref<'active' | 'excluded'>('active');
+const modalType = ref<ModalType>('active');
 const loadingModal = ref(false);
 const loadingMore = ref(false);
 const modalItems = ref<{ domain: string; reason: string | null }[]>([]);
@@ -226,13 +309,14 @@ const modalTotal = ref(0);
 const PAGE_SIZE = 50;
 
 const hasMore = computed(() => {
-  if (modalType.value !== 'active') return false;
+  if (modalType.value === 'excluded') return false;
   return modalInstances.value.length < modalTotal.value;
 });
 
-async function openModal(type: 'active' | 'excluded') {
+async function openModal(type: ModalType) {
   isModalOpen.value = true;
   modalType.value = type;
+  modalTitle.value = MODAL_TITLES[type];
   loadingModal.value = true;
   modalItems.value = [];
   modalInstances.value = [];
@@ -240,16 +324,10 @@ async function openModal(type: 'active' | 'excluded') {
   modalTotal.value = 0;
 
   try {
-    switch (type) {
-      case 'active':
-        modalTitle.value = 'Active Servers';
-        await fetchActiveInstances(true);
-        break;
-      case 'excluded':
-        modalTitle.value = 'Excluded Domains';
-        const excludedRes = await $fetch<{ domain: string; reason: string | null }[]>('/api/v1/exclusions');
-        modalItems.value = excludedRes;
-        break;
+    if (type === 'excluded') {
+      modalItems.value = await $fetch<{ domain: string; reason: string | null }[]>('/api/v1/exclusions');
+    } else {
+      await fetchActiveInstances(true);
     }
   } catch (e) {
     console.error('Failed to load modal data', e);
@@ -258,11 +336,19 @@ async function openModal(type: 'active' | 'excluded') {
   }
 }
 
+// activeはip_stack条件なし
 async function fetchActiveInstances(reset = false) {
   try {
     const currentOffset = reset ? 0 : modalOffset.value;
+    const type = modalType.value;
     const res = await $fetch<{ items: Instance[]; total: number }>('/api/v1/instances', {
-      params: { limit: PAGE_SIZE, offset: currentOffset, sort: 'users', order: 'desc' }
+      params: {
+        limit: PAGE_SIZE,
+        offset: currentOffset,
+        sort: 'users',
+        order: 'desc',
+        ...(type !== 'active' && type !== 'excluded' && { ip_stack: type }),
+      }
     });
 
     if (reset) {
