@@ -84,7 +84,7 @@ pnpm --filter @mil/agent exec wrangler deploy
 |---|---|---|---|
 | `discover-instances` | `DiscoverInstances` | `0 0 * * *` | 既知インスタンスから未知ホストを発見 |
 | `sync-exclusions` | `SyncExclusions` | `0 0 * * *` | JoinMisskeyのignorehosts.ymlと除外リストを同期 |
-| `plan-stats-sync` | `PlanStatsSync` | `0 */6 * * *` | 全インスタンスの統計同期をホスト単位のジョブへ |
+| `plan-stats-sync` | `PlanStatsSync` | `0 */6 * * *` | 全インスタンスの統計同期を10ホスト単位のジョブへ |
 | `sync-recommendation-scores` | `SyncRecommendationScores` | `0 */12 * * *` | おすすめスコアを再計算 |
 | `plan-instance-update` | `PlanInstanceUpdate` | `0 */12 * * *` | 更新の古い100件の再取得をホスト単位のジョブへ |
 

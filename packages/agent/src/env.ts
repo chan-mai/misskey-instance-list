@@ -5,6 +5,8 @@ export interface Env {
   DB: D1Database;
   // GitHub APIのレート制限緩和用トークン
   GITHUB_TOKEN?: string;
+  // 統計同期の実行間隔, 起点はUNIXエポック, 未設定時はcron通り
+  STATS_SYNC_INTERVAL_HOURS?: string;
 
   // ジョブの調停役
   JOB_SHARD: DurableObjectNamespace<TsumugiJobShard>;
