@@ -79,7 +79,7 @@ export const enqueueSyncInstanceBatches = (
 export const enqueuePlanStatsSync =(env: Env, scheduledAt: number): Promise<string> =>
   client.enqueue(env, {
     binding: 'PlanStatsSync',
-    payload: { scheduledAt },
+    payload: { scheduledAt, force: true },
     uniqueKey: 'plan-stats-sync:seed',
     uniqueForMs: 60 * 60 * 1000,
     timeoutMs: 300_000,

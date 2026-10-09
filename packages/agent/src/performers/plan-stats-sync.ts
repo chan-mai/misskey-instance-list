@@ -9,6 +9,8 @@ const ENQUEUE_CHUNK = 100;
 
 export interface PlanStatsSyncPayload {
   scheduledAt: number;
+  // 実行間隔の設定を無視
+  force?: boolean;
 }
 
 export interface PlanStatsSyncResult {
@@ -17,7 +19,12 @@ export interface PlanStatsSyncResult {
 
 // 全インスタンスの統計同期を複数ホスト単位のジョブへ分割
 export class PlanStatsSync extends Performer<PlanStatsSyncPayload, PlanStatsSyncResult, object, Env> {
-  async perform({ scheduledAt }: PlanStatsSyncPayload, ctx: JobContext): Promise<PlanStatsSyncResult> {
+  async perform({ scheduledAt, force }: PlanStatsSyncPayload, ctx: JobContext): Promise<PlanStatsSyncResult> {
+    const intervalHours = Number(this.env.STATS_SYNC_INTERVAL_HOURS ?? 0);
+    if (!force && intervalHours > 0 && Math.floor(scheduledAt / 3_600_000) % intervalHours !== 0) {
+      return { enqueued: 0 };
+    }
+
     const db = createDb(this.env.DB);
 
     // プランナ再試行時もバッチ構成とuniqueKeyを同一に保つ
