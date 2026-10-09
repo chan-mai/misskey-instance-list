@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: stg
+    schedule:
+      interval: weekly
+    # 公開直後の版を避ける
+    cooldown:
+      default-days: 7
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ['*']
+      minor-and-patch:
+        update-types: [minor, patch]
+        patterns: ['*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: stg
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']
