@@ -16,7 +16,7 @@ const tsumugi = defineTsumugi({
   bindings: BINDINGS,
   auth: accessAuth,
   ui: ui(),
-  retention: { olderThanMs: 3 * 24 * 60 * 60 * 1000, limit: 2_000 },
+  retention: { olderThanMs: 24 * 60 * 60 * 1000, limit: 2_000 },
 });
 
 export { TsumugiJobShard } from 'tsumugi';
