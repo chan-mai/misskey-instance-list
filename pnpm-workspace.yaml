@@ -14,6 +14,12 @@ overrides:
   serialize-javascript@<7.1.2: '^7.1.2'
   deepmerge-ts@<8.0.0: '^8.0.2'
   undici@>=7.0.0 <7.29.1: '^7.29.1'
+  source-map-js@<1.2.2: '^1.2.2'
+  shell-quote@<1.11.0: '^1.11.0'
+  brace-expansion@<1.1.21: '^1.1.21'
+  brace-expansion@>=2.0.0 <2.1.7: '^2.1.7'
+  brace-expansion@>=4.0.0 <5.0.12: '^5.0.12'
+  postcss-selector-parser@<7.1.6: '^7.1.6'
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
