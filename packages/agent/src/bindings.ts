@@ -59,22 +59,31 @@ export const SYNC_BATCH_SIZE = 10;
 // バッチの実行開始間隔, ホスト換算で240件/分
 const SYNC_BATCH_INTERVAL_MS = 2_500;
 
-export const enqueueSyncInstanceBatches = (
+export const enqueueSyncInstanceBatches = async(
   env: Env,
   batches: readonly (readonly string[])[],
   scheduledAt: number,
   startAt: number,
   offset: number,
-): Promise<string[]> => client.enqueueMany(env, batches.map((hosts, i) => ({
-  binding: 'SyncInstanceBatch',
-  payload: { hosts, scheduledAt },
-  uniqueKey: `stats:${scheduledAt}:${hosts[0]}`,
-  uniqueForMs: 5 * 60 * 60 * 1000,
-  // 実行可能ジョブの滞留防止
-  runAt: startAt + (offset + i) * SYNC_BATCH_INTERVAL_MS,
-  // 1ホスト最大90秒程度の逐次処理
-  timeoutMs: 600_000,
-})));
+): Promise<string[]> => {
+  const keys = await Promise.all(batches.map(hashHosts));
+  return client.enqueueMany(env, batches.map((hosts, i) => ({
+    binding: 'SyncInstanceBatch',
+    payload: { hosts, scheduledAt },
+    // 構成ホスト全体で識別
+    uniqueKey: `stats:${scheduledAt}:${keys[i]}`,
+    uniqueForMs: 5 * 60 * 60 * 1000,
+    // 実行可能ジョブの滞留防止
+    runAt: startAt + (offset + i) * SYNC_BATCH_INTERVAL_MS,
+    // 1ホスト最大90秒程度の逐次処理
+    timeoutMs: 600_000,
+  })));
+};
+
+const hashHosts = async(hosts: readonly string[]): Promise<string> => {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(hosts.join('\n')));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+};
 
 export const enqueuePlanStatsSync =(env: Env, scheduledAt: number): Promise<string> =>
   client.enqueue(env, {
