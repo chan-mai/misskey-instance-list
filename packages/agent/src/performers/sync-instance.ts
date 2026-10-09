@@ -26,26 +26,35 @@ export class SyncInstance extends Performer<
   Env
 > {
   async perform({ host, scheduledAt, withLanguage }: SyncInstancePayload): Promise<SyncInstanceResult> {
-    const ctx = buildCrawlContext(this.env);
-    const res = await validateInstance(ctx, host);
-
-    let language: string | null = null;
-    if (withLanguage && res.info) {
-      const texts: string[] = [];
-      if (res.info.name) texts.push(res.info.name);
-      if (res.info.description) texts.push(res.info.description);
-      texts.push(...await fetchLocalTimeline(host, 30));
-
-      try {
-        language = await detectLanguageFromTexts(texts);
-      } catch (e) {
-        // 言語判定が失敗してもクロール結果は保存する
-        console.warn(`Language detection failed for ${host}:`, e);
-      }
-    }
-
-    await saveInstance(ctx, host, res, new Date(scheduledAt), withLanguage ? language : undefined);
-
-    return { host, alive: Boolean(res.info), language };
+    return syncInstance(this.env, host, scheduledAt, withLanguage);
   }
+}
+
+export async function syncInstance(
+  env: Env,
+  host: string,
+  scheduledAt: number,
+  withLanguage: boolean,
+): Promise<SyncInstanceResult> {
+  const ctx = buildCrawlContext(env);
+  const res = await validateInstance(ctx, host);
+
+  let language: string | null = null;
+  if (withLanguage && res.info) {
+    const texts: string[] = [];
+    if (res.info.name) texts.push(res.info.name);
+    if (res.info.description) texts.push(res.info.description);
+    texts.push(...await fetchLocalTimeline(host, 30));
+
+    try {
+      language = await detectLanguageFromTexts(texts);
+    } catch (e) {
+      // 言語判定が失敗してもクロール結果は保存する
+      console.warn(`Language detection failed for ${host}:`, e);
+    }
+  }
+
+  await saveInstance(ctx, host, res, new Date(scheduledAt), withLanguage ? language : undefined);
+
+  return { host, alive: Boolean(res.info), language };
 }

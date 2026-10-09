@@ -21,6 +21,14 @@ export const BINDINGS = {
     failedRetentionMs: 2 * 24 * 60 * 60 * 1000,
   },
 
+  SyncInstanceBatch: {
+    shards: 1,
+    // NOTE: 実行間隔はrunAtで調整
+    policy: { concurrency: 24, agingIntervalMs: null, reaperGraceMs: 60_000 },
+    sweepAfterMs: 60_000,
+    failedRetentionMs: 2 * 24 * 60 * 60 * 1000,
+  },
+
   // 前回が終わる前に次が始まらないよう同時実行を1に制限する
   PlanStatsSync: { policy: { concurrency: 1 } },
   ListUpdateTargets: { policy: { concurrency: 1 } },
@@ -44,6 +52,28 @@ export const enqueueSyncInstance = (
   uniqueKey: `stats:${scheduledAt}:${host}`,
   // 次サイクルまでに予約が切れるよう発火間隔より短くする
   uniqueForMs: 5 * 60 * 60 * 1000,
+})));
+
+// 1ジョブあたりのホスト数
+export const SYNC_BATCH_SIZE = 10;
+// バッチの実行開始間隔, ホスト換算で240件/分
+const SYNC_BATCH_INTERVAL_MS = 2_500;
+
+export const enqueueSyncInstanceBatches = (
+  env: Env,
+  batches: readonly (readonly string[])[],
+  scheduledAt: number,
+  startAt: number,
+  offset: number,
+): Promise<string[]> => client.enqueueMany(env, batches.map((hosts, i) => ({
+  binding: 'SyncInstanceBatch',
+  payload: { hosts, scheduledAt },
+  uniqueKey: `stats:${scheduledAt}:${hosts[0]}`,
+  uniqueForMs: 5 * 60 * 60 * 1000,
+  // 実行可能ジョブの滞留防止
+  runAt: startAt + (offset + i) * SYNC_BATCH_INTERVAL_MS,
+  // 1ホスト最大90秒程度の逐次処理
+  timeoutMs: 600_000,
 })));
 
 export const enqueuePlanStatsSync =(env: Env, scheduledAt: number): Promise<string> =>
