@@ -14,6 +14,10 @@ updates:
         patterns: ['*']
       dependencies:
         patterns: ['*']
+    ignore:
+      # v-for内のスロット変数を誤検出
+      - dependency-name: vue-tsc
+        versions: ['3.3.12']
 
   - package-ecosystem: github-actions
     directory: /
