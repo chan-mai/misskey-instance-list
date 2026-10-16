@@ -30,7 +30,7 @@
     "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261006.1",
+    "@cloudflare/workers-types": "^5.20261009.1",
     "nitro-cloudflare-dev": "^0.2.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vue-tsc": "3.3.11",
