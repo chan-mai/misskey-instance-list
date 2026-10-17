@@ -3,7 +3,7 @@ packages:
 
 # drizzle-ormは全パッケージで同一インスタンスでないと演算子シンボルが一致しない
 catalog:
-  drizzle-orm: ^0.45.2
+  drizzle-orm: ^0.45.4
 
 overrides:
   '@esbuild-kit/core-utils>esbuild': '^0.25.12'
