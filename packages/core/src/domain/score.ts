@@ -1,4 +1,5 @@
-import type { IpStack } from '../db/schema.js';
+import type { IpStack } from '../entity/schema.js';
+import { parseVersionToMonths } from './version.js';
 
 /**
  * おすすめスコアの重みと設定
@@ -20,22 +21,6 @@ const SCORING_CONFIG = {
   // IPスタック種別の点数 (0-1)
   IP_STACK_SCORES: { v4: 0.25, v6: 0.5, dual: 1 } satisfies Record<IpStack, number>
 };
-
-/**
- * バージョン文字列から年月を抽出して月単位の数値に変換する
- * CalVer (YYYY.MM.Patch) を想定
- * 戻り値: (Year * 12) + Month
- */
-export function parseVersionToMonths(version: string): number | null {
-  // v2025.12.0 や 2025.12.0-fork などの形式に対応
-  // 先頭の 'v' はあってもなくても良い
-  const match = version.match(/^v?(\d{4})\.(\d{1,2})\.\d+/);
-  if (!match) return null;
-
-  const year = parseInt(match[1]!, 10);
-  const month = parseInt(match[2]!, 10);
-  return (year * 12) + month;
-}
 
 /**
  * バージョンスコアを計算する (0-1)

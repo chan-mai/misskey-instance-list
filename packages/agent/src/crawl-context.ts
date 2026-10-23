@@ -1,5 +1,5 @@
 import { createDb } from '@mil/core/db';
-import type { CrawlContext } from '@mil/core/crawl';
+import type { CrawlContext } from '@mil/core/domain';
 import type { Env } from './env.js';
 
 // D1bindingはenvにしか無いためジョブ毎に組み立てる
