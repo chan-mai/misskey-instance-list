@@ -60,9 +60,6 @@ importers:
       '@mil/core':
         specifier: workspace:*
         version: link:../core
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.4(@cloudflare/workers-types@5.20261016.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@7.0.2))(typescript@7.0.2))(@types/pg@8.20.0)(mysql2@3.24.6(@types/node@26.6.5))(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@7.0.2))
       tsumugi:
         specifier: 0.10.0
         version: 0.10.0(@cloudflare/workers-types@5.20261016.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@7.0.2))(typescript@7.0.2))(@types/pg@8.20.0)(mysql2@3.24.6(@types/node@26.6.5))(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@7.0.2))
@@ -140,9 +137,6 @@ importers:
       '@nuxtjs/tailwindcss':
         specifier: ^6.14.0
         version: 6.14.0(magicast@0.5.5)(tsx@4.23.15)(yaml@2.9.0)
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.4(@cloudflare/workers-types@5.20261016.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(@typescript/typescript6@6.0.2)(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(@typescript/typescript6@6.0.2)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)))(@types/pg@8.20.0)(mysql2@3.24.6(@types/node@26.6.5))(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(@typescript/typescript6@6.0.2)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
       h3:
         specifier: ^2.0.2
         version: 2.0.2(crossws@0.4.16(srvx@1.0.6))
@@ -8827,6 +8821,7 @@ snapshots:
       pg: 8.20.0
       postgres: 3.4.7
       prisma: 7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(@typescript/typescript6@6.0.2)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+    optional: true
 
   drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261016.1)(@electric-sql/pglite@0.4.1)(@prisma/client@7.8.0(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@7.0.2))(typescript@7.0.2))(@types/pg@8.20.0)(mysql2@3.24.6(@types/node@26.6.5))(pg@8.20.0)(postgres@3.4.7)(prisma@7.8.0(@types/node@26.6.5)(@types/react@19.2.7)(magicast@0.5.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@7.0.2)):
     optionalDependencies:

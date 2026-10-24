@@ -73,7 +73,6 @@ export const getAdminCounts = async(db: Database) => {
   };
 };
 
-// アクティブなインスタンスのみ
 export const listRepositoryUsage = (db: Database) =>
   db
     .select({
@@ -89,7 +88,6 @@ export const listRepositoryUsage = (db: Database) =>
     // 同数時の順序を固定
     .orderBy(desc(count(instances.repository_url)), asc(instances.repository_url));
 
-// アクティブなインスタンスのみ
 export const listLanguageUsage = (db: Database) =>
   db
     .select({ code: instances.language, count: count(instances.language) })
@@ -98,7 +96,7 @@ export const listLanguageUsage = (db: Database) =>
     .groupBy(instances.language)
     .orderBy(desc(count(instances.language)), asc(instances.language));
 
-// アクティブなインスタンスのみ, NULLは未判定
+// NULLは未判定
 export const listIpStackUsage = (db: Database) =>
   db
     .select({

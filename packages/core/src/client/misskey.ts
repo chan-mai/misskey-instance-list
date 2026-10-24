@@ -17,6 +17,7 @@ export interface InstanceInfo {
   ipStack?: IpStack | null;
 }
 
+// TIMEOUT: 接続失敗・410以外の非2xx, GONE: HTTP 410, UNKNOWN: 形式不正
 export type FetchError = 'TIMEOUT' | 'GONE' | 'UNKNOWN';
 
 export type InstanceResult = {
@@ -24,13 +25,7 @@ export type InstanceResult = {
   error?: FetchError;
 };
 
-/**
- * nodeinfo, api/stats, api/metaからインスタンス情報を取得
- *
- * @param host プロトコルなしのホスト名
- * @param userAgent 送信するUser-Agent
- * @returns 失敗時は`info: null`と`error`(TIMEOUT: 接続失敗・410以外の非2xx, GONE: HTTP 410, UNKNOWN: nodeinfo形式不正)
- */
+// nodeinfo, api/stats, api/metaからインスタンス情報取得
 export async function getInstanceInfo(
   host: string,
   userAgent = 'MisskeyInstanceList/0.1.0'
@@ -308,13 +303,7 @@ export async function getInstanceInfo(
   }
 }
 
-
-/**
- * ローカルタイムラインの公開ノート本文, 言語判定用
- *
- * @param limit 取得件数
- * @returns 10文字以上の本文
- */
+// 言語判定用, 10文字以上の本文のみ
 export async function fetchLocalTimeline(
   host: string,
   limit = 10
@@ -352,7 +341,7 @@ const FEDERATION_PAGE_LIMIT = 30;
 const FEDERATION_MAX_ITEMS = 250;
 const FEDERATION_TIMEOUT_MS = 10_000;
 
-// 連合先ホスト一覧, 重複除去済み
+// 重複除去済み
 export async function fetchFederatedHosts(source: string): Promise<string[]> {
   const found: string[] = [];
 

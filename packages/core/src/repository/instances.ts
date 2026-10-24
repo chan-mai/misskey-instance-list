@@ -18,8 +18,9 @@ import {
 } from 'drizzle-orm';
 import type { BatchItem } from 'drizzle-orm/batch';
 import { instances, excludedHosts } from '../entity/schema.js';
-import type { InstanceInsert, SuspensionState } from '../entity/schema.js';
-import { chunkForD1, type Database } from '../db/index.js';
+import { SuspensionState, type InstanceInsert } from '../entity/schema.js';
+import type { Database } from '../db/client.js';
+import { chunkForD1 } from '../db/chunk.js';
 import type { InstancesQuery } from '../validation/request.js';
 
 export const findInstance = async(db: Database, id: string) => {
@@ -72,9 +73,9 @@ export const insertInstanceIds = async(db: Database, ids: readonly string[]): Pr
   }
 };
 
-export const deleteInstance = async(db: Database, id: string): Promise<void> => {
-  await db.delete(instances).where(eq(instances.id, id));
-};
+// batch用に未実行で返す
+export const deleteInstance = (db: Database, id: string) =>
+  db.delete(instances).where(eq(instances.id, id));
 
 export const deleteInstances = async(db: Database, ids: readonly string[]): Promise<void> => {
   for (const chunk of chunkForD1(ids, 1)) {
@@ -92,15 +93,13 @@ export const sampleAliveInstanceIds = async(db: Database, limit: number): Promis
   return rows.map((row) => row.id);
 };
 
-// gone以外かつ未除外
 const selectSyncTargetIds = (db: Database) =>
   db
     .select({ id: instances.id })
     .from(instances)
     .leftJoin(excludedHosts, eq(instances.id, excludedHosts.domain))
-    .where(and(ne(instances.suspension_state, 'gone'), isNull(excludedHosts.domain)));
+    .where(and(ne(instances.suspension_state, SuspensionState.gone), isNull(excludedHosts.domain)));
 
-// 最終確認の古い順
 export const listStaleSyncTargetIds = async(db: Database, limit: number): Promise<string[]> => {
   const rows = await selectSyncTargetIds(db).orderBy(asc(instances.last_check_at)).limit(limit);
   return rows.map((row) => row.id);
@@ -112,7 +111,7 @@ export const listAllSyncTargetIds = async(db: Database): Promise<string[]> => {
   return rows.map((row) => row.id);
 };
 
-export type InstanceProbeUpdate = Pick<
+export type InstanceMetadataUpdate = Pick<
   InstanceInsert,
   | 'node_name'
   | 'users_count'
@@ -131,11 +130,11 @@ export const markInstanceAlive = async(
   db: Database,
   id: string,
   now: Date,
-  values: InstanceProbeUpdate,
+  values: InstanceMetadataUpdate,
 ): Promise<void> => {
   await db
     .update(instances)
-    .set({ ...values, is_alive: true, last_check_at: now, suspension_state: 'none' })
+    .set({ ...values, is_alive: true, last_check_at: now, suspension_state: SuspensionState.none })
     .where(eq(instances.id, id));
 };
 

@@ -1,11 +1,11 @@
-import type { SuspensionState } from '../entity/schema.js';
+import { SuspensionState } from '../entity/schema.js';
 import type { InstanceResult } from '../client/misskey.js';
 import { resolveRepositoryInfo } from '../client/github.js';
 import { markInstanceAlive, markInstanceDown } from '../repository/instances.js';
-import { upsertSystemExclusionAndDeleteInstance } from '../repository/excluded-hosts.js';
-import { upsertRepository } from '../repository/repositories.js';
+import { upsertSoftwareRepository } from '../repository/software-repositories.js';
 import type { CrawlContext } from './context.js';
 import { evaluateInstance } from './evaluate.js';
+import { excludeRejectedHost } from './exclusion.js';
 
 /**
  * インスタンスを検査し, 不合格なら除外リストへの登録とインスタンス削除まで行う
@@ -24,21 +24,13 @@ export async function validateInstance(
   const { rejection, ...result } = await evaluateInstance(host);
 
   if (rejection) {
-    await upsertSystemExclusionAndDeleteInstance(ctx.db, host, rejection.reason);
+    await excludeRejectedHost(ctx.db, host, rejection.reason);
   }
 
   return result;
 }
 
-/**
- * クロール結果をinstancesへ保存
- *
- * 成功時はrepositoriesとメタデータを更新し稼働中扱い, 失敗時は410でgone, 他はsuspended
- *
- * @param res 取得結果
- * @param now last_check_atに記録する時刻
- * @param language 判定した言語
- */
+// 失敗時は410でgone, 他はsuspended
 export async function saveInstance(
   ctx: CrawlContext,
   id: string,
@@ -56,7 +48,7 @@ export async function saveInstance(
 
     // リポジトリのリレーションを更新
     if (info.repositoryUrl && repoInfo) {
-      await upsertRepository(db, {
+      await upsertSoftwareRepository(db, {
         url: info.repositoryUrl,
         name: repoInfo.repositoryName,
         description: repoInfo.repository?.description || null,
@@ -79,7 +71,7 @@ export async function saveInstance(
   } else {
     // 410 -> gone (Permanent)
     // TIMEOUT/OTHER -> suspended (Temporary)
-    const state: SuspensionState = res.error === 'GONE' ? 'gone' : 'suspended';
+    const state = res.error === 'GONE' ? SuspensionState.gone : SuspensionState.suspended;
     await markInstanceDown(db, id, now, state);
   }
 }

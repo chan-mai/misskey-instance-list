@@ -3,7 +3,7 @@ import type { RepositoryInsert } from '../entity/schema.js';
 import type { Database } from '../db/index.js';
 
 // name, descriptionは値がある場合のみ上書き
-export const upsertRepository = async(
+export const upsertSoftwareRepository = async(
   db: Database,
   { url, name, description }: { url: string; name: string | null; description: string | null },
 ): Promise<void> => {

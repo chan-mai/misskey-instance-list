@@ -1,7 +1,8 @@
 import { and, count, desc, eq, inArray, like, or, type SQL } from 'drizzle-orm';
-import { instances, excludedHosts } from '../entity/schema.js';
-import type { ExcludedHostInsert, ExcludedHostSource } from '../entity/schema.js';
-import { chunkForD1, type Database } from '../db/index.js';
+import { excludedHosts } from '../entity/schema.js';
+import { ExcludedHostSource, type ExcludedHostInsert } from '../entity/schema.js';
+import type { Database } from '../db/client.js';
+import { chunkForD1 } from '../db/chunk.js';
 
 export const findExclusion = async(db: Database, domain: string) => {
   const [row] = await db
@@ -12,19 +13,15 @@ export const findExclusion = async(db: Database, domain: string) => {
   return row;
 };
 
-export const listExcludedDomains = async(db: Database): Promise<string[]> => {
-  const rows = await db.select({ domain: excludedHosts.domain }).from(excludedHosts);
-  return rows.map((row) => row.domain);
-};
-
-export const listExcludedDomainsBySource = async(
+// source省略時は全件
+export const listExcludedDomains = async(
   db: Database,
-  source: ExcludedHostSource,
+  source?: ExcludedHostSource,
 ): Promise<string[]> => {
   const rows = await db
     .select({ domain: excludedHosts.domain })
     .from(excludedHosts)
-    .where(eq(excludedHosts.source, source));
+    .where(source === undefined ? undefined : eq(excludedHosts.source, source));
   return rows.map((row) => row.domain);
 };
 
@@ -96,23 +93,15 @@ export const insertExclusionsIgnoringConflict = async(
   }
 };
 
-// 既存行はreasonのみ更新, sourceは維持
-export const upsertSystemExclusionAndDeleteInstance = async(
-  db: Database,
-  domain: string,
-  reason: string,
-): Promise<void> => {
-  await db.batch([
-    db
-      .insert(excludedHosts)
-      .values({ domain, reason, source: 'system' })
-      .onConflictDoUpdate({
-        target: excludedHosts.domain,
-        set: { reason },
-      }),
-    db.delete(instances).where(eq(instances.id, domain)),
-  ]);
-};
+// 既存行はreasonのみ更新, sourceは維持, batch用に未実行で返す
+export const upsertSystemExclusion = (db: Database, domain: string, reason: string) =>
+  db
+    .insert(excludedHosts)
+    .values({ domain, reason, source: ExcludedHostSource.system })
+    .onConflictDoUpdate({
+      target: excludedHosts.domain,
+      set: { reason },
+    });
 
 // 不在ならundefined
 export const updateExclusionReason = async(db: Database, domain: string, reason: string) => {

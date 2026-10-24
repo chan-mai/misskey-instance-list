@@ -1,3 +1,4 @@
+import { ExcludedHostSource, type ExcludedHostInsert } from '../entity/schema.js';
 import { fetchIgnoredHosts } from '../client/joinmisskey.js';
 import { deleteInstance, deleteInstances } from '../repository/instances.js';
 import {
@@ -5,12 +6,11 @@ import {
   insertExclusion,
   insertExclusionsIgnoringConflict,
   listExcludedDomains,
-  listExcludedDomainsBySource,
+  upsertSystemExclusion,
 } from '../repository/excluded-hosts.js';
-import type { ExcludedHostInsert } from '../entity/schema.js';
 import type { Database } from '../db/index.js';
 
-// 登録済みならundefined, 登録時は既存インスタンスも削除
+// 登録済みならundefined
 export async function addExclusion(db: Database, values: ExcludedHostInsert) {
   const exclusion = await insertExclusion(db, values);
   if (!exclusion) return undefined;
@@ -19,23 +19,21 @@ export async function addExclusion(db: Database, values: ExcludedHostInsert) {
   return exclusion;
 }
 
-/**
- * ignorehosts.ymlと除外リストの差分
- *
- * @param upstream ignorehosts.ymlのドメイン
- * @param existing 全sourceの除外ドメイン(manual/system上書き防止用)
- * @param joinmisskey source=joinmisskeyの除外ドメイン
- */
-export function diffIgnoredHosts(
-  upstream: readonly string[],
-  existing: readonly string[],
-  joinmisskey: readonly string[],
+export async function excludeRejectedHost(db: Database, domain: string, reason: string): Promise<void> {
+  await db.batch([upsertSystemExclusion(db, domain, reason), deleteInstance(db, domain)]);
+}
+
+// 追加は全source既存分を除外, 削除はjoinmisskey由来のみ
+function diffIgnoredHosts(
+  upstreamDomains: readonly string[],
+  excludedDomains: readonly string[],
+  joinmisskeyDomains: readonly string[],
 ): { additions: string[]; deletions: string[] } {
-  const upstreamSet = new Set(upstream);
-  const existingSet = new Set(existing);
+  const upstreamSet = new Set(upstreamDomains);
+  const excludedSet = new Set(excludedDomains);
   return {
-    additions: upstream.filter((d) => !existingSet.has(d)),
-    deletions: joinmisskey.filter((d) => !upstreamSet.has(d)),
+    additions: upstreamDomains.filter((d) => !excludedSet.has(d)),
+    deletions: joinmisskeyDomains.filter((d) => !upstreamSet.has(d)),
   };
 }
 
@@ -43,23 +41,23 @@ export function diffIgnoredHosts(
 export async function syncJoinMisskeyExclusions(
   db: Database,
 ): Promise<{ additions: number; deletions: number }> {
-  const upstream = await fetchIgnoredHosts();
-  const joinmisskey = await listExcludedDomainsBySource(db, 'joinmisskey');
-  const existing = await listExcludedDomains(db);
+  const upstreamDomains = await fetchIgnoredHosts();
+  const joinmisskeyDomains = await listExcludedDomains(db, ExcludedHostSource.joinmisskey);
+  const excludedDomains = await listExcludedDomains(db);
 
-  const { additions, deletions } = diffIgnoredHosts(upstream, existing, joinmisskey);
+  const { additions, deletions } = diffIgnoredHosts(upstreamDomains, excludedDomains, joinmisskeyDomains);
 
   console.log(`Syncing exclusions: ${additions.length} additions, ${deletions.length} deletions`);
 
   if (deletions.length > 0) {
-    await deleteExclusionsBySource(db, deletions, 'joinmisskey');
+    await deleteExclusionsBySource(db, deletions, ExcludedHostSource.joinmisskey);
   }
 
   if (additions.length > 0) {
     await insertExclusionsIgnoringConflict(db, additions.map((domain) => ({
       domain,
       reason: 'JoinMisskey: ignorehosts.yml',
-      source: 'joinmisskey' as const,
+      source: ExcludedHostSource.joinmisskey,
     })));
 
     // 新規追加分のみ削除

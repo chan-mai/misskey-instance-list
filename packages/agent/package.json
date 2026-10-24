@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@mil/core": "workspace:*",
-    "drizzle-orm": "catalog:",
     "tsumugi": "0.10.0"
   },
   "devDependencies": {
