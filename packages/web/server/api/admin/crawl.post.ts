@@ -1,6 +1,5 @@
-import { eq } from 'drizzle-orm';
-import { instances, excludedHosts } from '@mil/core/db';
-import { validateInstance, saveInstance } from '@mil/core/crawl';
+import { findExclusion, findInstanceSummary, insertInstanceIfAbsent } from '@mil/core/repository';
+import { validateInstance, saveInstance } from '@mil/core/domain';
 import { isPubliclyResolvable } from '@mil/core/net';
 import { crawlBodySchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
@@ -25,11 +24,7 @@ export default defineEventHandler(async(event) => {
   const { domain } = parseOrThrow(crawlBodySchema, await readBody(event));
 
   // 除外ホストはクロール対象にしない
-  const [excluded] = await db
-    .select({ source: excludedHosts.source })
-    .from(excludedHosts)
-    .where(eq(excludedHosts.domain, domain))
-    .limit(1);
+  const excluded = await findExclusion(db, domain);
   if (excluded) {
     throw createError({
       statusCode: 409,
@@ -46,38 +41,19 @@ export default defineEventHandler(async(event) => {
   }
 
   // 未登録ドメインはレコードを作ってからクロールす
-  const created = await db
-    .insert(instances)
-    .values({ id: domain })
-    .onConflictDoNothing({ target: instances.id })
-    .returning({ id: instances.id });
+  const created = await insertInstanceIfAbsent(db, domain);
 
   const ctx = createCrawlContext(event);
   const result = await validateInstance(ctx, domain);
   await saveInstance(ctx, domain, result, new Date());
 
-  const [instance] = await db
-    .select({
-      id: instances.id,
-      node_name: instances.node_name,
-      version: instances.version,
-      users_count: instances.users_count,
-      notes_count: instances.notes_count,
-      is_alive: instances.is_alive,
-      suspension_state: instances.suspension_state,
-      language: instances.language,
-      repository_url: instances.repository_url,
-      last_check_at: instances.last_check_at,
-    })
-    .from(instances)
-    .where(eq(instances.id, domain))
-    .limit(1);
+  const instance = await findInstanceSummary(db, domain);
 
   return {
     domain,
     ok: !!result.info,
     error: result.error ?? null,
-    created: created.length > 0,
+    created,
     instance: instance ?? null,
   };
 });

@@ -1,5 +1,4 @@
-import { eq } from 'drizzle-orm';
-import { excludedHosts } from '@mil/core/db';
+import { updateExclusionReason } from '@mil/core/repository';
 import { domainParamSchema, exclusionPatchBodySchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
 import { parseOrThrow } from '~~/server/utils/validate';
@@ -24,12 +23,7 @@ export default defineEventHandler(async(event) => {
   const { domain } = parseOrThrow(domainParamSchema, getRouterParams(event));
   const { reason } = parseOrThrow(exclusionPatchBodySchema, await readBody(event));
 
-  // 理由の更新実行
-  const [exclusion] = await db
-    .update(excludedHosts)
-    .set({ reason })
-    .where(eq(excludedHosts.domain, domain))
-    .returning();
+  const exclusion = await updateExclusionReason(db, domain, reason);
 
   if (!exclusion) {
     throw createError({ statusCode: 404, statusMessage: 'Exclusion not found' });

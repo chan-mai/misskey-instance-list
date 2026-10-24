@@ -1,5 +1,4 @@
-import { eq } from 'drizzle-orm';
-import { excludedHosts } from '@mil/core/db';
+import { deleteExclusion } from '@mil/core/repository';
 import { domainParamSchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
 import { parseOrThrow } from '~~/server/utils/validate';
@@ -21,12 +20,7 @@ export default defineEventHandler(async(event) => {
   const db = useDb(event);
   const { domain } = parseOrThrow(domainParamSchema, getRouterParams(event));
 
-  // 削除実行
-  // レコード不在でも死なないためreturning件数で判定
-  const [exclusion] = await db
-    .delete(excludedHosts)
-    .where(eq(excludedHosts.domain, domain))
-    .returning();
+  const exclusion = await deleteExclusion(db, domain);
 
   if (!exclusion) {
     throw createError({ statusCode: 404, statusMessage: 'Exclusion not found' });

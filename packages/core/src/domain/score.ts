@@ -1,4 +1,4 @@
-import type { IpStack } from '../db/schema.js';
+import type { IpStack } from '../entity/schema.js';
 
 /**
  * おすすめスコアの重みと設定

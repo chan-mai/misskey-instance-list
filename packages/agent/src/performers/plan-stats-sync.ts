@@ -1,6 +1,6 @@
 import { Performer, type JobContext } from 'tsumugi/performer';
-import { and, asc, eq, isNull, ne } from 'drizzle-orm';
-import { createDb, instances, excludedHosts } from '@mil/core/db';
+import { createDb } from '@mil/core/db';
+import { listAllSyncTargetIds } from '@mil/core/repository';
 import { SYNC_BATCH_SIZE, enqueueSyncInstanceBatches } from '../bindings.js';
 import type { Env } from '../env.js';
 
@@ -28,14 +28,7 @@ export class PlanStatsSync extends Performer<PlanStatsSyncPayload, PlanStatsSync
     const db = createDb(this.env.DB);
 
     // プランナ再試行時もバッチ構成とuniqueKeyを同一に保つ
-    const candidates = await db
-      .select({ id: instances.id })
-      .from(instances)
-      .leftJoin(excludedHosts, eq(instances.id, excludedHosts.domain))
-      .where(and(ne(instances.suspension_state, 'gone'), isNull(excludedHosts.domain)))
-      .orderBy(asc(instances.id));
-
-    const hosts = candidates.map((row) => row.id);
+    const hosts = await listAllSyncTargetIds(db);
     const batches: string[][] = [];
     for (let i = 0; i < hosts.length; i += SYNC_BATCH_SIZE) {
       batches.push(hosts.slice(i, i + SYNC_BATCH_SIZE));

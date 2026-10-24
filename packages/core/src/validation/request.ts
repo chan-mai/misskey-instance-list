@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { EXCLUDED_HOST_SOURCES } from '../db/schema.js';
+import { EXCLUDED_HOST_SOURCES } from '../entity/schema.js';
 import {
   booleanParam,
   domainSchema,

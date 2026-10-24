@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { SUSPENSION_STATES, EXCLUDED_HOST_SOURCES, IP_STACKS } from '../db/schema.js';
+import { SUSPENSION_STATES, EXCLUDED_HOST_SOURCES, IP_STACKS } from '../entity/schema.js';
 import { clampLikeTerm } from '../db/chunk.js';
 import { validateDomain } from '../net/domain-validation.js';
 

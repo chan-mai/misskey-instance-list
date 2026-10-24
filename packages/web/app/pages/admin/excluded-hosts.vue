@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ExcludedHost } from '@mil/core/db';
+import type { ExcludedHost } from '@mil/core/entity';
 
 definePageMeta({
   layout: 'admin',

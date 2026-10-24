@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3';
-import type { CrawlContext } from '@mil/core/crawl';
+import type { CrawlContext } from '@mil/core/domain';
 import { useDb } from '~~/server/utils/db';
 
 /**
