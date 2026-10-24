@@ -1,5 +1,6 @@
 import { Performer } from 'tsumugi/performer';
-import { validateInstance, saveInstance, fetchLocalTimeline } from '@mil/core/crawl';
+import { validateInstance, saveInstance } from '@mil/core/domain';
+import { fetchLocalTimeline } from '@mil/core/client';
 import { detectLanguageFromTexts } from '@mil/core/lang';
 import { buildCrawlContext } from '../crawl-context.js';
 import type { Env } from '../env.js';

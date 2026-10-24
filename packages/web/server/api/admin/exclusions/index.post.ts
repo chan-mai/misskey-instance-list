@@ -1,5 +1,4 @@
-import { eq } from 'drizzle-orm';
-import { instances, excludedHosts } from '@mil/core/db';
+import { addExclusion } from '@mil/core/domain';
 import { exclusionCreateBodySchema } from '@mil/core/validation';
 import { useDb } from '~~/server/utils/db';
 import { parseOrThrow } from '~~/server/utils/validate';
@@ -24,19 +23,11 @@ export default defineEventHandler(async(event) => {
   // SQLiteは暗黙変換するため型もアプリ層で
   const { domain, reason, source } = parseOrThrow(exclusionCreateBodySchema, await readBody(event));
 
-  // 除外リストへ登録
-  const [exclusion] = await db
-    .insert(excludedHosts)
-    .values({ domain, reason, source })
-    .onConflictDoNothing({ target: excludedHosts.domain })
-    .returning();
+  const exclusion = await addExclusion(db, { domain, reason, source });
 
   if (!exclusion) {
     throw createError({ statusCode: 409, statusMessage: 'Domain is already excluded' });
   }
-
-  // 既存のインスタンスデータがあれば削除
-  await db.delete(instances).where(eq(instances.id, domain));
 
   return exclusion;
 });

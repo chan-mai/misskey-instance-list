@@ -1,14 +1,8 @@
-import { excludedHosts } from '@mil/core/db';
+import { listExclusionReasons } from '@mil/core/repository';
 
 export default defineCachedEventHandler(async(event): Promise<ExclusionResponse[]> => {
   // すべての除外ホストを返す
-  const exclusions = await useDb(event)
-    .select({
-      domain: excludedHosts.domain,
-      reason: excludedHosts.reason,
-    })
-    .from(excludedHosts);
-  return exclusions;
+  return listExclusionReasons(useDb(event));
 }, {
   // sync:exclusionsタスクからの明示的なキャッシュ無効化がなくなったため短めにする
   maxAge: 10 * 60,

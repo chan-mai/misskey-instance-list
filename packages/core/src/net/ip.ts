@@ -1,6 +1,6 @@
 import ipaddr from 'ipaddr.js';
 import dns from 'node:dns/promises';
-import type { IpStack } from '../db/schema.js';
+import type { IpStack } from '../entity/schema.js';
 
 export type ResolvedAddresses = { v4: string[]; v6: string[] };
 

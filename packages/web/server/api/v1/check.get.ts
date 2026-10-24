@@ -1,7 +1,6 @@
 import { defineEventHandler, getQuery } from 'h3';
-import { eq } from 'drizzle-orm';
-import { instances, excludedHosts } from '@mil/core/db';
-import { evaluateInstance } from '@mil/core/crawl';
+import { findExclusion, findInstance } from '@mil/core/repository';
+import { evaluateInstance, isConfirmedNonMisskey } from '@mil/core/domain';
 import { checkQuerySchema } from '@mil/core/validation';
 
 export default defineEventHandler(async(event): Promise<CheckResponse> => {
@@ -10,11 +9,7 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
   const db = useDb(event);
 
   // 既知のインスタンスを確認
-  const [existingInstance] = await db
-    .select()
-    .from(instances)
-    .where(eq(instances.id, domain))
-    .limit(1);
+  const existingInstance = await findInstance(db, domain);
 
   if (existingInstance && existingInstance.is_alive && existingInstance.suspension_state === 'none') {
     return {
@@ -34,23 +29,12 @@ export default defineEventHandler(async(event): Promise<CheckResponse> => {
   }
 
   // 除外ホストを確認
-  const [excludedHost] = await db
-    .select()
-    .from(excludedHosts)
-    .where(eq(excludedHosts.domain, domain))
-    .limit(1);
+  const excludedHost = await findExclusion(db, domain);
 
   if (excludedHost) {
-    const reason = excludedHost.reason?.toLowerCase() || '';
     // Misskeyでないことが確実な場合 (例: システムが検出したフォークや他のソフトウェア)
     // 即座にfalseを返す
-    // 手動で除外された場合、ユーザーのコメントを考慮すると技術的にはまだMisskeyである可能性があるため、
-    // "Not Misskey" や既知のシステムによる除外理由の場合のみ取得をスキップする
-    if (
-      reason.includes('not misskey') ||
-      reason.includes('fork repository') ||
-      reason.includes('spoofing')
-    ) {
+    if (isConfirmedNonMisskey(excludedHost.reason)) {
       return {
         is_misskey: false,
         data: null,

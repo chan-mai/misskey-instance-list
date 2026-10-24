@@ -1,5 +1,5 @@
-import { and, asc, count, desc, eq, gte, like, lte, notExists, or, sql, type SQL } from 'drizzle-orm';
-import { instances, excludedHosts } from '@mil/core/db';
+import { searchInstances } from '@mil/core/repository';
+import { OFFICIAL_REPOSITORY_URL } from '@mil/core/domain';
 import { instancesQuerySchema } from '@mil/core/validation';
 
 /**
@@ -31,95 +31,10 @@ import { instancesQuerySchema } from '@mil/core/validation';
 export default defineCachedEventHandler(async(event): Promise<InstancesResponse> => {
   const query = parseOrThrow(instancesQuerySchema, getQuery(event));
 
-  const db = useDb(event);
-
-  // SQLiteのNULL順序はPostgresと逆のため, is nullを第1キーに置いて末尾固定する
-  const sortColumns = {
-    notes: instances.notes_count,
-    users: instances.users_count,
-    createdAt: instances.created_at,
-    recommended: instances.recommendation_score,
-    repository: instances.repository_url,
-  };
-  const sortColumn = sortColumns[query.sort];
-
-  const orderBy = [
-    sql`(${sortColumn} is null) asc`,
-    query.order === 'asc' ? asc(sortColumn) : desc(sortColumn),
-    // ページングを安定
-    asc(instances.id),
-  ];
-
-  // 検索条件を構築
-  const conditions: (SQL | undefined)[] = [eq(instances.is_alive, true)];
-
-  // 除外ドメイン
-  conditions.push(
-    notExists(
-      db
-        .select({ x: sql`1` })
-        .from(excludedHosts)
-        .where(eq(excludedHosts.domain, instances.id)),
-    ),
-  );
-
-  // 切り詰め後に空になる検索語はフィルタしない
-  if (query.search) {
-    conditions.push(
-      or(like(instances.id, `%${query.search}%`), like(instances.node_name, `%${query.search}%`)),
-    );
-  }
-
-  // リポジトリフィルタ
-  if (query.repository) {
-    conditions.push(eq(
-      instances.repository_url,
-      query.repository === 'official' ? 'https://github.com/misskey-dev/misskey' : query.repository,
-    ));
-  }
-
-  // 言語フィルタ
-  if (query.language) {
-    conditions.push(eq(instances.language, query.language));
-  }
-
-  // 登録開放状況フィルタ
-  if (query.open_registrations !== undefined) {
-    conditions.push(eq(instances.open_registrations, query.open_registrations));
-  }
-
-  // メールアドレス必須フィルタ
-  if (query.email_required !== undefined) {
-    conditions.push(eq(instances.email_required, query.email_required));
-  }
-
-  // IPスタックフィルタ
-  if (query.ip_stack !== undefined) {
-    conditions.push(eq(instances.ip_stack, query.ip_stack));
-  }
-
-  // ユーザー数フィルタ
-  if (query.min_users !== undefined) {
-    conditions.push(gte(instances.users_count, query.min_users));
-  }
-  if (query.max_users !== undefined) {
-    conditions.push(lte(instances.users_count, query.max_users));
-  }
-
-  const where = and(...conditions);
-
-  // 総件数を取得
-  const totalRows = await db.select({ value: count() }).from(instances).where(where);
-  const total = totalRows[0]?.value ?? 0;
-
-  // インスタンス一覧を取得
-  const rows = await db
-    .select()
-    .from(instances)
-    .where(where)
-    .orderBy(...orderBy)
-    .limit(query.limit)
-    .offset(query.offset);
+  const { total, rows } = await searchInstances(useDb(event), {
+    ...query,
+    repository: query.repository === 'official' ? OFFICIAL_REPOSITORY_URL : query.repository,
+  });
 
   // レスポンス用に整形。
   // timestamp_ms列はDateで返るためNumber()でepoch msになる
