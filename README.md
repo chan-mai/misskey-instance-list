@@ -1,10 +1,35 @@
-# (Unofficial) Misskey Instance List
+<div align="center">
 
-[![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+<a href="https://servers.misskey.ink">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/logo-dark.svg">
+    <img src=".github/assets/logo-light.svg" alt="Unofficial Misskey Server List" width="360">
+  </picture>
+</a>
+
+<br>
+<br>
+
+[![Website](https://img.shields.io/badge/web-servers.misskey.ink-fc9fa8?style=flat-square&logo=misskey&logoColor=white)](https://servers.misskey.ink)
+[![API Docs](https://img.shields.io/badge/docs-API_v1-fc9fa8?style=flat-square&logo=readthedocs&logoColor=white)](https://servers.misskey.ink/docs/api/v1)
+[![CI](https://img.shields.io/github/actions/workflow/status/chan-mai/misskey-instance-list/ci.yaml?branch=stg&event=push&style=flat-square&logo=github&logoColor=white&label=CI&color=fc9fa8)](https://github.com/chan-mai/misskey-instance-list/actions/workflows/ci.yaml)
+[![License](https://img.shields.io/github/license/chan-mai/misskey-instance-list?style=flat-square&label=license&color=fc9fa8)](./LICENSE)
+
+![Nuxt](https://img.shields.io/badge/Nuxt_4-00DC82?style=flat-square&logo=nuxt&logoColor=white)
+![Vue](https://img.shields.io/badge/Vue_3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Hono](https://img.shields.io/badge/Hono-E36002?style=flat-square&logo=hono&logoColor=white)
+![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-C5F74F?style=flat-square&logo=drizzle&logoColor=black)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-F38020?style=flat-square&logo=cloudflare&logoColor=white)
+![D1](https://img.shields.io/badge/D1-F38020?style=flat-square)
+![Durable Objects](https://img.shields.io/badge/Durable_Objects-F38020?style=flat-square)
+![Queues](https://img.shields.io/badge/Queues-F38020?style=flat-square)
+[![Tsumugi](https://img.shields.io/badge/Tsumugi-f7a1b2?style=flat-square)](https://tsumugi.mq1.dev)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 
 MisskeyHubのサーバーリストがメンテナンス中のまま復旧しないため、非公式のサーバーリストを作成しました。
 
-🌐 **Website**: https://servers.misskey.ink
+</div>
 
 ## ✨ Features
 
@@ -74,26 +99,6 @@ http://localhost:3000 で開発サーバーが起動します。
 pnpm build
 pnpm --filter @mil/web exec wrangler deploy
 pnpm --filter @mil/agent exec wrangler deploy
-```
-
-### ジョブ
-
-クロールと集計はTsumugiのジョブとして動きます。定期実行の定義は`packages/agent/src/schedules.ts`に記載されています。
-
-| スケジュール名 | binding | cron(UTC) | 内容 |
-|---|---|---|---|
-| `discover-instances` | `DiscoverInstances` | `0 0 * * *` | 既知インスタンスから未知ホストを発見 |
-| `sync-exclusions` | `SyncExclusions` | `0 0 * * *` | JoinMisskeyのignorehosts.ymlと除外リストを同期 |
-| `plan-stats-sync` | `PlanStatsSync` | `0 */6 * * *` | 全インスタンスの統計同期を10ホスト単位のジョブへ |
-| `sync-recommendation-scores` | `SyncRecommendationScores` | `0 */12 * * *` | おすすめスコアを再計算 |
-| `plan-instance-update` | `PlanInstanceUpdate` | `0 */12 * * *` | 更新の古い100件の再取得をホスト単位のジョブへ |
-
-
-
-
-```bash
-pnpm --filter @mil/agent exec wrangler dev --test-scheduled
-curl "http://localhost:8787/__scheduled?cron=*/15+*+*+*+*"
 ```
 
 ## 🤝 Contributing
