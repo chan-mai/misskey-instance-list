@@ -1,4 +1,4 @@
-import type { RunControl, SchedulerControl, TsumugiJobShard } from 'tsumugi';
+import type { RunControlStub, SchedulerControl, TsumugiJobShard } from 'tsumugi';
 
 export interface Env {
   // アプリ本体のD1
@@ -11,7 +11,7 @@ export interface Env {
   // ジョブの調停役
   JOB_SHARD: DurableObjectNamespace<TsumugiJobShard>;
   // Flowのrun実行
-  RUN: DurableObjectNamespace<RunControl>;
+  RUN: DurableObjectNamespace<RunControlStub>;
   // 定期実行の発火役
   SCHEDULER: DurableObjectNamespace<SchedulerControl>;
   // Tsumugiの読み取りモデル用D1
