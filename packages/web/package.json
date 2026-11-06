@@ -19,7 +19,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "h3": "^2.0.2",
     "kiso.css": "^1.2.4",
-    "nuxt": "^4.6.2",
+    "nuxt": "^4.6.3",
     "nuxt-gtag": "5.0.0",
     "nuxt-jsonld": "^3.0.0",
     "nuxt-oidc-auth": "1.0.0-beta.12",
