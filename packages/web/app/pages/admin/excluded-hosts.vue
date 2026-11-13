@@ -8,6 +8,8 @@ definePageMeta({
 	middleware: 'admin',
 });
 
+const { formatDateTime } = useFormat();
+
 const page = ref(1);
 const limit = 20;
 const search = ref('');
@@ -65,7 +67,7 @@ const openAddModal = async () => {
 	dialogRef.value?.showModal();
 };
 
-const editItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
+const editItem = async (item: ExcludedHost) => {
 	isEditing.value = true;
 	form.domain = item.domain;
 	form.reason = item.reason || '';
@@ -107,7 +109,7 @@ const submitForm = async () => {
 	}
 };
 
-const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at: string | Date }) => {
+const deleteItem = async (item: ExcludedHost) => {
 	if (!confirm(`${item.domain} を削除してもよろしいですか？`)) return;
 
 	try {
@@ -206,7 +208,7 @@ const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at:
 							</span>
 						</td>
 						<td class="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">
-							{{ new Date(item.created_at).toLocaleString() }}
+							{{ formatDateTime(item.created_at) }}
 						</td>
 						<td class="px-4 py-3 text-right">
 							<div v-if="item.source === 'manual'" class="flex justify-end gap-2">

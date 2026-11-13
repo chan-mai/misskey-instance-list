@@ -25,8 +25,14 @@ export const useFormat = () => {
 		return code.toUpperCase();
 	};
 
+	const formatDateTime = (epochMs: number | null | undefined): string => {
+		if (epochMs == null) return '-';
+		return Temporal.Instant.fromEpochMilliseconds(epochMs).toLocaleString();
+	};
+
 	return {
 		formatNumber,
+		formatDateTime,
 		calculateShare,
 		getLanguageName,
 	};

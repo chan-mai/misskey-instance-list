@@ -9,7 +9,7 @@ export const upsertSoftwareRepository = async (
 	{ url, name, description }: { url: string; name: string | null; description: string | null },
 ): Promise<void> => {
 	// $onUpdateはonConflictDoUpdate内で発火しないため明示
-	const set: Partial<RepositoryInsert> = { updated_at: new Date() };
+	const set: Partial<RepositoryInsert> = { updated_at: Temporal.Now.instant().epochMilliseconds };
 	if (name) set.name = name;
 	if (description) set.description = description;
 

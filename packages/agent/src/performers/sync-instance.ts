@@ -46,7 +46,7 @@ export async function syncInstance(env: Env, host: string, scheduledAt: number, 
 		}
 	}
 
-	await saveInstance(ctx, host, res, new Date(scheduledAt), withLanguage ? language : undefined);
+	await saveInstance(ctx, host, res, Temporal.Instant.fromEpochMilliseconds(scheduledAt), withLanguage ? language : undefined);
 
 	return { host, alive: Boolean(res.info), language };
 }

@@ -107,15 +107,18 @@ export type InstanceMetadataUpdate = Pick<
 	| 'ip_stack'
 >;
 
-export const markInstanceAlive = async (db: Database, id: string, now: Date, values: InstanceMetadataUpdate): Promise<void> => {
+export const markInstanceAlive = async (db: Database, id: string, now: Temporal.Instant, values: InstanceMetadataUpdate): Promise<void> => {
 	await db
 		.update(instances)
-		.set({ ...values, is_alive: true, last_check_at: now, suspension_state: SuspensionState.none })
+		.set({ ...values, is_alive: true, last_check_at: now.epochMilliseconds, suspension_state: SuspensionState.none })
 		.where(eq(instances.id, id));
 };
 
-export const markInstanceDown = async (db: Database, id: string, now: Date, state: SuspensionState): Promise<void> => {
-	await db.update(instances).set({ is_alive: false, last_check_at: now, suspension_state: state }).where(eq(instances.id, id));
+export const markInstanceDown = async (db: Database, id: string, now: Temporal.Instant, state: SuspensionState): Promise<void> => {
+	await db
+		.update(instances)
+		.set({ is_alive: false, last_check_at: now.epochMilliseconds, suspension_state: state })
+		.where(eq(instances.id, id));
 };
 
 // idのキーセットページング
