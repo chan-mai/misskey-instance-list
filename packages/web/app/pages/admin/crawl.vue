@@ -19,7 +19,7 @@ type CrawlResult = {
 		suspension_state: string;
 		language: string | null;
 		repository_url: string | null;
-		last_check_at: string | null;
+		last_check_at: number | null;
 	} | null;
 };
 
@@ -27,6 +27,8 @@ const domain = ref('');
 const pending = ref(false);
 const result = ref<CrawlResult | null>(null);
 const errorMessage = ref('');
+
+const { formatDateTime } = useFormat();
 
 const formatNumber = (num: number | null | undefined) => {
 	if (num === null || num === undefined) return '-';
@@ -48,7 +50,7 @@ const resultRows = computed(() => {
 		{ label: 'リポジトリ', value: instance.repository_url || '-' },
 		{
 			label: '最終チェック',
-			value: instance.last_check_at ? new Date(instance.last_check_at).toLocaleString() : '-',
+			value: formatDateTime(instance.last_check_at),
 		},
 	];
 });

@@ -47,11 +47,11 @@ export const repositories = sqliteTable('repositories', {
 	name: text('name'),
 	description: text('description'),
 	// $onUpdateはonConflictDoUpdate内で発火しない, upsert時はsetに明示すること
-	updated_at: integer('updated_at', { mode: 'timestamp_ms' })
+	updated_at: integer('updated_at')
 		.notNull()
 		.default(nowMs())
-		.$onUpdate(() => new Date()),
-	created_at: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(nowMs()),
+		.$onUpdate(() => Temporal.Now.instant().epochMilliseconds),
+	created_at: integer('created_at').notNull().default(nowMs()),
 });
 
 export const instances = sqliteTable(
@@ -63,11 +63,11 @@ export const instances = sqliteTable(
 		notes_count: integer('notes_count').default(0),
 		version: text('version'),
 		is_alive: integer('is_alive', { mode: 'boolean' }).notNull().default(false),
-		created_at: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(nowMs()),
-		last_updated: integer('last_updated', { mode: 'timestamp_ms' })
+		created_at: integer('created_at').notNull().default(nowMs()),
+		last_updated: integer('last_updated')
 			.default(nowMs())
-			.$onUpdate(() => new Date()),
-		last_check_at: integer('last_check_at', { mode: 'timestamp_ms' }),
+			.$onUpdate(() => Temporal.Now.instant().epochMilliseconds),
+		last_check_at: integer('last_check_at'),
 		banner_url: text('banner_url'),
 		icon_url: text('icon_url'),
 		suspension_state: text('suspension_state', { enum: SUSPENSION_STATES }).notNull().default('none'),
@@ -97,7 +97,7 @@ export const excludedHosts = sqliteTable(
 		domain: text('domain').primaryKey(),
 		reason: text('reason'),
 		source: text('source', { enum: EXCLUDED_HOST_SOURCES }).notNull().default('system'),
-		created_at: integer('created_at', { mode: 'timestamp_ms' }).notNull().default(nowMs()),
+		created_at: integer('created_at').notNull().default(nowMs()),
 	},
 	t => [check('excluded_hosts_source_check', sql`${t.source} in (${sqlLiteralList(EXCLUDED_HOST_SOURCES)})`)],
 );

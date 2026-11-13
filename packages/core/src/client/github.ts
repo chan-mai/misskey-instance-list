@@ -1,15 +1,15 @@
 // Simple in-memory cache to avoid hitting GitHub API excessively during sync
 type GitHubRepository = {
 	description: string | null;
-	cachedAt: number;
+	cachedAt: Temporal.Instant;
 	notFound?: boolean; // 404エラーの場合はtrue
 };
 const repositoryCache = new Map<string, GitHubRepository>();
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const CACHE_TTL = Temporal.Duration.from({ hours: 1 });
 
 function getCachedRepository(name: string): GitHubRepository | undefined {
 	const cached = repositoryCache.get(name);
-	if (cached && Date.now() - cached.cachedAt > CACHE_TTL_MS) {
+	if (cached && Temporal.Duration.compare(Temporal.Now.instant().since(cached.cachedAt), CACHE_TTL) > 0) {
 		repositoryCache.delete(name);
 		return undefined;
 	}
@@ -61,7 +61,7 @@ export async function resolveRepositoryInfo(repositoryUrl: string, githubToken?:
 								const ghData = (await ghRes.json()) as { description?: string | null };
 								repository = {
 									description: ghData.description !== undefined && ghData.description !== '' ? ghData.description : null,
-									cachedAt: Date.now(),
+									cachedAt: Temporal.Now.instant(),
 								};
 								// 成功した場合のみキャッシュする
 								repositoryCache.set(repositoryName, repository);
@@ -73,7 +73,7 @@ export async function resolveRepositoryInfo(repositoryUrl: string, githubToken?:
 								if (ghRes.status === 404) {
 									repositoryCache.set(repositoryName, {
 										description: null,
-										cachedAt: Date.now(),
+										cachedAt: Temporal.Now.instant(),
 										notFound: true,
 									});
 								}

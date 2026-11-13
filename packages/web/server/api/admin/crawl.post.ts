@@ -45,7 +45,7 @@ export default defineEventHandler(async event => {
 
 	const ctx = createCrawlContext(event);
 	const result = await validateInstance(ctx, domain);
-	await saveInstance(ctx, domain, result, new Date());
+	await saveInstance(ctx, domain, result, Temporal.Now.instant());
 
 	const instance = await findInstanceSummary(db, domain);
 

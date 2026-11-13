@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const currentYear = Temporal.Now.plainDateISO().year;
+</script>
+
 <template>
 	<footer class="py-24 bg-neutral-50 dark:bg-black text-neutral-900 dark:text-white transition-colors duration-300">
 		<div class="container mx-auto max-w-screen-xl px-6">
@@ -94,7 +98,7 @@
 			<!-- Copyright -->
 			<div class="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-neutral-200 dark:border-neutral-800">
 				<p class="text-xs text-neutral-500 dark:text-neutral-500">
-					© 2025-{{ new Date().getFullYear() }} <NuxtLink to="https://mq1.dev/about" target="_blank">chan-mai</NuxtLink>.
+					© 2025-{{ currentYear }} <NuxtLink to="https://mq1.dev/about" target="_blank">chan-mai</NuxtLink>.
 				</p>
 				<p class="text-xs text-neutral-500 dark:text-neutral-500">このサイトはsyuilo氏及びMisskeyプロジェクトとは関係ありません。</p>
 			</div>

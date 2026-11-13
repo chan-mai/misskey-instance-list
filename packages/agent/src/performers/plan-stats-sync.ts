@@ -23,7 +23,11 @@ export interface PlanStatsSyncResult {
 export class PlanStatsSync extends Performer<PlanStatsSyncPayload, PlanStatsSyncResult, object, Env> {
 	async perform({ scheduledAt, force }: PlanStatsSyncPayload, ctx: JobContext): Promise<PlanStatsSyncResult> {
 		const intervalHours = Number(this.env.STATS_SYNC_INTERVAL_HOURS ?? 0);
-		if (!force && intervalHours > 0 && Math.floor(scheduledAt / 3_600_000) % intervalHours !== 0) {
+		if (
+			!force &&
+			intervalHours > 0 &&
+			Math.floor(Temporal.Duration.from({ milliseconds: scheduledAt }).total('hours')) % intervalHours !== 0
+		) {
 			return { enqueued: 0 };
 		}
 
@@ -36,7 +40,7 @@ export class PlanStatsSync extends Performer<PlanStatsSyncPayload, PlanStatsSync
 			batches.push(hosts.slice(i, i + SYNC_BATCH_SIZE));
 		}
 
-		const startAt = Date.now();
+		const startAt = Temporal.Now.instant();
 		for (let i = 0; i < batches.length; i += ENQUEUE_CHUNK) {
 			// timeoutMsの起点を最後の報告時刻へ移す
 			await ctx.heartbeat(i / batches.length);
