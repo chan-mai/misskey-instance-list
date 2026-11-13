@@ -12,10 +12,10 @@ export const D1_MAX_BOUND_PARAMS = 100;
  * @param columnsPerRow 1行あたりが消費するパラメータ数
  */
 export const chunkForD1 = <T>(rows: readonly T[], columnsPerRow: number): T[][] => {
-  const size = Math.max(1, Math.floor((D1_MAX_BOUND_PARAMS - 1) / Math.max(1, columnsPerRow)));
-  const out: T[][] = [];
-  for (let i = 0; i < rows.length; i += size) out.push(rows.slice(i, i + size) as T[]);
-  return out;
+	const size = Math.max(1, Math.floor((D1_MAX_BOUND_PARAMS - 1) / Math.max(1, columnsPerRow)));
+	const out: T[][] = [];
+	for (let i = 0; i < rows.length; i += size) out.push(rows.slice(i, i + size) as T[]);
+	return out;
 };
 
 /**
@@ -25,16 +25,16 @@ export const chunkForD1 = <T>(rows: readonly T[], columnsPerRow: number): T[][] 
  * ESCAPE句をdrizzleのlike()が出さないので, %と_はエスケープではなく除去する
  */
 export const clampLikeTerm = (raw: string, maxPatternBytes = 50): string => {
-  // 前後の%で2バイト消費する
-  const budget = maxPatternBytes - 2;
-  const stripped = raw.replace(/[%_\\]/g, '');
-  const enc = new TextEncoder();
-  if (enc.encode(stripped).length <= budget) return stripped;
+	// 前後の%で2バイト消費する
+	const budget = maxPatternBytes - 2;
+	const stripped = raw.replace(/[%_\\]/g, '');
+	const enc = new TextEncoder();
+	if (enc.encode(stripped).length <= budget) return stripped;
 
-  let out = '';
-  for (const ch of stripped) {
-    if (enc.encode(out + ch).length > budget) break;
-    out += ch;
-  }
-  return out;
+	let out = '';
+	for (const ch of stripped) {
+		if (enc.encode(out + ch).length > budget) break;
+		out += ch;
+	}
+	return out;
 };

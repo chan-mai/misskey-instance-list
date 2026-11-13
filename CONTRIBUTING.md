@@ -44,18 +44,17 @@
 
 このプロジェクトはCloudflare Workers上で動作しています。bindingは各パッケージの`wrangler.jsonc`が持ち、`stg`と`prod`の2環境に分かれています。
 
-| パッケージ | 役割 | 主なbinding |
-|---|---|---|
-| `packages/web` | Nuxtのフロントエンドと公開API | D1, KV |
+| パッケージ       | 役割                                | 主なbinding                                       |
+| ---------------- | ----------------------------------- | ------------------------------------------------- |
+| `packages/web`   | Nuxtのフロントエンドと公開API       | D1, KV                                            |
 | `packages/agent` | クロールと集計のジョブ基盤(Tsumugi) | D1 2本, Queues, Durable Objects, Analytics Engine |
-| `packages/core` | 共通ロジックとスキーマ定義 | D1(マイグレーション適用専用) |
+| `packages/core`  | 共通ロジックとスキーマ定義          | D1(マイグレーション適用専用)                      |
 
 インフラ構成の変更が必要な場合は、該当する`wrangler.jsonc`を修正し、PRに含めてください。
 
-
 ## スタイルガイド
 
-- 基本的に ESLint の設定 (`eslint.config.mjs`) に従ってください。
+- 基本的にoxlintとoxfmtの設定(`oxlint.config.ts`, `oxfmt.config.ts`)に従ってください。
 - ファイル名、定数、ディレクトリ名などは、プロジェクトの既存の命名規則に従ってください。
 
 不安な点や質問がある場合は、Issue を作成するか、Pull Request 上でお気軽にお尋ねください。

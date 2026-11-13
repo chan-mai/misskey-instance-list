@@ -22,10 +22,9 @@ const f_minUsers = ref<number | null>(initialConditions.minUsers);
 const f_maxUsers = ref<number | null>(initialConditions.maxUsers);
 
 onMounted(() => {
-  const saved = loadViewMode(window.localStorage.getItem(STORAGE_KEY));
-  if (saved) v_view.value = saved;
+	const saved = loadViewMode(window.localStorage.getItem(STORAGE_KEY));
+	if (saved) v_view.value = saved;
 });
-
 
 const PAGE_SIZE = 30;
 const instances = ref<Instance[]>([]);
@@ -37,153 +36,163 @@ const initialLoading = ref(true);
 const errorMessage = ref<string | null>(null);
 
 const filterConditions = computed<FilterConditions>(() => ({
-  q: f_query.value,
-  repository: f_repository.value,
-  language: f_language.value,
-  orderBy: f_orderBy.value,
-  order: f_order.value,
-  openRegistrations: f_openRegistrations.value,
-  emailRequired: f_emailRequired.value,
-  ipStack: f_ipStack.value,
-  minUsers: f_minUsers.value,
-  maxUsers: f_maxUsers.value,
+	q: f_query.value,
+	repository: f_repository.value,
+	language: f_language.value,
+	orderBy: f_orderBy.value,
+	order: f_order.value,
+	openRegistrations: f_openRegistrations.value,
+	emailRequired: f_emailRequired.value,
+	ipStack: f_ipStack.value,
+	minUsers: f_minUsers.value,
+	maxUsers: f_maxUsers.value,
 }));
 
-watch(filterConditions, (conditions) => {
-  router.replace({ query: toFilterQuery(conditions) });
+watch(filterConditions, conditions => {
+	router.replace({ query: toFilterQuery(conditions) });
 });
 
 // 正規化後クエリで比較
 const isSameConditions = (a: FilterConditions, b: FilterConditions) =>
-  JSON.stringify(toFilterQuery(a)) === JSON.stringify(toFilterQuery(b));
+	JSON.stringify(toFilterQuery(a)) === JSON.stringify(toFilterQuery(b));
 
 function applyConditions(conditions: FilterConditions) {
-  f_query.value = conditions.q;
-  f_repository.value = conditions.repository;
-  f_language.value = conditions.language;
-  f_orderBy.value = conditions.orderBy;
-  f_order.value = conditions.order;
-  f_openRegistrations.value = conditions.openRegistrations;
-  f_emailRequired.value = conditions.emailRequired;
-  f_ipStack.value = conditions.ipStack;
-  f_minUsers.value = conditions.minUsers;
-  f_maxUsers.value = conditions.maxUsers;
+	f_query.value = conditions.q;
+	f_repository.value = conditions.repository;
+	f_language.value = conditions.language;
+	f_orderBy.value = conditions.orderBy;
+	f_order.value = conditions.order;
+	f_openRegistrations.value = conditions.openRegistrations;
+	f_emailRequired.value = conditions.emailRequired;
+	f_ipStack.value = conditions.ipStack;
+	f_minUsers.value = conditions.minUsers;
+	f_maxUsers.value = conditions.maxUsers;
 }
 
 // クエリのみの遷移を反映, 自身のreplace由来は除外
-watch(() => route.query, (query) => {
-  const conditions = parseFilterQuery(query);
-  if (isSameConditions(conditions, filterConditions.value)) return;
-  applyConditions(conditions);
-  fetchInstances(true);
-});
+watch(
+	() => route.query,
+	query => {
+		const conditions = parseFilterQuery(query);
+		if (isSameConditions(conditions, filterConditions.value)) return;
+		applyConditions(conditions);
+		fetchInstances(true);
+	},
+);
 
-watch(v_view, (view) => {
-  if (import.meta.client) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ v_view: view }));
-  }
+watch(v_view, view => {
+	if (import.meta.client) {
+		window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ v_view: view }));
+	}
 });
 
 const sortApiValue = computed(() => {
-  switch (f_orderBy.value) {
-    case 'recommendedScore': return 'recommended';
-    case 'notesCount': return 'notes';
-    case 'usersCount': return 'users';
-    case 'createdAt': return 'createdAt';
-    default: return 'users';
-  }
+	switch (f_orderBy.value) {
+		case 'recommendedScore':
+			return 'recommended';
+		case 'notesCount':
+			return 'notes';
+		case 'usersCount':
+			return 'users';
+		case 'createdAt':
+			return 'createdAt';
+		default:
+			return 'users';
+	}
 });
 
 const abortController = ref<AbortController | null>(null);
 
 // クエリパラメータ生成ヘルパー
-const getQueryParams = (currentOffset: number = 0) => ({
-  sort: sortApiValue.value,
-  order: f_order.value,
-  limit: PAGE_SIZE.toString(),
-  offset: currentOffset.toString(),
-  ...(f_query.value && { search: f_query.value }),
-  ...(f_repository.value && { repository: f_repository.value }),
-  ...(f_language.value && { language: f_language.value }),
-  ...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
-  ...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
-  ...(f_ipStack.value !== null && { ip_stack: f_ipStack.value }),
-  ...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
-  ...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() })
+const getQueryParams = (currentOffset = 0) => ({
+	sort: sortApiValue.value,
+	order: f_order.value,
+	limit: PAGE_SIZE.toString(),
+	offset: currentOffset.toString(),
+	...(f_query.value && { search: f_query.value }),
+	...(f_repository.value && { repository: f_repository.value }),
+	...(f_language.value && { language: f_language.value }),
+	...(f_openRegistrations.value !== null && { open_registrations: f_openRegistrations.value.toString() }),
+	...(f_emailRequired.value !== null && { email_required: f_emailRequired.value.toString() }),
+	...(f_ipStack.value !== null && { ip_stack: f_ipStack.value }),
+	...(f_minUsers.value !== null && { min_users: f_minUsers.value.toString() }),
+	...(f_maxUsers.value !== null && { max_users: f_maxUsers.value.toString() }),
 });
-
 
 const requestFetch = useRequestFetch();
 
-const { data: initialResponse, status: initialStatus } = await useAsyncData(
-  'servers-list',
-  () => requestFetch<InstancesResponse>('/api/v1/instances', { params: getQueryParams(0) })
+const { data: initialResponse, status: initialStatus } = await useAsyncData('servers-list', () =>
+	requestFetch<InstancesResponse>('/api/v1/instances', { params: getQueryParams(0) }),
 );
 
-watch(initialStatus, (status) => {
-  if (status === 'success' && initialResponse.value) {
-    instances.value = initialResponse.value.items;
-    total.value = initialResponse.value.total;
-    offset.value = initialResponse.value.limit;
-    initialLoading.value = false;
-  } else if (status === 'error') {
-    errorMessage.value = 'データの取得に失敗しました。';
-    initialLoading.value = false;
-  }
-}, { immediate: true });
+watch(
+	initialStatus,
+	status => {
+		if (status === 'success' && initialResponse.value) {
+			instances.value = initialResponse.value.items;
+			total.value = initialResponse.value.total;
+			offset.value = initialResponse.value.limit;
+			initialLoading.value = false;
+		} else if (status === 'error') {
+			errorMessage.value = 'データの取得に失敗しました。';
+			initialLoading.value = false;
+		}
+	},
+	{ immediate: true },
+);
 
 async function fetchInstances(reset = false) {
-  // 保留中のリクエストをキャンセル
-  if (abortController.value) {
-    abortController.value.abort();
-    abortController.value = null;
-  }
+	// 保留中のリクエストをキャンセル
+	if (abortController.value) {
+		abortController.value.abort();
+		abortController.value = null;
+	}
 
-  // 新しいコントローラーを作成
-  const controller = new AbortController();
-  abortController.value = controller;
+	// 新しいコントローラーを作成
+	const controller = new AbortController();
+	abortController.value = controller;
 
-  isLoading.value = true;
-  errorMessage.value = null;
+	isLoading.value = true;
+	errorMessage.value = null;
 
-  if (reset) {
-    initialLoading.value = true;
-    instances.value = [];
-  }
+	if (reset) {
+		initialLoading.value = true;
+		instances.value = [];
+	}
 
-  try {
-    const currentOffset = reset ? 0 : offset.value;
-    const params = new URLSearchParams(getQueryParams(currentOffset));
+	try {
+		const currentOffset = reset ? 0 : offset.value;
+		const params = new URLSearchParams(getQueryParams(currentOffset));
 
-    const signal = controller.signal;
-    const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`, { signal });
+		const signal = controller.signal;
+		const response = await $fetch<InstancesResponse>(`/api/v1/instances?${params}`, { signal });
 
-    if (reset) {
-      instances.value = response.items;
-      offset.value = response.limit;
-    } else {
-      instances.value = [...instances.value, ...response.items];
-      offset.value = currentOffset + response.limit;
-    }
-    total.value = response.total;
-  } catch (e: any) {
-    if (e.name === 'AbortError') {
-      // 中断エラーは無視する
-      return;
-    }
-    errorMessage.value = 'データの取得に失敗しました。';
-  } finally {
-    // アクティブなリクエストの場合のみ状態を更新
-    if (abortController.value === controller) {
-      isLoading.value = false;
-      initialLoading.value = false;
-      abortController.value = null;
-    }
-  }
+		if (reset) {
+			instances.value = response.items;
+			offset.value = response.limit;
+		} else {
+			instances.value = [...instances.value, ...response.items];
+			offset.value = currentOffset + response.limit;
+		}
+		total.value = response.total;
+	} catch (e) {
+		if (e instanceof Error && e.name === 'AbortError') {
+			// 中断エラーは無視する
+			return;
+		}
+		errorMessage.value = 'データの取得に失敗しました。';
+	} finally {
+		// アクティブなリクエストの場合のみ状態を更新
+		if (abortController.value === controller) {
+			isLoading.value = false;
+			initialLoading.value = false;
+			abortController.value = null;
+		}
+	}
 }
 
 watch([f_orderBy, f_order, f_openRegistrations, f_emailRequired, f_ipStack, f_minUsers, f_maxUsers], () => {
-  fetchInstances(true);
+	fetchInstances(true);
 });
 
 const loadMoreTrigger = ref<HTMLElement | null>(null);
@@ -191,202 +200,250 @@ const loadMoreTrigger = ref<HTMLElement | null>(null);
 // Statsの取得もuseAsyncDataに統一
 const { data: stats } = useLazyAsyncData('stats', () => requestFetch<StatsResponse>('/api/v1/stats'));
 
-watch(loadMoreTrigger, (el) => {
-  if (import.meta.client && el) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]!.isIntersecting && hasMore.value && !isLoading.value) {
-          fetchInstances(false);
-        }
-      },
-      { rootMargin: '200px' }
-    );
-    observer.observe(el);
-    onUnmounted(() => observer.disconnect());
-  }
+watch(loadMoreTrigger, el => {
+	if (import.meta.client && el) {
+		const observer = new IntersectionObserver(
+			entries => {
+				if (entries[0]?.isIntersecting && hasMore.value && !isLoading.value) {
+					fetchInstances(false);
+				}
+			},
+			{ rootMargin: '200px' },
+		);
+		observer.observe(el);
+		onUnmounted(() => observer.disconnect());
+	}
 });
 
 useHead({
-  title: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
-  meta: [
-    { name: 'keywords', content: 'Misskey,Server List,Instance List,Misskeyサーバー,インスタンス,Fediverse,ActivityPub,サーバー検索' },
-    { name: 'description', content: '稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。' },
-    { property: 'og:title', content: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
-    { property: 'og:description', content: '稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。' },
-    { property: 'og:url', content: 'https://servers.misskey.ink/servers' },
-    { name: 'twitter:title', content: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
-    { name: 'twitter:description', content: '稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。' },
-  ]
+	title: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト',
+	meta: [
+		{ name: 'keywords', content: 'Misskey,Server List,Instance List,Misskeyサーバー,インスタンス,Fediverse,ActivityPub,サーバー検索' },
+		{
+			name: 'description',
+			content:
+				'稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。',
+		},
+		{ property: 'og:title', content: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
+		{
+			property: 'og:description',
+			content:
+				'稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。',
+		},
+		{ property: 'og:url', content: 'https://servers.misskey.ink/servers' },
+		{ name: 'twitter:title', content: 'Servers - (Unofficial) Misskey Server List | Misskeyサーバー・インスタンスリスト' },
+		{
+			name: 'twitter:description',
+			content:
+				'稼働中のMisskeyサーバーの一覧です。ユーザー数、ノート数、対応言語、新規登録の可否などで絞り込み、サーバー同士を比較できます。',
+		},
+	],
 });
-
 
 const isFilterDrawerOpen = ref(false);
 
-
 const repositories = computed(() => {
-  const repos = stats.value?.repositories?.map((repo: StatsRepository) => ({
-    name: repo.name || 'Unknown',
-    url: repo.url,
-    count: repo.count
-  })) ?? [];
+	const repos =
+		stats.value?.repositories?.map((repo: StatsRepository) => ({
+			name: repo.name || 'Unknown',
+			url: repo.url,
+			count: repo.count,
+		})) ?? [];
 
-  return repos;
+	return repos;
 });
 
 const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (f_query.value) count++;
-  if (f_language.value) count++;
-  if (f_orderBy.value !== 'recommendedScore') count++;
-  if (f_openRegistrations.value !== null) count++;
-  if (f_emailRequired.value !== null) count++;
-  if (f_ipStack.value !== null) count++;
-  if (f_minUsers.value !== null) count++;
-  if (f_maxUsers.value !== null) count++;
-  if (f_repository.value) count++;
-  return count;
+	let count = 0;
+	if (f_query.value) count++;
+	if (f_language.value) count++;
+	if (f_orderBy.value !== 'recommendedScore') count++;
+	if (f_openRegistrations.value !== null) count++;
+	if (f_emailRequired.value !== null) count++;
+	if (f_ipStack.value !== null) count++;
+	if (f_minUsers.value !== null) count++;
+	if (f_maxUsers.value !== null) count++;
+	if (f_repository.value) count++;
+	return count;
 });
 
 function handleSearch(query: string) {
-  f_query.value = query;
-  fetchInstances(true);
+	f_query.value = query;
+	fetchInstances(true);
 }
 
 function handleRepoChange(repo: string) {
-  f_repository.value = repo;
-  fetchInstances(true);
+	f_repository.value = repo;
+	fetchInstances(true);
 }
 
 function handleLanguageChange(lang: string) {
-  f_language.value = lang;
-  fetchInstances(true);
+	f_language.value = lang;
+	fetchInstances(true);
 }
 
 function handleReset() {
-  f_query.value = '';
-  f_language.value = '';
-  f_orderBy.value = 'recommendedScore';
-  f_order.value = 'desc';
-  f_repository.value = '';
-  f_openRegistrations.value = null;
-  f_emailRequired.value = null;
-  f_ipStack.value = null;
-  f_minUsers.value = null;
-  f_maxUsers.value = null;
-  fetchInstances(true);
+	f_query.value = '';
+	f_language.value = '';
+	f_orderBy.value = 'recommendedScore';
+	f_order.value = 'desc';
+	f_repository.value = '';
+	f_openRegistrations.value = null;
+	f_emailRequired.value = null;
+	f_ipStack.value = null;
+	f_minUsers.value = null;
+	f_maxUsers.value = null;
+	fetchInstances(true);
 }
 
-function handleOrderByChange(val: any) {
-  f_orderBy.value = val as SortField;
+function handleOrderByChange(val: SortField) {
+	f_orderBy.value = val;
 }
 
-function handleOrderChange(val: any) {
-  f_order.value = val as SortOrder;
+function handleOrderChange(val: SortOrder) {
+	f_order.value = val;
 }
 // ローカルでの拡張型定義
 type InstanceWithDescription = Instance & {
-  description?: string;
+	description?: string;
 };
 
 useJsonld(() => ({
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  numberOfItems: instances.value.length,
-  itemListElement: instances.value.map((instance: InstanceWithDescription, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    item: {
-      '@type': 'Thing',
-      name: instance.name || instance.host,
-      url: `https://${instance.host}`,
-      ...(instance.description && { description: instance.description })
-    }
-  }))
+	'@context': 'https://schema.org',
+	'@type': 'ItemList',
+	numberOfItems: instances.value.length,
+	itemListElement: instances.value.map((instance: InstanceWithDescription, index) => ({
+		'@type': 'ListItem',
+		position: index + 1,
+		item: {
+			'@type': 'Thing',
+			name: instance.name || instance.host,
+			url: `https://${instance.host}`,
+			...(instance.description && { description: instance.description }),
+		},
+	})),
 }));
 </script>
 
 <template>
-  <div>
-    <!-- Fullscreen Hero -->
-    <Hero label="(Unofficial) Misskey Server List" title="Servers" description="Misskeyサーバーをさがす" :show-scroll="true" />
+	<div>
+		<!-- Fullscreen Hero -->
+		<Hero label="(Unofficial) Misskey Server List" title="Servers" description="Misskeyサーバーをさがす" :show-scroll="true" />
 
-    <!-- Filter Tabs -->
-    <FilterTabs id="servers" :active-filters-count="activeFiltersCount" :total-count="formatNumber(total)"
-      :view="v_view" @update:view="(v: any) => v_view = v" @open-filters="isFilterDrawerOpen = true" />
+		<!-- Filter Tabs -->
+		<FilterTabs
+			id="servers"
+			:active-filters-count="activeFiltersCount"
+			:total-count="formatNumber(total)"
+			:view="v_view"
+			@update:view="(v: any) => (v_view = v)"
+			@open-filters="isFilterDrawerOpen = true"
+		/>
 
-    <!-- Filter Drawer -->
-    <FilterDrawer :is-open="isFilterDrawerOpen" :total-count="formatNumber(total)" :search-query="f_query"
-      :order-by="f_orderBy" :order="f_order" :language-filter="f_language" :languages="stats?.languages"
-      :repository-filter="f_repository" :repositories="repositories" :open-registrations="f_openRegistrations"
-      :email-required="f_emailRequired" :ip-stack="f_ipStack" :min-users="f_minUsers" :max-users="f_maxUsers"
-      @close="isFilterDrawerOpen = false" @search="handleSearch" @update:order-by="handleOrderByChange"
-      @update:order="handleOrderChange" @update:language-filter="handleLanguageChange"
-      @update:repository-filter="handleRepoChange" @update:open-registrations="(v) => f_openRegistrations = v"
-      @update:email-required="(v) => f_emailRequired = v" @update:ip-stack="(v) => f_ipStack = v"
-      @update:min-users="(v) => f_minUsers = v"
-      @update:max-users="(v) => f_maxUsers = v" @reset="handleReset" />
+		<!-- Filter Drawer -->
+		<FilterDrawer
+			:is-open="isFilterDrawerOpen"
+			:total-count="formatNumber(total)"
+			:search-query="f_query"
+			:order-by="f_orderBy"
+			:order="f_order"
+			:language-filter="f_language"
+			:languages="stats?.languages"
+			:repository-filter="f_repository"
+			:repositories="repositories"
+			:open-registrations="f_openRegistrations"
+			:email-required="f_emailRequired"
+			:ip-stack="f_ipStack"
+			:min-users="f_minUsers"
+			:max-users="f_maxUsers"
+			@close="isFilterDrawerOpen = false"
+			@search="handleSearch"
+			@update:order-by="handleOrderByChange"
+			@update:order="handleOrderChange"
+			@update:language-filter="handleLanguageChange"
+			@update:repository-filter="handleRepoChange"
+			@update:open-registrations="v => (f_openRegistrations = v)"
+			@update:email-required="v => (f_emailRequired = v)"
+			@update:ip-stack="v => (f_ipStack = v)"
+			@update:min-users="v => (f_minUsers = v)"
+			@update:max-users="v => (f_maxUsers = v)"
+			@reset="handleReset"
+		/>
 
-    <!-- Server Grid -->
-    <section class="py-8 lg:py-12 bg-neutral-50 dark:bg-black min-h-screen">
-      <div class="container mx-auto max-w-screen-xl px-4 lg:px-6">
-        <!-- Results info -->
-        <div class="flex items-center justify-between mb-6">
-        </div>
+		<!-- Server Grid -->
+		<section class="py-8 lg:py-12 bg-neutral-50 dark:bg-black min-h-screen">
+			<div class="container mx-auto max-w-screen-xl px-4 lg:px-6">
+				<!-- Results info -->
+				<div class="flex items-center justify-between mb-6"></div>
 
-        <!-- Grid/List Container -->
-        <div :class="v_view === 'grid'
-          ? 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4'
-          : 'flex flex-col gap-3'">
+				<!-- Grid/List Container -->
+				<div
+					:class="
+						v_view === 'grid'
+							? 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 lg:gap-4'
+							: 'flex flex-col gap-3'
+					"
+				>
+					<!-- Server cards -->
+					<ServerCard v-if="instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance" :view="v_view" />
 
-          <!-- Server cards -->
-          <ServerCard v-if="instances.length > 0" v-for="instance in instances" :key="instance.host" :instance="instance"
-            :view="v_view" />
+					<!-- Error state (only if no data) -->
+					<StateError v-else-if="errorMessage && instances.length === 0" :message="errorMessage">
+						<template #action>
+							<button
+								@click="fetchInstances(true)"
+								class="font-display px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white"
+							>
+								Retry
+							</button>
+						</template>
+					</StateError>
 
-          <!-- Error state (only if no data) -->
-          <StateError v-else-if="errorMessage && instances.length === 0" :message="errorMessage">
-            <template #action>
-              <button @click="fetchInstances(true)"
-                class="font-display px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
-                Retry
-              </button>
-            </template>
-          </StateError>
+					<!-- Empty state -->
+					<StateEmpty
+						v-else-if="!initialLoading"
+						:message="f_query ? `&quot;${f_query}&quot; に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした'"
+						sub-message="検索条件を変更してみてください"
+					>
+						<template #action>
+							<button
+								v-if="f_query || f_repository || f_language"
+								@click="handleReset"
+								class="font-display px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white"
+							>
+								Reset Filters
+							</button>
+						</template>
+					</StateEmpty>
 
-          <!-- Empty state -->
-          <StateEmpty v-else-if="!initialLoading"
-            :message="f_query ? `&quot;${f_query}&quot; に一致するサーバーが見つかりませんでした` : 'サーバーが見つかりませんでした'"
-            sub-message="検索条件を変更してみてください">
-            <template #action>
-              <button v-if="f_query || f_repository || f_language" @click="handleReset"
-                class="font-display px-6 py-3 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center mx-auto border border-neutral-900 dark:border-white">
-                Reset Filters
-              </button>
-            </template>
-          </StateEmpty>
+					<!-- Loading state -->
+					<StateLoading v-else message="Loading servers" />
+				</div>
 
-          <!-- Loading state -->
-          <StateLoading v-else message="Loading servers" />
-        </div>
+				<!-- Infinite scroll trigger -->
+				<div
+					v-if="!initialLoading && instances.length > 0"
+					ref="loadMoreTrigger"
+					class="py-12 flex justify-center flex-col items-center gap-4"
+				>
+					<div v-if="isLoading" class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
 
-        <!-- Infinite scroll trigger -->
-        <div v-if="!initialLoading && instances.length > 0" ref="loadMoreTrigger" class="py-12 flex justify-center flex-col items-center gap-4">
-          <div v-if="isLoading"
-            class="w-8 h-8 border-2 border-neutral-200 dark:border-neutral-700 border-t-primary animate-spin"></div>
+					<!-- Pagination Error -->
+					<div v-else-if="errorMessage" class="text-center">
+						<p class="text-red-600 mb-2">{{ errorMessage }}</p>
+						<button
+							@click="fetchInstances(false)"
+							class="font-display px-4 py-2 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors border border-neutral-900 dark:border-white"
+						>
+							Retry
+						</button>
+					</div>
 
-          <!-- Pagination Error -->
-          <div v-else-if="errorMessage" class="text-center">
-            <p class="text-red-600 mb-2">{{ errorMessage }}</p>
-            <button @click="fetchInstances(false)"
-              class="font-display px-4 py-2 text-xs tracking-widest uppercase bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors border border-neutral-900 dark:border-white">
-              Retry
-            </button>
-          </div>
-
-          <p v-else-if="!hasMore" class="font-display text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
-            — All {{ formatNumber(total) }} servers —
-          </p>
-        </div>
-      </div>
-    </section>
-  </div>
+					<p v-else-if="!hasMore" class="font-display text-neutral-400 dark:text-neutral-600 text-xs tracking-widest uppercase">
+						— All {{ formatNumber(total) }} servers —
+					</p>
+				</div>
+			</div>
+		</section>
+	</div>
 </template>

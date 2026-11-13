@@ -1,38 +1,38 @@
 {
-  "name": "@mil/web",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "build": "pnpm --filter @mil/core build && nuxt build",
-    "dev": "nuxt dev --dotenv ../../.env --port 3000",
-    "generate": "nuxt generate",
-    "preview": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "typecheck": "nuxi typecheck",
-    "postinstall": "nuxt prepare"
-  },
-  "dependencies": {
-    "@mil/core": "workspace:*",
-    "@nuxt/icon": "^2.5.1",
-    "@nuxtjs/color-mode": "^4.0.1",
-    "@nuxtjs/sitemap": "^9.1.0",
-    "@nuxtjs/tailwindcss": "^6.14.0",
-    "h3": "^2.0.2",
-    "kiso.css": "^1.2.4",
-    "nuxt": "^4.6.4",
-    "nuxt-gtag": "5.0.0",
-    "nuxt-jsonld": "^3.0.0",
-    "nuxt-oidc-auth": "1.0.0-beta.13",
-    "nuxt-security": "^2.7.0",
-    "valibot": "^1.5.0",
-    "vue": "^3.5.45",
-    "vue-router": "^5.4.0"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261102.1",
-    "nitro-cloudflare-dev": "^0.2.2",
-    "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vue-tsc": "3.3.14",
-    "wrangler": "^4.156.1"
-  }
+	"name": "@mil/web",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "pnpm --filter @mil/core build && nuxt build",
+		"dev": "nuxt dev --dotenv ../../.env --port 3000",
+		"generate": "nuxt generate",
+		"preview": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"typecheck": "nuxi typecheck",
+		"postinstall": "nuxt prepare"
+	},
+	"dependencies": {
+		"@mil/core": "workspace:*",
+		"@nuxt/icon": "^2.5.1",
+		"@nuxtjs/color-mode": "^4.0.1",
+		"@nuxtjs/sitemap": "^9.1.0",
+		"@nuxtjs/tailwindcss": "^6.14.0",
+		"h3": "^2.0.2",
+		"kiso.css": "^1.2.4",
+		"nuxt": "^4.6.4",
+		"nuxt-gtag": "5.0.0",
+		"nuxt-jsonld": "^3.0.0",
+		"nuxt-oidc-auth": "1.0.0-beta.13",
+		"nuxt-security": "^2.7.0",
+		"valibot": "^1.5.0",
+		"vue": "^3.5.45",
+		"vue-router": "^5.4.0"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20261102.1",
+		"nitro-cloudflare-dev": "^0.2.2",
+		"typescript": "npm:@typescript/typescript6@^6.0.2",
+		"vue-tsc": "3.3.14",
+		"wrangler": "^4.156.1"
+	}
 }
