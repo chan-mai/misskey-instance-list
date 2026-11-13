@@ -7,7 +7,7 @@ import type { Database } from '../db/index.js';
  * 呼び出し側が明示的に組み立てて渡す
  */
 export interface CrawlContext {
-  db: Database;
-  /** GitHub APIのレート制限緩和用トークン, 未設定なら未認証で叩く */
-  githubToken?: string;
+	db: Database;
+	/** GitHub APIのレート制限緩和用トークン, 未設定なら未認証で叩く */
+	githubToken?: string;
 }

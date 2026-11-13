@@ -1,6 +1,7 @@
-import type { H3Event } from 'h3';
-import type { CrawlContext } from '@mil/core/domain';
 import { useDb } from '~~/server/utils/db';
+
+import type { CrawlContext } from '@mil/core/domain';
+import type { H3Event } from 'h3';
 
 /**
  * クロール処理用のコンテキストを組み立てる
@@ -10,6 +11,6 @@ import { useDb } from '~~/server/utils/db';
  * `GITHUB_TOKEN`(プレフィックスなし)のため上書きが効かない。
  */
 export const createCrawlContext = (event: H3Event): CrawlContext => ({
-  db: useDb(event),
-  githubToken: process.env.GITHUB_TOKEN,
+	db: useDb(event),
+	githubToken: process.env.GITHUB_TOKEN,
 });

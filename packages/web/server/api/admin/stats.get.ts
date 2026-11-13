@@ -7,6 +7,6 @@ import { useDb } from '~~/server/utils/db';
  * 管理者ダッシュボード用の統計情報を取得します。
  * キャッシュは行いません。
  */
-export default defineEventHandler(async(event) => {
-  return getAdminCounts(useDb(event));
+export default defineEventHandler(async event => {
+	return getAdminCounts(useDb(event));
 });

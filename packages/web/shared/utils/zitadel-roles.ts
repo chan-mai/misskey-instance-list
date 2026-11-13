@@ -13,8 +13,8 @@ export const ADMIN_ROLE = 'Admin';
 
 /** ロール判定に使うセッションの部分型 */
 export interface RoleBearingSession {
-  claims?: Record<string, unknown>;
-  userInfo?: Record<string, unknown>;
+	claims?: Record<string, unknown>;
+	userInfo?: Record<string, unknown>;
 }
 
 /**
@@ -26,24 +26,23 @@ export interface RoleBearingSession {
  * - `['Admin']` 文字列配列
  */
 const collectRoleNames = (claim: unknown): string[] => {
-  if (!claim) return [];
-  if (typeof claim === 'string') return [claim];
-  if (Array.isArray(claim)) return claim.flatMap(collectRoleNames);
-  if (typeof claim === 'object') return Object.keys(claim as Record<string, unknown>);
-  return [];
+	if (!claim) return [];
+	if (typeof claim === 'string') return [claim];
+	if (Array.isArray(claim)) return claim.flatMap(collectRoleNames);
+	if (typeof claim === 'object') return Object.keys(claim as Record<string, unknown>);
+	return [];
 };
 
 /** セッションからロール名一覧を取得, claimsとuserinfoの両方を参照 */
 export const getSessionRoles = (session: RoleBearingSession | null | undefined): string[] => {
-  if (!session) return [];
+	if (!session) return [];
 
-  return [...new Set([
-    ...collectRoleNames(session.claims?.[ZITADEL_ROLES_CLAIM]),
-    ...collectRoleNames(session.userInfo?.[ZITADEL_ROLES_CLAIM]),
-  ])];
+	return [
+		...new Set([...collectRoleNames(session.claims?.[ZITADEL_ROLES_CLAIM]), ...collectRoleNames(session.userInfo?.[ZITADEL_ROLES_CLAIM])]),
+	];
 };
 
 /** セッションが指定ロールを持つか */
 export const hasRole = (session: RoleBearingSession | null | undefined, role: string): boolean => {
-  return getSessionRoles(session).includes(role);
+	return getSessionRoles(session).includes(role);
 };
