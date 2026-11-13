@@ -65,7 +65,7 @@ export const enqueueSyncInstanceBatches = async (
 	env: Env,
 	batches: readonly (readonly string[])[],
 	scheduledAt: number,
-	startAt: number,
+	startAt: Temporal.Instant,
 	offset: number,
 ): Promise<string[]> => {
 	const keys = await Promise.all(batches.map(hashHosts));
@@ -78,7 +78,7 @@ export const enqueueSyncInstanceBatches = async (
 			uniqueKey: `stats:${scheduledAt}:${keys[i]}`,
 			uniqueForMs: 5 * 60 * 60 * 1000,
 			// 実行可能ジョブの滞留防止
-			runAt: startAt + (offset + i) * SYNC_BATCH_INTERVAL_MS,
+			runAt: startAt.add({ milliseconds: (offset + i) * SYNC_BATCH_INTERVAL_MS }).epochMilliseconds,
 			// 1ホスト最大90秒程度の逐次処理
 			timeoutMs: 600_000,
 		})),

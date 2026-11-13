@@ -3,7 +3,7 @@
 	"name": "misskey-instance-list",
 	"main": "./.output/server/index.mjs",
 	"compatibility_date": "2026-07-15",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": ["nodejs_compat", "temporal"],
 	"assets": {
 		"directory": "./.output/public/",
 		"binding": "ASSETS",
@@ -17,7 +17,7 @@
 
 	"env": {
 		"stg": {
-			"compatibility_flags": ["nodejs_compat"],
+			"compatibility_flags": ["nodejs_compat", "temporal"],
 			"observability": { "enabled": true },
 			"assets": { "directory": "./.output/public/", "binding": "ASSETS", "html_handling": "drop-trailing-slash" },
 			"d1_databases": [
@@ -38,7 +38,7 @@
 			"routes": [{ "pattern": "servers-stg.misskey.ink", "custom_domain": true }],
 		},
 		"prod": {
-			"compatibility_flags": ["nodejs_compat"],
+			"compatibility_flags": ["nodejs_compat", "temporal"],
 			"observability": { "enabled": true },
 			"assets": { "directory": "./.output/public/", "binding": "ASSETS", "html_handling": "drop-trailing-slash" },
 			"d1_databases": [

@@ -3,7 +3,7 @@
 	"name": "misskey-instance-list-agent",
 	"main": "src/index.ts",
 	"compatibility_date": "2026-07-15",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": ["nodejs_compat", "temporal"],
 	"observability": { "enabled": true },
 
 	"migrations": [
@@ -46,7 +46,7 @@
 
 	"env": {
 		"stg": {
-			"compatibility_flags": ["nodejs_compat"],
+			"compatibility_flags": ["nodejs_compat", "temporal"],
 			"observability": { "enabled": true },
 			"d1_databases": [
 				{
@@ -90,7 +90,7 @@
 			"routes": [{ "pattern": "servers-tsumugi-stg.misskey.ink", "custom_domain": true }],
 		},
 		"prod": {
-			"compatibility_flags": ["nodejs_compat"],
+			"compatibility_flags": ["nodejs_compat", "temporal"],
 			"observability": { "enabled": true },
 			"d1_databases": [
 				{

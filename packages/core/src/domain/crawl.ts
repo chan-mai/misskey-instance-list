@@ -29,7 +29,7 @@ export async function validateInstance(ctx: CrawlContext, host: string): Promise
 }
 
 // 失敗時は410でgone, 他はsuspended
-export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceResult, now: Date, language?: string | null) {
+export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceResult, now: Temporal.Instant, language?: string | null) {
 	const { db } = ctx;
 	const info = res.info;
 
