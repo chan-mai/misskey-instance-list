@@ -3,6 +3,7 @@ import { defineOxlintConfig } from '@chan-mai/oxc-config';
 export default defineOxlintConfig({
 	features: {
 		nuxt: true,
+		workers: true,
 	},
 	overrides: {
 		ignorePatterns: ['**/dist/**', '**/.nuxt/**', '**/.output/**', '**/.wrangler/**', '**/generated/**'],

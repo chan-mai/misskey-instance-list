@@ -24,5 +24,4 @@ export { TsumugiJobShard } from 'tsumugi';
 export class TsumugiRun extends tsumugi.runClass {}
 export class TsumugiScheduler extends tsumugi.schedulerClass {}
 
-// oxlint-disable-next-line import/no-default-export -- Workersエントリポイント
 export default tsumugi satisfies ExportedHandler<Env>;
