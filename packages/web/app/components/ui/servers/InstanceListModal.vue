@@ -26,6 +26,9 @@ const isOpen = computed({
 
 const expandedItems = reactive(new Set<string>());
 
+// 属性値内の//はvue-tsc誤変換(vuejs/language-tools#6322)
+const instanceUrl = (host: string) => `https://${host}`;
+
 function toggleReason(domain: string) {
 	if (expandedItems.has(domain)) {
 		expandedItems.delete(domain);
@@ -93,7 +96,7 @@ function toggleReason(domain: string) {
 				<NuxtLink
 					v-for="instance in instances"
 					:key="instance.host"
-					:to="`https://${instance.host}`"
+					:to="instanceUrl(instance.host)"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="flex items-center gap-4 p-4 bg-back dark:bg-back-dark hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors group"

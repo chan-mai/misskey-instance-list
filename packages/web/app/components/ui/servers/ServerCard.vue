@@ -1,6 +1,6 @@
 <template>
 	<NuxtLink
-		:to="`https://${instance.host}`"
+		:to="instanceUrl"
 		target="_blank"
 		rel="noopener noreferrer"
 		class="group relative block overflow-hidden bg-neutral-100 dark:bg-neutral-900 transition-all duration-300 hover:scale-[1.005] focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
@@ -106,6 +106,9 @@ const props = defineProps<{
 	instance: Instance;
 	view?: 'grid' | 'list';
 }>();
+
+// 属性値内の//はvue-tsc誤変換(vuejs/language-tools#6322)
+const instanceUrl = computed(() => `https://${props.instance.host}`);
 
 const fetchedIcon = ref<string | null>(null);
 const fetchedBanner = ref<string | null>(null);
