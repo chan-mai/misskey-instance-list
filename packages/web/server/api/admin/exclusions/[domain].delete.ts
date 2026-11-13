@@ -16,15 +16,15 @@ import { parseOrThrow } from '~~/server/utils/validate';
  * @throws 401 Unauthorized
  * @throws 404 Not Found
  */
-export default defineEventHandler(async(event) => {
-  const db = useDb(event);
-  const { domain } = parseOrThrow(domainParamSchema, getRouterParams(event));
+export default defineEventHandler(async event => {
+	const db = useDb(event);
+	const { domain } = parseOrThrow(domainParamSchema, getRouterParams(event));
 
-  const exclusion = await deleteExclusion(db, domain);
+	const exclusion = await deleteExclusion(db, domain);
 
-  if (!exclusion) {
-    throw createError({ statusCode: 404, statusMessage: 'Exclusion not found' });
-  }
+	if (!exclusion) {
+		throw createError({ statusCode: 404, statusMessage: 'Exclusion not found' });
+	}
 
-  return exclusion;
+	return exclusion;
 });

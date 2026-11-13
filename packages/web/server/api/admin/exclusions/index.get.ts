@@ -18,15 +18,15 @@ import { parseOrThrow } from '~~/server/utils/validate';
  * @throws 400 Bad Request (パラメータが許容値の範囲外)
  * @returns {Promise<Object>} 除外ホスト一覧とページネーション情報
  */
-export default defineEventHandler(async(event) => {
-  const db = useDb(event);
-  const { page, limit, search, source } = parseOrThrow(adminExclusionsQuerySchema, getQuery(event));
-  const { total, exclusions } = await searchExclusions(db, { page, limit, search, source });
+export default defineEventHandler(async event => {
+	const db = useDb(event);
+	const { page, limit, search, source } = parseOrThrow(adminExclusionsQuerySchema, getQuery(event));
+	const { total, exclusions } = await searchExclusions(db, { page, limit, search, source });
 
-  return {
-    total,
-    page,
-    limit,
-    exclusions,
-  };
+	return {
+		total,
+		page,
+		limit,
+		exclusions,
+	};
 });

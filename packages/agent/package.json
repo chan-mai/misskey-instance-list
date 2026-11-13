@@ -1,24 +1,24 @@
 {
-  "name": "@mil/agent",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "build": "pnpm --filter @mil/core build",
-    "dev": "wrangler dev --persist-to ../../.wrangler/state",
-    "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit",
-    "jobs:migrate:local": "wrangler d1 migrations apply misskey-instance-list-jobs --local --persist-to ../../.wrangler/state",
-    "jobs:migrate:stg": "wrangler d1 migrations apply misskey-instance-list-jobs-stg --remote --env stg",
-    "jobs:migrate:deploy": "wrangler d1 migrations apply misskey-instance-list-jobs-prod --remote --env prod"
-  },
-  "dependencies": {
-    "@mil/core": "workspace:*",
-    "tsumugi": "0.12.0"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^5.20261102.1",
-    "@types/node": "^26.6.5",
-    "typescript": "^7.0.2",
-    "wrangler": "^4.156.1"
-  }
+	"name": "@mil/agent",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "pnpm --filter @mil/core build",
+		"dev": "wrangler dev --persist-to ../../.wrangler/state",
+		"deploy": "wrangler deploy",
+		"typecheck": "tsc --noEmit",
+		"jobs:migrate:local": "wrangler d1 migrations apply misskey-instance-list-jobs --local --persist-to ../../.wrangler/state",
+		"jobs:migrate:stg": "wrangler d1 migrations apply misskey-instance-list-jobs-stg --remote --env stg",
+		"jobs:migrate:deploy": "wrangler d1 migrations apply misskey-instance-list-jobs-prod --remote --env prod"
+	},
+	"dependencies": {
+		"@mil/core": "workspace:*",
+		"tsumugi": "0.12.0"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20261102.1",
+		"@types/node": "^26.6.5",
+		"typescript": "^7.0.2",
+		"wrangler": "^4.156.1"
+	}
 }

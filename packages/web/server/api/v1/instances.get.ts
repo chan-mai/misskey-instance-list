@@ -1,5 +1,5 @@
-import { searchInstances } from '@mil/core/repository';
 import { OFFICIAL_REPOSITORY_URL } from '@mil/core/domain';
+import { searchInstances } from '@mil/core/repository';
 import { instancesQuerySchema } from '@mil/core/validation';
 
 /**
@@ -28,43 +28,46 @@ import { instancesQuerySchema } from '@mil/core/validation';
  * @throws 400 Bad Request (パラメータが許容値の範囲外)
  * @returns {Promise<InstancesResponse>} インスタンス一覧
  */
-export default defineCachedEventHandler(async(event): Promise<InstancesResponse> => {
-  const query = parseOrThrow(instancesQuerySchema, getQuery(event));
+export default defineCachedEventHandler(
+	async (event): Promise<InstancesResponse> => {
+		const query = parseOrThrow(instancesQuerySchema, getQuery(event));
 
-  const { total, rows } = await searchInstances(useDb(event), {
-    ...query,
-    repository: query.repository === 'official' ? OFFICIAL_REPOSITORY_URL : query.repository,
-  });
+		const { total, rows } = await searchInstances(useDb(event), {
+			...query,
+			repository: query.repository === 'official' ? OFFICIAL_REPOSITORY_URL : query.repository,
+		});
 
-  // レスポンス用に整形。
-  // timestamp_ms列はDateで返るためNumber()でepoch msになる
-  const items = rows.map((i) => ({
-    host: i.id,
-    name: i.node_name ?? i.id,
-    users_count: i.users_count ?? 0,
-    notes_count: i.notes_count ?? 0,
-    created_at: i.created_at ? Number(i.created_at) : null,
-    version: i.version,
-    is_alive: i.is_alive,
-    last_updated: i.last_updated ? Number(i.last_updated) : null,
-    last_check_at: i.last_check_at ? Number(i.last_check_at) : null,
-    banner_url: i.banner_url,
-    icon_url: i.icon_url,
-    recommendation_score: i.recommendation_score ?? null,
-    suspension_state: i.suspension_state ?? 'none',
-    repository_url: i.repository_url,
-    language: i.language ?? null,
-    open_registrations: i.open_registrations ?? null,
-    email_required: i.email_required ?? null,
-    ip_stack: i.ip_stack ?? null,
-  }));
+		// レスポンス用に整形。
+		// timestamp_ms列はDateで返るためNumber()でepoch msになる
+		const items = rows.map(i => ({
+			host: i.id,
+			name: i.node_name ?? i.id,
+			users_count: i.users_count ?? 0,
+			notes_count: i.notes_count ?? 0,
+			created_at: i.created_at ? Number(i.created_at) : null,
+			version: i.version,
+			is_alive: i.is_alive,
+			last_updated: i.last_updated ? Number(i.last_updated) : null,
+			last_check_at: i.last_check_at ? Number(i.last_check_at) : null,
+			banner_url: i.banner_url,
+			icon_url: i.icon_url,
+			recommendation_score: i.recommendation_score ?? null,
+			suspension_state: i.suspension_state ?? 'none',
+			repository_url: i.repository_url,
+			language: i.language ?? null,
+			open_registrations: i.open_registrations ?? null,
+			email_required: i.email_required ?? null,
+			ip_stack: i.ip_stack ?? null,
+		}));
 
-  return {
-    items,
-    total,
-    limit: query.limit,
-    offset: query.offset,
-  };
-}, {
-  maxAge: 60 * 60, // 1時間間キャッシュ
-});
+		return {
+			items,
+			total,
+			limit: query.limit,
+			offset: query.offset,
+		};
+	},
+	{
+		maxAge: 60 * 60, // 1時間間キャッシュ
+	},
+);

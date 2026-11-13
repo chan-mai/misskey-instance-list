@@ -18,16 +18,16 @@ import { parseOrThrow } from '~~/server/utils/validate';
  * @throws 401 Unauthorized
  * @throws 409 Conflict (登録済みの場合)
  */
-export default defineEventHandler(async(event) => {
-  const db = useDb(event);
-  // SQLiteは暗黙変換するため型もアプリ層で
-  const { domain, reason, source } = parseOrThrow(exclusionCreateBodySchema, await readBody(event));
+export default defineEventHandler(async event => {
+	const db = useDb(event);
+	// SQLiteは暗黙変換するため型もアプリ層で
+	const { domain, reason, source } = parseOrThrow(exclusionCreateBodySchema, await readBody(event));
 
-  const exclusion = await addExclusion(db, { domain, reason, source });
+	const exclusion = await addExclusion(db, { domain, reason, source });
 
-  if (!exclusion) {
-    throw createError({ statusCode: 409, statusMessage: 'Domain is already excluded' });
-  }
+	if (!exclusion) {
+		throw createError({ statusCode: 409, statusMessage: 'Domain is already excluded' });
+	}
 
-  return exclusion;
+	return exclusion;
 });

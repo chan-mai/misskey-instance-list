@@ -1,4 +1,6 @@
-import { createDb, type Database } from '@mil/core/db';
+import { createDb } from '@mil/core/db';
+
+import type { Database } from '@mil/core/db';
 import type { H3Event } from 'h3';
 
 /** createDbが受けるD1bindingの型, @cloudflare/workers-typesの版ずれを避けるため実装から導出する */
@@ -12,10 +14,10 @@ type D1Binding = Parameters<typeof createDb>[0];
  * envはwrangler types未生成だと`{}`になるため, binding型を明示する
  */
 export const useDb = (event: H3Event): Database => {
-  const env = event.context.cloudflare?.env as { DB?: D1Binding } | undefined;
-  const binding = env?.DB;
-  if (!binding) {
-    throw createError({ statusCode: 500, statusMessage: 'D1 binding "DB" unavailable' });
-  }
-  return createDb(binding);
+	const env = event.context.cloudflare?.env as { DB?: D1Binding } | undefined;
+	const binding = env?.DB;
+	if (!binding) {
+		throw createError({ statusCode: 500, statusMessage: 'D1 binding "DB" unavailable' });
+	}
+	return createDb(binding);
 };
