@@ -6,7 +6,7 @@ export const parseOrThrow = <TSchema extends v.GenericSchema>(schema: TSchema, i
 	if (result.success) return result.output;
 
 	// 先頭issueのみ返す
-	const issue = result.issues[0]!;
+	const issue = result.issues[0];
 	throw createError({ statusCode: 400, statusMessage: describeIssue(issue) });
 };
 

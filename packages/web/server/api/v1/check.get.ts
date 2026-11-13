@@ -74,18 +74,18 @@ export default defineEventHandler(async (event): Promise<CheckResponse> => {
 			return {
 				is_misskey: false,
 				data: null,
-				reason: result.rejection?.reason || result.error || 'Unknown error or not a Misskey instance',
+				reason: result.rejection?.reason ?? result.error ?? 'Unknown error or not a Misskey instance',
 				source: 'fetch',
 			};
 		}
-	} catch (e: any) {
+	} catch (e) {
 		console.error(`Check API Error for ${domain}:`, e);
 		return {
 			is_misskey: false,
 			data: null,
 			reason: 'Internal Server Error during check',
 			source: 'error',
-			error: e.message,
+			error: e instanceof Error ? e.message : String(e),
 		};
 	}
 });

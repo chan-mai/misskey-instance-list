@@ -15,12 +15,12 @@ function detectByScript(text: string): string | null {
 	const total = text.replace(/\s/g, '').length;
 	if (total === 0) return null;
 
-	const hiragana = (text.match(/[\u3040-\u309F]/g) || []).length;
-	const katakana = (text.match(/[\u30A0-\u30FF]/g) || []).length;
-	const hangul = (text.match(/[\uAC00-\uD7AF]/g) || []).length;
-	const cyrillic = (text.match(/[\u0400-\u04FF]/g) || []).length;
-	const thai = (text.match(/[\u0E00-\u0E7F]/g) || []).length;
-	const arabic = (text.match(/[\u0600-\u06FF]/g) || []).length;
+	const hiragana = (text.match(/[\u3040-\u309F]/g) ?? []).length;
+	const katakana = (text.match(/[\u30A0-\u30FF]/g) ?? []).length;
+	const hangul = (text.match(/[\uAC00-\uD7AF]/g) ?? []).length;
+	const cyrillic = (text.match(/[\u0400-\u04FF]/g) ?? []).length;
+	const thai = (text.match(/[\u0E00-\u0E7F]/g) ?? []).length;
+	const arabic = (text.match(/[\u0600-\u06FF]/g) ?? []).length;
 
 	// 10%以上のひらがな/カタカナ → 日本語（混合言語対策）
 	if ((hiragana + katakana) / total > 0.1) return 'ja';
@@ -39,7 +39,7 @@ function detectByScript(text: string): string | null {
  */
 function convertToIso1(code: string): string | null {
 	if (code.length === 2) return code;
-	return iso6393To1[code] || null;
+	return iso6393To1[code] ?? null;
 }
 
 /**
@@ -52,7 +52,7 @@ async function detectByLibraries(text: string): Promise<string | null> {
 	try {
 		// TinyLD (ISO 639-1)
 		const tiny = tinyDetect(text);
-		if (tiny) results[tiny] = (results[tiny] || 0) + 1;
+		if (tiny) results[tiny] = (results[tiny] ?? 0) + 1;
 	} catch {
 		// ignore
 	}
@@ -61,8 +61,8 @@ async function detectByLibraries(text: string): Promise<string | null> {
 		// ELD (ISO 639-1)
 		const eld = await getEld();
 		const eldResult = eld.detect(text);
-		if (eldResult && eldResult.language) {
-			results[eldResult.language] = (results[eldResult.language] || 0) + 1;
+		if (eldResult.language) {
+			results[eldResult.language] = (results[eldResult.language] ?? 0) + 1;
 		}
 	} catch {
 		// ignore
@@ -73,7 +73,7 @@ async function detectByLibraries(text: string): Promise<string | null> {
 		const francResult = franc(text, { minLength: 20 });
 		if (francResult !== 'und') {
 			const iso1 = convertToIso1(francResult);
-			if (iso1) results[iso1] = (results[iso1] || 0) + 1;
+			if (iso1) results[iso1] = (results[iso1] ?? 0) + 1;
 		}
 	} catch {
 		// ignore
@@ -117,7 +117,7 @@ export async function detectLanguageFromTexts(texts: (string | null | undefined)
 	for (const text of texts) {
 		const lang = await detectLanguage(text);
 		if (lang) {
-			langCounts[lang] = (langCounts[lang] || 0) + 1;
+			langCounts[lang] = (langCounts[lang] ?? 0) + 1;
 		}
 	}
 

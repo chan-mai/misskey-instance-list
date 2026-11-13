@@ -68,8 +68,7 @@ export const searchExclusions = async (
 			.offset((page - 1) * limit),
 	]);
 
-	// count()は常に1行返る
-	return { total: total[0]!.value, exclusions };
+	return { total: total[0]?.value ?? 0, exclusions };
 };
 
 // 登録済みならundefined

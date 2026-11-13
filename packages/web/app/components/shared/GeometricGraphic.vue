@@ -117,7 +117,7 @@ const animate = () => {
 
 	points.value.forEach(p => {
 		// Rotate Y
-		let x = p.x * Math.cos(angleY) - p.z * Math.sin(angleY);
+		const x = p.x * Math.cos(angleY) - p.z * Math.sin(angleY);
 		let z = p.x * Math.sin(angleY) + p.z * Math.cos(angleY);
 		let y = p.y;
 
@@ -125,7 +125,6 @@ const animate = () => {
 		const y2 = y * Math.cos(angleX) - z * Math.sin(angleX);
 		const z2 = y * Math.sin(angleX) + z * Math.cos(angleX);
 
-		x = x;
 		y = y2;
 		z = z2;
 

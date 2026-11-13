@@ -7,10 +7,12 @@ const countKnown = (db: Database) => db.select({ value: count() }).from(instance
 
 const countActive = (db: Database) => db.select({ value: count() }).from(instances).where(eq(instances.is_alive, true));
 
-// sum()はドライバによって文字列を返すためmapWith(Number)で正規化する
+// sum()は0行でNULL, ドライバにより文字列
+const toNullableNumber = (value: unknown): number | null => (value === null ? null : Number(value));
+
 const sumActiveUsers = (db: Database) =>
 	db
-		.select({ value: sum(instances.users_count).mapWith(Number) })
+		.select({ value: sum(instances.users_count).mapWith(toNullableNumber) })
 		.from(instances)
 		.where(eq(instances.is_alive, true));
 
@@ -43,19 +45,17 @@ export const getAdminCounts = async (db: Database) => {
 		countExclusions(db, ExcludedHostSource.joinmisskey),
 	]);
 
-	// 集計クエリは常に1行返るため添字アクセスを断定する
 	return {
 		instances: {
-			known: known[0]!.value,
-			active: active[0]!.value,
+			known: known[0]?.value ?? 0,
+			active: active[0]?.value ?? 0,
 		},
-		// sum()は0行だとNULLを返す
-		users: users[0]!.value ?? 0,
+		users: users[0]?.value ?? 0,
 		exclusions: {
-			total: exclusionTotal[0]!.value,
-			manual: exclusionManual[0]!.value,
-			system: exclusionSystem[0]!.value,
-			joinmisskey: exclusionJoinMisskey[0]!.value,
+			total: exclusionTotal[0]?.value ?? 0,
+			manual: exclusionManual[0]?.value ?? 0,
+			system: exclusionSystem[0]?.value ?? 0,
+			joinmisskey: exclusionJoinMisskey[0]?.value ?? 0,
 		},
 	};
 };
@@ -89,7 +89,7 @@ export const listIpStackUsage = (db: Database) =>
 		.select({
 			stack: instances.ip_stack,
 			count: count(),
-			users: sum(instances.users_count).mapWith(Number),
+			users: sum(instances.users_count).mapWith(toNullableNumber),
 		})
 		.from(instances)
 		.where(eq(instances.is_alive, true))

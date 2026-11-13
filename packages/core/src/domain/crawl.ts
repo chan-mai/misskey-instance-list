@@ -41,7 +41,7 @@ export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceR
 			await upsertSoftwareRepository(db, {
 				url: info.repositoryUrl,
 				name: repoInfo.repositoryName,
-				description: repoInfo.repository?.description || null,
+				description: repoInfo.repository?.description ?? null,
 			});
 		}
 

@@ -96,6 +96,10 @@
 </template>
 
 <script setup lang="ts">
+import { firstNonEmpty } from '~~/shared/utils/text';
+
+type InstanceMeta = { description?: unknown; iconUrl?: unknown; bannerUrl?: unknown; backgroundImageUrl?: unknown };
+
 const { formatNumber, getLanguageName } = useFormat();
 
 const props = defineProps<{
@@ -113,14 +117,15 @@ function getProxiedUrl(url: string): string {
 // 画像URLの解決キャッシュ (key: originalUrl, value: resolvedUrl)
 const resolvedUrls = new Map<string, string>();
 // Meta情報のキャッシュ (key: host, value: Meta)
-const metaCache = new Map<string, any>();
+const metaCache = new Map<string, InstanceMeta>();
 
 async function resolveUrl(url: string | null | undefined): Promise<string | null> {
 	if (!url) return null;
 
 	// キャッシュにあれば返す
-	if (resolvedUrls.has(url)) {
-		return resolvedUrls.get(url)!;
+	const cached = resolvedUrls.get(url);
+	if (cached !== undefined) {
+		return cached;
 	}
 
 	// 直接アクセスを試行
@@ -177,9 +182,9 @@ async function updateDescription() {
 	}
 
 	// キャッシュ確認
-	if (metaCache.has(props.instance.host)) {
-		const meta = metaCache.get(props.instance.host);
-		applyMeta(meta);
+	const cachedMeta = metaCache.get(props.instance.host);
+	if (cachedMeta !== undefined) {
+		applyMeta(cachedMeta);
 		loadingDescription.value = false;
 		return;
 	}
@@ -235,15 +240,18 @@ async function updateDescription() {
 	}
 }
 
-async function applyMeta(meta: any) {
-	if (meta.description) description.value = stripTags(meta.description);
+async function applyMeta(meta: InstanceMeta) {
+	const metaDescription = firstNonEmpty(meta.description);
+	if (metaDescription) description.value = stripTags(metaDescription);
 
-	if (meta.iconUrl) {
-		const resolved = await resolveUrl(meta.iconUrl);
+	const iconUrl = firstNonEmpty(meta.iconUrl);
+	if (iconUrl) {
+		const resolved = await resolveUrl(iconUrl);
 		fetchedIcon.value = resolved;
 	}
-	if (meta.bannerUrl || meta.backgroundImageUrl) {
-		const resolved = await resolveUrl(meta.bannerUrl || meta.backgroundImageUrl);
+	const bannerUrl = firstNonEmpty(meta.bannerUrl, meta.backgroundImageUrl);
+	if (bannerUrl) {
+		const resolved = await resolveUrl(bannerUrl);
 		fetchedBanner.value = resolved;
 	}
 }

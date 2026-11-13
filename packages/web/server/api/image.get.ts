@@ -33,8 +33,8 @@ export default defineEventHandler(async event => {
 		// Proxy the stream
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return sendStream(event, res.body as any);
-	} catch (e: any) {
-		console.error('Proxy error:', e.message);
+	} catch (e) {
+		console.error('Proxy error:', e instanceof Error ? e.message : e);
 		throw createError({
 			statusCode: 502,
 			statusMessage: 'Bad Gateway',

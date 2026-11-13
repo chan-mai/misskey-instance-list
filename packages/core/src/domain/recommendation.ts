@@ -30,7 +30,7 @@ export async function syncRecommendationScores(db: Database): Promise<{ updated:
 		);
 
 		updated += rows.length;
-		cursor = rows.at(-1)!.id;
+		cursor = rows.at(-1)?.id;
 		console.log(`Processed ${updated} instances...`);
 	}
 

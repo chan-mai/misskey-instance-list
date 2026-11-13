@@ -25,6 +25,31 @@ export type InstanceResult = {
 	error?: FetchError;
 };
 
+type NodeInfoLink = { rel?: string; href?: string };
+
+type NodeInfo = {
+	software?: { name?: string; version?: string };
+	openRegistrations?: unknown;
+	usage?: { users?: { total?: unknown }; localPosts?: unknown };
+	metadata?: {
+		nodeName?: string;
+		name?: string;
+		nodeDescription?: string;
+		description?: string;
+		bannerUrl?: string;
+		iconUrl?: string;
+		repositoryUrl?: string;
+		emailRequiredForSignup?: unknown;
+	};
+};
+
+type ErrorLike = { name?: string; message?: string; code?: string };
+
+const toErrorLike = (e: unknown): ErrorLike => (typeof e === 'object' && e !== null ? e : {}) as ErrorLike;
+
+// 空文字はundefined扱い
+const nonEmpty = (value: unknown): string | undefined => (typeof value === 'string' && value !== '' ? value : undefined);
+
 // nodeinfo, api/stats, api/metaからインスタンス情報取得
 export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstanceList/0.1.0'): Promise<InstanceResult> {
 	const headers = { 'User-Agent': userAgent };
@@ -46,13 +71,14 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 
 			// 成功 or 4xx/5xx (ネットワークエラー以外) なのでループ終了
 			break;
-		} catch (e: any) {
+		} catch (e) {
 			clearTimeout(id);
+			const err = toErrorLike(e);
 			// 最後の試行でなければ次へ
 			if (i < RETRY_LIMIT - 1) {
-				const isAbort = e.name === 'AbortError' || e.message?.includes('aborted');
+				const isAbort = err.name === 'AbortError' || err.message?.includes('aborted');
 				// タイムアウトまたはネットワークエラーなら再試行
-				if (isAbort || e.name === 'FetchError' || e.code === 'ECONNRESET') {
+				if (isAbort || err.name === 'FetchError' || err.code === 'ECONNRESET') {
 					// 少し待つ
 					await new Promise(r => setTimeout(r, 1000 * (i + 1)));
 					continue;
@@ -60,7 +86,7 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 			}
 			// 再試行しないエラー、または再試行上限
 			if (i === RETRY_LIMIT - 1) {
-				console.warn(`Failed to fetch nodeinfo for ${host} (Attempt ${i + 1}/${RETRY_LIMIT}):`, e.message);
+				console.warn(`Failed to fetch nodeinfo for ${host} (Attempt ${i + 1}/${RETRY_LIMIT}):`, err.message);
 			}
 			return { info: null, error: 'TIMEOUT' };
 		}
@@ -72,17 +98,17 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 		return { info: null, error: 'TIMEOUT' }; // TIMEOUTというか接続不可全般
 	}
 
-	let wkJson: any;
+	let wkJson: { links?: NodeInfoLink[] };
 	try {
-		wkJson = await wkRes.json();
+		wkJson = (await wkRes.json()) as { links?: NodeInfoLink[] };
 	} catch {
 		return { info: null, error: 'UNKNOWN' };
 	}
-	const links = wkJson.links || [];
+	const links = Array.isArray(wkJson.links) ? wkJson.links : [];
 
 	const link =
-		links.find((l: any) => l.rel === 'http://nodeinfo.diaspora.software/ns/schema/2.1') ||
-		links.find((l: any) => l.rel === 'http://nodeinfo.diaspora.software/ns/schema/2.0');
+		links.find(l => l.rel === 'http://nodeinfo.diaspora.software/ns/schema/2.1') ??
+		links.find(l => l.rel === 'http://nodeinfo.diaspora.software/ns/schema/2.0');
 
 	if (!link || !link.href) return { info: null, error: 'UNKNOWN' }; // 正しくないフォーマット
 
@@ -101,25 +127,27 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 			return { info: null, error: 'TIMEOUT' };
 		}
 
-		let ni: any;
+		let ni: NodeInfo;
 		try {
-			ni = await niRes.json();
+			ni = (await niRes.json()) as NodeInfo;
 		} catch {
 			console.warn(`Failed to parse nodeinfo for ${host}: Invalid JSON`);
 			return { info: null, error: 'UNKNOWN' };
 		}
 
-		const metadata = ni.metadata || {};
-		const usage = ni.usage || {};
-		const users = usage.users || {};
+		const metadata = ni.metadata ?? {};
+		const usage = ni.usage ?? {};
+		const users = usage.users ?? {};
 
-		let name = metadata.nodeName || metadata.name || host;
-		let description = metadata.nodeDescription || metadata.description || '';
-		let version = ni.software?.version || '';
-		let banner = metadata.bannerUrl || null;
-		let icon = metadata.iconUrl || null;
+		let name = nonEmpty(metadata.nodeName) ?? nonEmpty(metadata.name) ?? host;
+		let description = nonEmpty(metadata.nodeDescription) ?? nonEmpty(metadata.description) ?? '';
+		let version = nonEmpty(ni.software?.version) ?? '';
+		let banner = nonEmpty(metadata.bannerUrl) ?? null;
+		let icon = nonEmpty(metadata.iconUrl) ?? null;
+		let userCount = typeof users.total === 'number' ? users.total : 0;
+		let noteCount = typeof usage.localPosts === 'number' ? usage.localPosts : 0;
 		let repositoryUrl: string | null = null;
-		const nodeinfoRepositoryUrl: string | null = metadata.repositoryUrl || null;
+		const nodeinfoRepositoryUrl = nonEmpty(metadata.repositoryUrl) ?? null;
 		let metaRepositoryUrl: string | null = null;
 		let openRegistrations: boolean | null = null;
 		let emailRequired: boolean | null = null;
@@ -128,7 +156,7 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 			openRegistrations = ni.openRegistrations;
 		}
 
-		if (metadata && typeof metadata.emailRequiredForSignup === 'boolean') {
+		if (typeof metadata.emailRequiredForSignup === 'boolean') {
 			emailRequired = metadata.emailRequiredForSignup;
 		}
 
@@ -154,20 +182,16 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 
 				// ユーザー数: originalUsersCount (ローカル) > usersCount (連合含む)
 				if (typeof stats.originalUsersCount === 'number') {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(users as any).total = stats.originalUsersCount;
+					userCount = stats.originalUsersCount;
 				} else if (typeof stats.usersCount === 'number') {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(users as any).total = stats.usersCount;
+					userCount = stats.usersCount;
 				}
 
 				// ノート数: originalNotesCount > notesCount
 				if (typeof stats.originalNotesCount === 'number') {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(usage as any).localPosts = stats.originalNotesCount;
+					noteCount = stats.originalNotesCount;
 				} else if (typeof stats.notesCount === 'number') {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(usage as any).localPosts = stats.notesCount;
+					noteCount = stats.notesCount;
 				}
 			}
 		} catch {
@@ -175,72 +199,71 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 		}
 
 		// POST /api/metaを試行
-		if (!banner || !icon || !name || !description || !version || !repositoryUrl) {
+		try {
+			// api/meta用のリトライロジック(接続エラーのみ)
+			const fetchWithRetry = async (url: string, options: RequestInit, retries = 3) => {
+				for (let i = 0; i < retries; i++) {
+					if (options.signal?.aborted) throw new Error('Aborted');
+					try {
+						const res = await fetch(url, options);
+						if (res.ok) return res;
+						if (res.status >= 500 && i < retries - 1) continue;
+						return res;
+					} catch (e) {
+						if (i === retries - 1 || options.signal?.aborted || toErrorLike(e).name === 'AbortError') throw e;
+						await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+					}
+				}
+				throw new Error('Failed to fetch after retries');
+			};
+
+			// api/meta用の独立したAbortController (前の残り時間でタイムアウトしないように)
+			const metaController = new AbortController();
+			const metaTimeoutId = setTimeout(() => metaController.abort(), 10000);
+
 			try {
-				// api/meta用のリトライロジック(接続エラーのみ)
-				const fetchWithRetry = async (url: string, options: RequestInit, retries = 3) => {
-					for (let i = 0; i < retries; i++) {
-						if (options.signal?.aborted) throw new Error('Aborted');
-						try {
-							const res = await fetch(url, options);
-							if (res.ok) return res;
-							if (res.status >= 500 && i < retries - 1) continue;
-							return res;
-						} catch (e: any) {
-							if (i === retries - 1 || options.signal?.aborted || e.name === 'AbortError') throw e;
-							await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+				const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', ...headers },
+					body: JSON.stringify({ detail: true }),
+					signal: metaController.signal,
+				});
+
+				if (metaRes.ok) {
+					try {
+						const meta = await metaRes.json();
+						clearTimeout(metaTimeoutId); // 成功したらタイマー解除
+
+						if (meta.bannerUrl) banner = meta.bannerUrl;
+						if (meta.iconUrl) icon = meta.iconUrl;
+						if (meta.name) name = meta.name;
+						if (meta.description) description = meta.description;
+						if (meta.version) version = meta.version;
+						// api/metaの情報を優先して採用する
+						if (meta.repositoryUrl) {
+							repositoryUrl = meta.repositoryUrl;
+							metaRepositoryUrl = meta.repositoryUrl;
 						}
-					}
-					throw new Error('Failed to fetch after retries');
-				};
 
-				// api/meta用の独立したAbortController (前の残り時間でタイムアウトしないように)
-				const metaController = new AbortController();
-				const metaTimeoutId = setTimeout(() => metaController.abort(), 10000);
-
-				try {
-					const metaRes = await fetchWithRetry(`https://${host}/api/meta`, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json', ...headers },
-						body: JSON.stringify({ detail: true }),
-						signal: metaController.signal,
-					});
-
-					if (metaRes.ok) {
-						try {
-							const meta = await metaRes.json();
-							clearTimeout(metaTimeoutId); // 成功したらタイマー解除
-
-							if (meta.bannerUrl) banner = meta.bannerUrl;
-							if (meta.iconUrl) icon = meta.iconUrl;
-							if (meta.name) name = meta.name;
-							if (meta.description) description = meta.description;
-							if (meta.version) version = meta.version;
-							// api/metaの情報を優先して採用する
-							if (meta.repositoryUrl) {
-								repositoryUrl = meta.repositoryUrl;
-								metaRepositoryUrl = meta.repositoryUrl;
-							}
-
-							if (typeof meta.disableRegistration === 'boolean') {
-								openRegistrations = !meta.disableRegistration;
-							}
-							if (typeof meta.emailRequiredForSignup === 'boolean') {
-								emailRequired = meta.emailRequiredForSignup;
-							}
-						} catch {
-							console.warn(`Failed to parse api/meta for ${host}: Invalid JSON`);
-							// JSONパースエラー時は何もせず続行
+						if (typeof meta.disableRegistration === 'boolean') {
+							openRegistrations = !meta.disableRegistration;
 						}
+						if (typeof meta.emailRequiredForSignup === 'boolean') {
+							emailRequired = meta.emailRequiredForSignup;
+						}
+					} catch {
+						console.warn(`Failed to parse api/meta for ${host}: Invalid JSON`);
+						// JSONパースエラー時は何もせず続行
 					}
-				} finally {
-					clearTimeout(metaTimeoutId);
 				}
-			} catch (e: any) {
-				if (e.name !== 'AbortError') {
-					// ログは状況によるが、すでにfetchWithRetryなどでwarnしているのでここは静かにするか、warnするか
-					console.warn(`Failed to fetch meta for ${host}:`, e.message);
-				}
+			} finally {
+				clearTimeout(metaTimeoutId);
+			}
+		} catch (e) {
+			const err = toErrorLike(e);
+			if (err.name !== 'AbortError') {
+				// ログは状況によるが、すでにfetchWithRetryなどでwarnしているのでここは静かにするか、warnするか
+				console.warn(`Failed to fetch meta for ${host}:`, err.message);
 			}
 		}
 
@@ -252,10 +275,10 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 		return {
 			info: {
 				name,
-				users: typeof users.total === 'number' ? users.total : 0,
-				notes: typeof usage.localPosts === 'number' ? usage.localPosts : 0,
+				users: userCount,
+				notes: noteCount,
 				version,
-				softwareName: ni.software?.name || '',
+				softwareName: nonEmpty(ni.software?.name) ?? '',
 				banner,
 				icon,
 				repositoryUrl,

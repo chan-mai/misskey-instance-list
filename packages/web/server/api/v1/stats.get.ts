@@ -1,4 +1,5 @@
 import { getNetworkCounts, listIpStackUsage, listLanguageUsage, listRepositoryUsage } from '@mil/core/repository';
+import { firstNonEmpty } from '~~/shared/utils/text';
 
 /**
  * GET /api/v1/stats
@@ -23,9 +24,9 @@ export default defineCachedEventHandler(
 
 		const repositories = repoStats.map(stat => ({
 			url: stat.url as string,
-			// 旧実装に合わせ空文字はnullへ寄せる
-			name: stat.name || null,
-			description: stat.description || null,
+			// 空文字はnull
+			name: firstNonEmpty(stat.name) ?? null,
+			description: firstNonEmpty(stat.description) ?? null,
 			count: stat.count,
 		}));
 

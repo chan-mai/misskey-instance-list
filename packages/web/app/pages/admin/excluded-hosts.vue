@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { firstNonEmpty } from '~~/shared/utils/text';
+
 import type { ExcludedHost } from '@mil/core/entity';
 
 definePageMeta({
@@ -97,8 +99,9 @@ const submitForm = async () => {
 		}
 		closeModal();
 		refresh();
-	} catch (e: any) {
-		formError.value = e.statusMessage || e.message || 'エラーが発生しました';
+	} catch (e) {
+		const err = e as { statusMessage?: unknown; message?: unknown } | null | undefined;
+		formError.value = firstNonEmpty(err?.statusMessage, err?.message) ?? 'エラーが発生しました';
 	} finally {
 		submitting.value = false;
 	}
@@ -112,8 +115,9 @@ const deleteItem = async (item: Omit<ExcludedHost, 'created_at'> & { created_at:
 			method: 'DELETE',
 		});
 		refresh();
-	} catch (e: any) {
-		alert(e.statusMessage || '削除に失敗しました');
+	} catch (e) {
+		const err = e as { statusMessage?: unknown } | null | undefined;
+		alert(firstNonEmpty(err?.statusMessage) ?? '削除に失敗しました');
 	}
 };
 </script>

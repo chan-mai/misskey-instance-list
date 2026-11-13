@@ -32,8 +32,8 @@ export function parseVersionToMonths(version: string): number | null {
 	const match = version.match(/^v?(\d{4})\.(\d{1,2})\.\d+/);
 	if (!match) return null;
 
-	const year = parseInt(match[1]!, 10);
-	const month = parseInt(match[2]!, 10);
+	const year = Number(match[1]);
+	const month = Number(match[2]);
 	return year * 12 + month;
 }
 

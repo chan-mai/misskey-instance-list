@@ -104,7 +104,7 @@ const sortApiValue = computed(() => {
 const abortController = ref<AbortController | null>(null);
 
 // クエリパラメータ生成ヘルパー
-const getQueryParams = (currentOffset: number = 0) => ({
+const getQueryParams = (currentOffset = 0) => ({
 	sort: sortApiValue.value,
 	order: f_order.value,
 	limit: PAGE_SIZE.toString(),
@@ -175,8 +175,8 @@ async function fetchInstances(reset = false) {
 			offset.value = currentOffset + response.limit;
 		}
 		total.value = response.total;
-	} catch (e: any) {
-		if (e.name === 'AbortError') {
+	} catch (e) {
+		if (e instanceof Error && e.name === 'AbortError') {
 			// 中断エラーは無視する
 			return;
 		}
@@ -204,7 +204,7 @@ watch(loadMoreTrigger, el => {
 	if (import.meta.client && el) {
 		const observer = new IntersectionObserver(
 			entries => {
-				if (entries[0]!.isIntersecting && hasMore.value && !isLoading.value) {
+				if (entries[0]?.isIntersecting && hasMore.value && !isLoading.value) {
 					fetchInstances(false);
 				}
 			},
@@ -296,12 +296,12 @@ function handleReset() {
 	fetchInstances(true);
 }
 
-function handleOrderByChange(val: any) {
-	f_orderBy.value = val as SortField;
+function handleOrderByChange(val: SortField) {
+	f_orderBy.value = val;
 }
 
-function handleOrderChange(val: any) {
-	f_order.value = val as SortOrder;
+function handleOrderChange(val: SortOrder) {
+	f_order.value = val;
 }
 // ローカルでの拡張型定義
 type InstanceWithDescription = Instance & {

@@ -12,7 +12,7 @@ const REJECTION_PREFIX = {
 
 // 手動除外はMisskeyの可能性が残る
 export const isConfirmedNonMisskey = (reason: string | null): boolean => {
-	const lower = reason?.toLowerCase() || '';
+	const lower = reason?.toLowerCase() ?? '';
 	return Object.values(REJECTION_PREFIX).some(prefix => lower.includes(prefix.toLowerCase()));
 };
 
@@ -73,46 +73,43 @@ export async function evaluateInstance(host: string): Promise<EvaluationResult> 
 		'vickey',
 	];
 
-	if (botInfo) {
-		const botSoftware = botInfo.softwareName?.toLowerCase() || '';
-		const repoUrl = botInfo.repositoryUrl?.toLowerCase() || '';
+	const botSoftware = botInfo.softwareName.toLowerCase();
+	const repoUrl = botInfo.repositoryUrl?.toLowerCase() ?? '';
 
-		// Misskey以外は除外
-		if (botSoftware !== 'misskey' && botSoftware !== '') {
-			console.log(`Detected non-misskey software for ${host}: ${botSoftware}`);
+	// Misskey以外は除外
+	if (botSoftware !== 'misskey' && botSoftware !== '') {
+		console.log(`Detected non-misskey software for ${host}: ${botSoftware}`);
+		return {
+			info: null,
+			error: 'UNKNOWN',
+			rejection: { reason: `${REJECTION_PREFIX.notMisskey}: ${botSoftware}` },
+		};
+	}
+
+	// リポジトリURLによるフォーク判定
+	// MetaとNodeInfo両方のURLをチェックする
+	const urlsToCheck = [
+		repoUrl,
+		botInfo.nodeinfoRepositoryUrl?.toLowerCase(),
+		botInfo.metaRepositoryUrl?.toLowerCase(),
+		browserInfo?.nodeinfoRepositoryUrl?.toLowerCase(),
+		browserInfo?.metaRepositoryUrl?.toLowerCase(),
+	].filter(Boolean) as string[];
+
+	if (urlsToCheck.length > 0) {
+		const detectedForkUrl = urlsToCheck.find(url => FORK_PATTERNS.some(pattern => url.includes(pattern)));
+		if (detectedForkUrl) {
+			console.log(`Detected fork repository for ${host}: ${detectedForkUrl}`);
 			return {
 				info: null,
 				error: 'UNKNOWN',
-				rejection: { reason: `${REJECTION_PREFIX.notMisskey}: ${botSoftware}` },
+				rejection: { reason: `${REJECTION_PREFIX.fork}: ${detectedForkUrl}` },
 			};
-		}
-
-		// リポジトリURLによるフォーク判定
-		// MetaとNodeInfo両方のURLをチェックする
-		const urlsToCheck = [
-			repoUrl,
-			botInfo.nodeinfoRepositoryUrl?.toLowerCase(),
-			botInfo.metaRepositoryUrl?.toLowerCase(),
-			browserInfo?.nodeinfoRepositoryUrl?.toLowerCase(),
-			browserInfo?.metaRepositoryUrl?.toLowerCase(),
-		].filter(Boolean) as string[];
-
-		if (urlsToCheck.length > 0) {
-			const detectedForkUrl = urlsToCheck.find(url => FORK_PATTERNS.some(pattern => url.includes(pattern)));
-			if (detectedForkUrl) {
-				console.log(`Detected fork repository for ${host}: ${detectedForkUrl}`);
-				return {
-					info: null,
-					error: 'UNKNOWN',
-					rejection: { reason: `${REJECTION_PREFIX.fork}: ${detectedForkUrl}` },
-				};
-			}
 		}
 	}
 
-	if (botInfo && browserInfo) {
-		const botSoftware = botInfo.softwareName?.toLowerCase() || '';
-		const browserSoftware = browserInfo.softwareName?.toLowerCase() || '';
+	if (browserInfo) {
+		const browserSoftware = browserInfo.softwareName.toLowerCase();
 
 		// JoinMisskey相手にはMisskeyを返すが、ブラウザにはそれ以外 (かつEmptyでない)を返す場合
 		if (botSoftware === 'misskey' && browserSoftware !== 'misskey' && browserSoftware !== '') {

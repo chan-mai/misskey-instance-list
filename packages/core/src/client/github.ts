@@ -58,10 +58,9 @@ export async function resolveRepositoryInfo(repositoryUrl: string, githubToken?:
 								// ここでnullをキャッシュすると、キャッシュ有効期限切れや再起動まで説明文が失われるため
 								// repository変数の設定をスキップし、nullのままにするがキャッシュには保存しない
 							} else if (ghRes.ok) {
-								// eslint-disable-next-line @typescript-eslint/no-explicit-any
-								const ghData = (await ghRes.json()) as any;
+								const ghData = (await ghRes.json()) as { description?: string | null };
 								repository = {
-									description: ghData.description || null,
+									description: ghData.description !== undefined && ghData.description !== '' ? ghData.description : null,
 									cachedAt: Date.now(),
 								};
 								// 成功した場合のみキャッシュする
@@ -79,8 +78,8 @@ export async function resolveRepositoryInfo(repositoryUrl: string, githubToken?:
 									});
 								}
 							}
-						} catch (e: any) {
-							console.warn(`GitHub API Fetch Error for ${repositoryName}:`, e.message);
+						} catch (e) {
+							console.warn(`GitHub API Fetch Error for ${repositoryName}:`, e instanceof Error ? e.message : e);
 						}
 					}
 				}
