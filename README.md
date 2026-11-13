@@ -52,13 +52,13 @@ APIドキュメントは https://servers.misskey.ink/docs/api/v1 で確認でき
 
 ### Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/instances` | インスタンス一覧を取得 |
-| GET | `/api/v1/deny_instances` | 拒否リストを取得 |
-| GET | `/api/v1/ignore_instances` | 無視リストを取得 |
-| GET | `/api/v1/stats` | 統計情報を取得 (リポジトリ統計含む) |
-| GET | `/api/health` | ヘルスチェック |
+| Method | Endpoint                   | Description                         |
+| ------ | -------------------------- | ----------------------------------- |
+| GET    | `/api/v1/instances`        | インスタンス一覧を取得              |
+| GET    | `/api/v1/deny_instances`   | 拒否リストを取得                    |
+| GET    | `/api/v1/ignore_instances` | 無視リストを取得                    |
+| GET    | `/api/v1/stats`            | 統計情報を取得 (リポジトリ統計含む) |
+| GET    | `/api/health`              | ヘルスチェック                      |
 
 ## 🛠️ Development
 

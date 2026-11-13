@@ -1,6 +1,6 @@
-language: "ja-JP"
+language: 'ja-JP'
 reviews:
   auto_review:
     enabled: true
     base_branches:
-      - ".*"
+      - '.*'
