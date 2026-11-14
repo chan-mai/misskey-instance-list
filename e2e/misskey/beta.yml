@@ -1,0 +1,16 @@
+url: https://beta.mil-e2e.test/
+port: 3000
+db:
+  host: postgres
+  port: 5432
+  db: misskey_beta
+  user: mil
+  pass: mil
+dbReplications: false
+redis:
+  host: redis
+  port: 6379
+  prefix: beta
+fulltextSearch:
+  provider: sqlLike
+id: 'aidx'

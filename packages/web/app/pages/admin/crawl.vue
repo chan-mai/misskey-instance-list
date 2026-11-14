@@ -29,6 +29,7 @@ const result = ref<CrawlResult | null>(null);
 const errorMessage = ref('');
 
 const { formatDateTime } = useFormat();
+const { getErrorMessage } = useFetchError();
 
 const formatNumber = (num: number | null | undefined) => {
 	if (num === null || num === undefined) return '-';
@@ -68,8 +69,7 @@ const run = async () => {
 			body: { domain: domain.value.trim() },
 		});
 	} catch (e: unknown) {
-		const err = e as { statusMessage?: string; message?: string };
-		errorMessage.value = err.statusMessage || err.message || 'クロールに失敗しました';
+		errorMessage.value = getErrorMessage(e, 'クロールに失敗しました');
 	} finally {
 		pending.value = false;
 	}

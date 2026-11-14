@@ -1,0 +1,4 @@
+{
+	"extends": "../../packages/agent/tsconfig.json",
+	"include": ["agent-entry.ts"]
+}

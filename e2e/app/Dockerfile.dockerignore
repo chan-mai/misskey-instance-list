@@ -1,0 +1,11 @@
+**/node_modules
+**/.output
+**/.nuxt
+**/.data
+**/.wrangler
+**/dist
+**/.dev.vars
+.git
+
+e2e/*
+!e2e/package.json
