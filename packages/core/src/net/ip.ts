@@ -5,59 +5,21 @@ import type { IpStack } from '../entity/schema.js';
 
 export type ResolvedAddresses = { v4: string[]; v6: string[] };
 
-/**
- * 指定されたIPアドレスが有効なパブリックIPかどうかを確認します
- * 以下を拒否します:
- * - 無効な形式
- * - プライベート範囲 (IPv4/IPv6)
- * - ループバック
- * - リンクローカル
- * - ユニークローカル
- * - マルチキャスト
- * - 予約済み
- * - ブロードキャスト
- * - キャリアグレードNAT
- * - ドキュメンテーション
- * - 未指定
- */
+const IPV4_COMPATIBLE = ipaddr.parseCIDR('::/96');
+
+// unicast以外拒否
 export function isValidPublicIp(ip: string): boolean {
 	if (!ipaddr.isValid(ip)) return false;
 
 	try {
 		const addr = ipaddr.parse(ip);
-		const range = addr.range();
-
-		// ブロックする範囲のリスト
-		const blockedRanges = [
-			'private',
-			'loopback',
-			'linkLocal',
-			'uniqueLocal',
-			'multicast',
-			'reserved',
-			'broadcast',
-			'carrierGradeNat', // 100.64.0.0/10
-			'documentation', // 192.0.2.0/24, etc.
-			'unspecified',
-		];
-
-		if (blockedRanges.includes(range)) {
-			return false;
-		}
-
-		// ipaddr.js の range() でカバーされない特定のチェック
-		// 例えば、ipaddr.js の 'reserved' は多くをカバーしますが、必要に応じて明示的にします
-		// ipaddr.js では、IPv4射影アドレス (::ffff:127.0.0.1) はIPv6として扱われますが、
-		// 射影されている場合は基となるIPv4を確認する必要があります
 		if (addr.kind() === 'ipv6') {
 			const ipv6 = addr as ipaddr.IPv6;
-			if (ipv6.isIPv4MappedAddress()) {
-				const ipv4 = ipv6.toIPv4Address();
-				return isValidPublicIp(ipv4.toString());
-			}
+			if (ipv6.isIPv4MappedAddress()) return isValidPublicIp(ipv6.toIPv4Address().toString());
+			// range() IPv4互換をunicast判定
+			if (ipv6.match(IPV4_COMPATIBLE)) return false;
 		}
-
-		return true;
+		return addr.range() === 'unicast';
 	} catch {
 		return false;
 	}
