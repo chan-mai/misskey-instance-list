@@ -1,15 +1,15 @@
-// クロール済みデータの公開ページでの表示
+// クロール済みデータでの公開ページ表示
 import { expect, test } from '@playwright/test';
 import { HOSTS } from './support';
 
 const card = (page: import('@playwright/test').Page, name: string) =>
 	page.getByRole('link').filter({ has: page.getByRole('heading', { name }) });
 
-test('トップページに集計値を表示する', async ({ page }) => {
+test('トップページに集計値表示, 一覧へ遷移', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.getByRole('heading', { name: /Find Your\s*Misskey Server/ })).toBeVisible();
 
-	// ページ下部のCTAにも同じ集計値, 先頭のヒーローに限定
+	// ページ下部のCTAに同一集計値, 先頭のheroに限定
 	const hero = page.locator('section').first();
 	const statOf = (label: string) => hero.locator('p', { hasText: new RegExp(`^${label}$`) }).locator('xpath=preceding-sibling::p[1]');
 	await expect(statOf('Active')).toHaveText('3');
@@ -21,8 +21,8 @@ test('トップページに集計値を表示する', async ({ page }) => {
 	await expect(page).toHaveURL('/servers');
 });
 
-test.describe('サーバー一覧', () => {
-	test('稼働中のサーバーをおすすめ順にカードで表示する', async ({ page }) => {
+test.describe('サーバ一覧', () => {
+	test('稼働中サーバをおすすめ順にカード表示, 除外フォーク非表示', async ({ page }) => {
 		const api = await (await page.request.get('/api/v1/instances', { params: { search: HOSTS.alpha } })).json();
 		await page.goto('/servers');
 
@@ -51,7 +51,7 @@ test.describe('サーバー一覧', () => {
 		await expect(page.getByRole('heading', { name: 'CherryPick E2E' })).toHaveCount(0);
 	});
 
-	test('URLの検索条件を復元して一覧を抽出する', async ({ page }) => {
+	test('URLクエリの条件で一覧抽出', async ({ page }) => {
 		const cases: [string, string[]][] = [
 			['language=en', ['Beta E2E']],
 			['language=ja', ['Alpha E2E', 'Tempura E2E']],
@@ -69,7 +69,7 @@ test.describe('サーバー一覧', () => {
 		}
 	});
 
-	test('フィルタで検索語と並び順を変更する', async ({ page }) => {
+	test('フィルタで検索語/並び順変更, URLへ反映', async ({ page }) => {
 		await page.goto('/servers');
 		await page.getByRole('button', { name: 'FILTERS' }).click();
 
@@ -97,7 +97,7 @@ test.describe('サーバー一覧', () => {
 });
 
 test.describe('統計ページ', () => {
-	test('集計値とソフトウェア分布を表示する', async ({ page }) => {
+	test('集計値/IPスタック割合/レポジトリ分布表示', async ({ page }) => {
 		await page.goto('/stats');
 
 		// 集計値の大きな数値を含むタイル
@@ -121,7 +121,7 @@ test.describe('統計ページ', () => {
 		await expect(tempura).toContainText('33.3%');
 	});
 
-	test('除外ドメインの一覧を理由付きで表示する', async ({ page }) => {
+	test('除外ドメイン一覧を理由付きで表示', async ({ page }) => {
 		await page.goto('/stats');
 		await page.getByRole('button', { name: /Excluded/ }).click();
 
@@ -132,7 +132,7 @@ test.describe('統計ページ', () => {
 		await expect(dialog.getByText(HOSTS.spoof)).toBeVisible();
 	});
 
-	test('IPスタック別のサーバー一覧を表示する', async ({ page }) => {
+	test('IPスタック別サーバ一覧をダイアログ表示', async ({ page }) => {
 		await page.goto('/stats');
 		await page.getByRole('button', { name: /Dual Stack/ }).click();
 
@@ -152,19 +152,19 @@ test.describe('静的ページ', () => {
 		'/docs/api/v1/check',
 		'/privacy',
 	]) {
-		test(`${path} を表示する`, async ({ page }) => {
+		test(`${path}は200でフッター表示`, async ({ page }) => {
 			const res = await page.goto(path);
 			expect(res?.status()).toBe(200);
 			await expect(page.getByRole('contentinfo')).toContainText(/© 2025-\d{4}/);
 		});
 	}
 
-	test('存在しないページは404を返す', async ({ page }) => {
+	test('存在しないページは404', async ({ page }) => {
 		const res = await page.goto('/no-such-page');
 		expect(res?.status()).toBe(404);
 	});
 
-	test('本番以外のホストはnoindexを付与する', async ({ request }) => {
+	test('本番以外ホストにnoindex付与', async ({ request }) => {
 		const res = await request.get('/');
 		expect(res.headers()['x-robots-tag']).toBe('noindex, nofollow');
 	});

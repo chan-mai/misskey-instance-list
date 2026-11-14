@@ -35,7 +35,7 @@ describe('saveInstance', () => {
 		await insertInstanceIfAbsent(db, 'a.example');
 	});
 
-	test('取得結果を稼働中として保存し, 言語未指定なら既存値を保持', async () => {
+	test('取得結果を稼働中として保存, 言語未指定時既存値保持', async () => {
 		await insertAlive([{ id: 'b.example', language: 'ja' }]);
 		await saveInstance(ctx, 'b.example', { info: info() }, now);
 
@@ -51,13 +51,13 @@ describe('saveInstance', () => {
 		});
 	});
 
-	test('言語判定の結果nullは未判定として上書き', async () => {
+	test('言語判定結果nullは未判定として上書き', async () => {
 		await insertAlive([{ id: 'b.example', language: 'ja' }]);
 		await saveInstance(ctx, 'b.example', { info: info() }, now, null);
 		expect((await findInstance(db, 'b.example'))?.language).toBeNull();
 	});
 
-	test('GitHub以外のリポジトリはowner/repo形式の名前で登録し紐付け', async () => {
+	test('GitHub以外のレポジトリはowner/repo名で登録/紐付け', async () => {
 		const url = 'https://codeberg.example/owner/repo.git';
 		await saveInstance(ctx, 'a.example', { info: info({ repositoryUrl: url }) }, now);
 
@@ -66,7 +66,7 @@ describe('saveInstance', () => {
 	});
 
 	test.each(['not a url', 'https://codeberg.example/', 'https://codeberg.example/owner'])(
-		'owner/repo形式に解析できないURL(%s)は保存しない',
+		'owner/repo解析不可URL(%s)は保存無し',
 		async url => {
 			await saveInstance(ctx, 'a.example', { info: info({ repositoryUrl: url }) }, now);
 
@@ -90,7 +90,7 @@ describe('saveInstance', () => {
 });
 
 describe('除外', () => {
-	test('手動除外はインスタンスを削除し, 登録済みならundefined', async () => {
+	test('手動除外でインスタンス削除, 登録済み時undefined', async () => {
 		await insertAlive([{ id: 'spam.example' }]);
 
 		expect(await addExclusion(db, { domain: 'spam.example', reason: 'spam', source: 'manual' })).toMatchObject({ source: 'manual' });
@@ -98,7 +98,7 @@ describe('除外', () => {
 		expect(await addExclusion(db, { domain: 'spam.example', source: 'manual' })).toBeUndefined();
 	});
 
-	test('自動判定の除外は登録と削除を1バッチで行う', async () => {
+	test('自動判定除外はsource=systemで登録, インスタンス削除', async () => {
 		await insertAlive([{ id: 'fork.example' }]);
 		await excludeRejectedHost(db, 'fork.example', 'Fork Repository: x');
 
@@ -108,7 +108,7 @@ describe('除外', () => {
 });
 
 describe('upsertSoftwareRepository', () => {
-	test('名前と説明は値がある場合のみ上書きし, 更新時刻を記録', async () => {
+	test('名前/説明は値ありのみ上書き, 更新時刻記録', async () => {
 		const url = 'https://github.com/misskey-dev/misskey';
 		await upsertSoftwareRepository(db, { url, name: 'misskey-dev/misskey', description: 'first' });
 		const [created] = await db.select().from(repositories);

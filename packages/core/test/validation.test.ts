@@ -19,11 +19,11 @@ const issueOf = (schema: v.GenericSchema, input: unknown) => {
 };
 
 describe('instancesQuerySchema', () => {
-	test('省略時の既定値', () => {
+	test('省略時既定値', () => {
 		expect(v.parse(instancesQuerySchema, {})).toEqual({ sort: 'users', order: 'desc', limit: 30, offset: 0 });
 	});
 
-	test('文字列のクエリを型変換', () => {
+	test('文字列クエリ型変換', () => {
 		expect(
 			v.parse(instancesQuerySchema, {
 				sort: 'recommended',
@@ -74,7 +74,7 @@ describe('checkQuerySchema', () => {
 		[' misskey.io ', 'misskey.io'],
 		['https://misskey.io/@syuilo', 'misskey.io'],
 		['http://Example.com:8080/path', 'example.com'],
-	])('%sからホスト名%sを取り出す', (domain, host) => {
+	])('%sからホスト名%s抽出', (domain, host) => {
 		expect(v.parse(checkQuerySchema, { domain })).toEqual({ domain: host });
 	});
 
@@ -92,8 +92,8 @@ describe('checkQuerySchema', () => {
 	});
 });
 
-describe('除外ホストの入力', () => {
-	test('作成時はドメインを正規化しsourceの既定はmanual', () => {
+describe('除外ホスト入力', () => {
+	test('作成時ドメイン正規化, 既定sourceはmanual', () => {
 		expect(v.parse(exclusionCreateBodySchema, { domain: ' Spam.Example ' })).toEqual({ domain: 'spam.example', source: 'manual' });
 		expect(v.parse(exclusionCreateBodySchema, { domain: 'spam.example', reason: null, source: 'system' })).toEqual({
 			domain: 'spam.example',
@@ -112,7 +112,7 @@ describe('除外ホストの入力', () => {
 		expect(issueOf(exclusionCreateBodySchema, input)).toContain(message);
 	});
 
-	test('更新時は理由の前後空白を除去', () => {
+	test('更新時理由前後空白除去', () => {
 		expect(v.parse(exclusionPatchBodySchema, { reason: '  spam  ' })).toEqual({ reason: 'spam' });
 	});
 
@@ -124,20 +124,20 @@ describe('除外ホストの入力', () => {
 		expect(issueOf(exclusionPatchBodySchema, input)).toContain(message);
 	});
 
-	test('一覧の検索条件', () => {
+	test('一覧検索条件は既定値補完, 範囲外拒否', () => {
 		expect(v.parse(adminExclusionsQuerySchema, {})).toEqual({ page: 1, limit: 20, source: 'all' });
 		expect(issueOf(adminExclusionsQuerySchema, { page: '0' })).toContain('page: ');
 		expect(issueOf(adminExclusionsQuerySchema, { source: 'other' })).toContain('source: ');
 	});
 });
 
-describe('その他の入力', () => {
+describe('その他入力', () => {
 	test('クロール対象はドメインのみ', () => {
 		expect(v.parse(crawlBodySchema, { domain: 'Misskey.IO' })).toEqual({ domain: 'misskey.io' });
 		expect(issueOf(crawlBodySchema, { domain: '127.0.0.1' })).toBe('domain: Invalid domain format');
 	});
 
-	test('画像プロキシはhttp(s)のURLのみ', () => {
+	test('画像プロキシはhttp(s) URLのみ', () => {
 		expect(v.parse(imageQuerySchema, { url: 'https://example.com/a.png' })).toEqual({ url: 'https://example.com/a.png' });
 		expect(issueOf(imageQuerySchema, { url: 'file:///etc/passwd' })).toBe('url: Invalid URL');
 		expect(issueOf(imageQuerySchema, { url: 'not a url' })).toBe('url: Invalid URL');

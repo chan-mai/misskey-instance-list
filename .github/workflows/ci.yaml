@@ -2,7 +2,9 @@ name: Misskey Instance List CI
 
 on:
   push:
+    branches: [stg, prod]
   pull_request:
+    branches: [stg]
 
 jobs:
   validate:
@@ -63,7 +65,6 @@ jobs:
           node-version-file: .node-version
           cache: 'pnpm'
 
-      # Playwrightコンテナがリポジトリのnode_modulesを参照
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 

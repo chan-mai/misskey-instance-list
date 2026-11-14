@@ -7,7 +7,7 @@ import { OFFICIAL, db, insertAlive, resetDb } from '../db.js';
 
 beforeEach(resetDb);
 
-test('空のDBでもユーザー数は0', async () => {
+test('空DBは全件数0', async () => {
 	expect(await getNetworkCounts(db)).toEqual({ known: 0, active: 0, exclusions: 0, users: 0 });
 	expect(await listIpStackUsage(db)).toEqual([]);
 });
@@ -30,11 +30,11 @@ describe('集計', () => {
 		await insertExclusion(db, { domain: 'j.example', source: 'joinmisskey' });
 	});
 
-	test('公開統計の件数', async () => {
+	test('公開統計件数を集計, ユーザー数は稼働中のみ合計', async () => {
 		expect(await getNetworkCounts(db)).toEqual({ known: 5, active: 4, exclusions: 3, users: 123 });
 	});
 
-	test('管理画面の件数', async () => {
+	test('管理画面件数を集計, 除外はsource別内訳', async () => {
 		expect(await getAdminCounts(db)).toEqual({
 			instances: { known: 5, active: 4 },
 			users: 123,
@@ -42,14 +42,14 @@ describe('集計', () => {
 		});
 	});
 
-	test('リポジトリは稼働中の件数の多い順', async () => {
+	test('レポジトリは稼働中件数降順', async () => {
 		expect(await listRepositoryUsage(db)).toEqual([
 			{ url: OFFICIAL, name: 'misskey-dev/misskey', description: 'Misskey', count: 2 },
 			{ url: FORK, name: 'example/fork', description: null, count: 1 },
 		]);
 	});
 
-	test('言語は判定済みの稼働中のみ, 同数はコード順', async () => {
+	test('言語は判定済み稼働中のみ件数降順', async () => {
 		expect(await listLanguageUsage(db)).toEqual([
 			{ code: 'ja', count: 2 },
 			{ code: 'en', count: 1 },

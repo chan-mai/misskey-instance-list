@@ -29,8 +29,6 @@ const post = async (url, body, headers = {}) => {
 	return text ? JSON.parse(text) : null;
 };
 
-// Misskey
-
 const MISSKEY = {
 	alpha: {
 		meta: {
@@ -110,8 +108,6 @@ const provisionMisskey = async (name, spec) => {
 	console.log(`misskey ${name} provisioned`);
 	return i;
 };
-
-// ZITADEL
 
 const ZITADEL = 'https://zitadel.mil-e2e.test';
 

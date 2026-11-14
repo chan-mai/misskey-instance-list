@@ -1,4 +1,4 @@
-// クロール済みデータに対する公開APIの応答
+// クロール済みデータでの公開API応答
 import { expect, test } from '@playwright/test';
 import { HOSTS, OFFICIAL_REPOSITORY_URL } from './support';
 
@@ -13,14 +13,14 @@ const hostsOf = async (res: APIResponse) => {
 	return ((await res.json()).items as Item[]).map(item => item.host);
 };
 
-// 各サーバーが現在返す統計値, Misskeyはチャートを20分ごとにDBへ保存
+// 各サーバが現在返す統計値, Misskeyはチャートを20分ごとにDBへ保存
 const serverStats = async (request: APIRequestContext, host: string) => {
 	const res = await request.post(`https://${host}/api/stats`, { data: {} });
 	return (await res.json()) as { originalUsersCount: number; originalNotesCount: number };
 };
 
 test.describe('GET /api/v1/instances', () => {
-	test('稼働中で除外されていないサーバーだけを返す', async ({ request }) => {
+	test('稼働中かつ未除外サーバを取得値/スコア付きで返却', async ({ request }) => {
 		const res = await request.get('/api/v1/instances');
 		const body = await res.json();
 
@@ -73,12 +73,12 @@ test.describe('GET /api/v1/instances', () => {
 			expect(item.last_check_at, host).toEqual(expect.any(Number));
 		}
 
-		// 同数ならIPスタックの差, betaのプレリリースは最新版扱い
+		// 件数同数時IPスタックで差, betaのプレリリースは最新版扱い
 		expect(items[HOSTS.alpha]?.recommendation_score as number).toBeGreaterThan(items[HOSTS.beta]?.recommendation_score as number);
 		expect(items[HOSTS.beta]?.recommendation_score).toBe(items[HOSTS.tempura]?.recommendation_score);
 	});
 
-	test('検索条件に一致するサーバーだけを返す', async ({ request }) => {
+	test('検索条件ごとに一致サーバのみ返却', async ({ request }) => {
 		const cases: [Record<string, string>, string[]][] = [
 			[{ language: 'ja' }, [HOSTS.alpha, HOSTS.tempura]],
 			[{ language: 'en' }, [HOSTS.beta]],
@@ -100,8 +100,8 @@ test.describe('GET /api/v1/instances', () => {
 		}
 	});
 
-	test('並び順とページングを指定できる', async ({ request }) => {
-		// スコア同値はID順
+	test('sort/order/limit/offset反映', async ({ request }) => {
+		// スコア同値時ID順
 		expect(await hostsOf(await request.get('/api/v1/instances', { params: { sort: 'recommended' } }))).toEqual([
 			HOSTS.alpha,
 			HOSTS.beta,
@@ -117,7 +117,7 @@ test.describe('GET /api/v1/instances', () => {
 		expect(await page2.json()).toMatchObject({ total: 3, limit: 1, offset: 1, items: [{ host: HOSTS.beta }] });
 	});
 
-	test('範囲外のパラメータは400を返す', async ({ request }) => {
+	test('不正パラメータは400, エラー内容返却', async ({ request }) => {
 		const cases: [Record<string, string>, string][] = [
 			[{ limit: '0' }, 'limit: '],
 			[{ limit: '101' }, 'limit: '],
@@ -135,7 +135,7 @@ test.describe('GET /api/v1/instances', () => {
 	});
 });
 
-test('GET /api/v1/statsは稼働中サーバーの集計を返す', async ({ request }) => {
+test('GET /api/v1/statsは件数/言語/レポジトリ/IPスタック集計', async ({ request }) => {
 	const res = await request.get('/api/v1/stats');
 	expect(res.status()).toBe(200);
 	const stats = await res.json();
@@ -162,7 +162,7 @@ test('GET /api/v1/statsは稼働中サーバーの集計を返す', async ({ req
 	});
 });
 
-test('GET /api/v1/exclusionsは自動判定の理由を含む', async ({ request }) => {
+test('GET /api/v1/exclusionsは自動除外理由付き, 掲載フォーク含まず', async ({ request }) => {
 	const res = await request.get('/api/v1/exclusions');
 	expect(res.status()).toBe(200);
 	const exclusions = (await res.json()) as { domain: string; reason: string | null }[];
@@ -179,7 +179,7 @@ test('GET /api/v1/exclusionsは自動判定の理由を含む', async ({ request
 });
 
 test.describe('GET /api/v1/check', () => {
-	test('登録済みのサーバーはDBの情報を返す', async ({ request }) => {
+	test('登録済みサーバはDBから返却', async ({ request }) => {
 		const res = await request.get('/api/v1/check', { params: { domain: `https://${HOSTS.alpha}/about` } });
 		expect(await res.json()).toMatchObject({
 			is_misskey: true,
@@ -188,7 +188,7 @@ test.describe('GET /api/v1/check', () => {
 		});
 	});
 
-	test('自動除外されたサーバーは理由を返す', async ({ request }) => {
+	test('自動除外サーバは除外理由返却', async ({ request }) => {
 		const res = await request.get('/api/v1/check', { params: { domain: HOSTS.cherrypick } });
 		expect(await res.json()).toEqual({
 			is_misskey: false,
@@ -199,7 +199,7 @@ test.describe('GET /api/v1/check', () => {
 		});
 	});
 
-	test('稼働中でないサーバーはその場で取得し, DBへ書き込まない', async ({ request }) => {
+	test('非稼働/未登録サーバは都度取得, DB登録無し', async ({ request }) => {
 		const down = await request.get('/api/v1/check', { params: { domain: HOSTS.down } });
 		expect(await down.json()).toMatchObject({ is_misskey: false, source: 'fetch', reason: 'TIMEOUT' });
 
@@ -210,7 +210,7 @@ test.describe('GET /api/v1/check', () => {
 		expect((await admin.json()).total).toBe(0);
 	});
 
-	test('不正なドメイン指定は400を返す', async ({ request }) => {
+	test('不正ドメイン指定は400', async ({ request }) => {
 		const cases: [string, string][] = [
 			['localhost', 'Localhost addresses are not allowed'],
 			['exa mple.com', 'Domain parameter contains invalid characters'],
@@ -224,7 +224,7 @@ test.describe('GET /api/v1/check', () => {
 	});
 });
 
-test('GET /api/metaはサーバーのメタ情報を中継する', async ({ request }) => {
+test('GET /api/metaはapi/meta中継, 不正hostは400', async ({ request }) => {
 	const res = await request.get('/api/meta', { params: { host: HOSTS.beta } });
 	expect(res.status()).toBe(200);
 	expect(await res.json()).toMatchObject({ name: 'Beta E2E', disableRegistration: true });
@@ -233,7 +233,7 @@ test('GET /api/metaはサーバーのメタ情報を中継する', async ({ requ
 	expect(invalid.status()).toBe(400);
 });
 
-test('GET /api/healthは時刻を返す', async ({ request }) => {
+test('GET /api/healthはstatusとISO時刻返却', async ({ request }) => {
 	const res = await request.get('/api/health');
 	const body = await res.json();
 	expect(body.status).toBe('ok');

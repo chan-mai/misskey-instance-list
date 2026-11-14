@@ -1,5 +1,4 @@
 #!/bin/sh
-# D1マイグレーション適用後, web/agentをwrangler devで起動
 set -eu
 
 STATE=/state

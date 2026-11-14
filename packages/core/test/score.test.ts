@@ -7,7 +7,7 @@ describe('parseVersionToMonths', () => {
 		['v2026.1.3', 2026 * 12 + 1],
 		['2025.12.0-beta.1', 2025 * 12 + 12],
 		['2025.12.0-fork', 2025 * 12 + 12],
-	])('%s', (version, months) => {
+	])('%sを月数へ換算', (version, months) => {
 		expect(parseVersionToMonths(version)).toBe(months);
 	});
 
@@ -17,7 +17,7 @@ describe('parseVersionToMonths', () => {
 });
 
 describe('getVersionScore', () => {
-	test('最新版と同じか新しい場合は満点', () => {
+	test('最新版以上で満点', () => {
 		expect(getVersionScore('2026.11.0', '2026.11.0')).toBe(1);
 		expect(getVersionScore('2026.12.0-beta.1', '2026.11.0')).toBe(1);
 	});
@@ -27,7 +27,7 @@ describe('getVersionScore', () => {
 		expect(getVersionScore('2025.11.0', '2026.11.0')).toBeCloseTo(Math.exp(-4));
 	});
 
-	test('バージョン不明やCalVer以外は0', () => {
+	test('バージョン不明/CalVer以外は0', () => {
 		expect(getVersionScore(null, '2026.11.0')).toBe(0);
 		expect(getVersionScore('2026.11.0', null)).toBe(0);
 		expect(getVersionScore('13.14.2', '2026.11.0')).toBe(0);
@@ -37,7 +37,7 @@ describe('getVersionScore', () => {
 describe('calculateRecommendationScore', () => {
 	const latest = '2026.11.0';
 
-	test('全指標が上限なら100', () => {
+	test('全指標上限時100', () => {
 		expect(
 			calculateRecommendationScore({ users_count: 1_000_000, notes_count: 200_000_000, version: latest, ip_stack: 'dual' }, latest),
 		).toBe(100);
@@ -53,7 +53,7 @@ describe('calculateRecommendationScore', () => {
 		expect(calculateRecommendationScore({ users_count: null, notes_count: null, version: null, ip_stack: null }, latest)).toBe(0);
 	});
 
-	test('IPスタックの配点はdual > v6 > v4', () => {
+	test('IPスタック配点はdual > v6 > v4', () => {
 		const base = { users_count: 0, notes_count: 0, version: null };
 		expect(calculateRecommendationScore({ ...base, ip_stack: 'dual' }, latest)).toBe(10);
 		expect(calculateRecommendationScore({ ...base, ip_stack: 'v6' }, latest)).toBe(5);

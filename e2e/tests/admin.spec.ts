@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 import { ADMIN_STATE, HOSTS, loginWithZitadel } from './support';
 
 test.describe('未ログイン', () => {
-	test('管理APIは401を返す', async ({ request }) => {
+	test('管理APIは401', async ({ request }) => {
 		for (const path of ['/api/admin/stats', '/api/admin/exclusions']) {
 			const res = await request.get(path);
 			expect(res.status(), path).toBe(401);
@@ -12,13 +12,13 @@ test.describe('未ログイン', () => {
 		expect(crawl.status()).toBe(401);
 	});
 
-	test('管理ページはZITADELのログインへ遷移する', async ({ page }) => {
+	test('管理ページはZITADELログインへリダイレクト', async ({ page }) => {
 		await page.goto('/admin/excluded-hosts');
 		await expect(page).toHaveURL(/zitadel\.mil-e2e\.test\/ui\/v2\/login/);
 	});
 });
 
-test('Adminロールの無いユーザーは403になる', async ({ page }) => {
+test('Adminロール無し時管理ページ/APIは403', async ({ page }) => {
 	await page.goto('/admin');
 	await loginWithZitadel(page, 'mil-viewer');
 
@@ -30,7 +30,7 @@ test('Adminロールの無いユーザーは403になる', async ({ page }) => {
 test.describe('管理者', () => {
 	test.use({ storageState: ADMIN_STATE });
 
-	test('ダッシュボードに件数を表示する', async ({ page }) => {
+	test('ダッシュボードに稼働/既知数とsource別除外数表示', async ({ page }) => {
 		await page.goto('/admin');
 		await expect(page.getByText('Active / Known Instances').locator('..')).toContainText('3 / 5');
 		await expect(page.getByText('System: 3')).toBeVisible();
@@ -38,7 +38,7 @@ test.describe('管理者', () => {
 		await expect(page.getByText(/JoinMisskey: [1-9]/)).toBeVisible();
 	});
 
-	test('sourceと検索語で自動除外のホストを抽出し, 操作不可にする', async ({ page }) => {
+	test('source/検索語から自動除外ホストを抽出, 操作不可に', async ({ page }) => {
 		await page.goto('/admin/excluded-hosts');
 		await page.getByRole('combobox').selectOption('system');
 
@@ -64,7 +64,7 @@ test.describe('管理者', () => {
 		expect([200, 404]).toContain(res.status());
 	});
 
-	test('手動除外を追加, 編集, 削除する', async ({ page }) => {
+	test('手動除外を追加/編集/削除, 重複登録時エラー表示', async ({ page }) => {
 		const domain = MANUAL_DOMAIN;
 		page.on('dialog', dialog => dialog.accept());
 
@@ -83,7 +83,6 @@ test.describe('管理者', () => {
 		await expect(rows).toContainText('E2E added');
 		await expect(rows).toContainText('manual');
 
-		// 重複登録
 		await page.getByRole('button', { name: 'Add' }).click();
 		await modal.getByPlaceholder('example.com').fill(domain);
 		await modal.getByRole('button', { name: '保存' }).click();
@@ -103,7 +102,7 @@ test.describe('管理者', () => {
 		expect((await res.json()).total).toBe(0);
 	});
 
-	test('除外APIは入力を検証する', async ({ page }) => {
+	test('除外APIは不正入力時400, 未登録ドメイン削除時404', async ({ page }) => {
 		const invalid = await page.request.post('/api/admin/exclusions', { data: { domain: 'not a domain' } });
 		expect(invalid.status()).toBe(400);
 		expect((await invalid.json()).statusMessage).toBe('domain: Invalid domain format');

@@ -16,7 +16,7 @@ describe('isConfirmedNonMisskey', () => {
 });
 
 describe('evaluateInstance', () => {
-	test.each(['127.0.0.1', '10.0.0.1', '169.254.169.254', '::1'])('非公開アドレス%sへは接続しない', async host => {
+	test.each(['127.0.0.1', '10.0.0.1', '169.254.169.254', '::1'])('非公開アドレス%sは接続せずUNKNOWN', async host => {
 		expect(await evaluateInstance(host)).toEqual({ info: null, error: 'UNKNOWN' });
 	});
 });

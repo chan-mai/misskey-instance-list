@@ -29,7 +29,7 @@ beforeEach(resetDb);
 const ids = (count: number) => Array.from({ length: count }, (_, i) => `host-${String(i).padStart(3, '0')}.example`);
 
 describe('登録', () => {
-	test('未登録なら作成しtrue, 登録済みならfalse', async () => {
+	test('未登録時既定値で作成, true返却, 登録済み時false返却', async () => {
 		expect(await insertInstanceIfAbsent(db, 'a.example')).toBe(true);
 		expect(await insertInstanceIfAbsent(db, 'a.example')).toBe(false);
 		expect(await findInstance(db, 'a.example')).toMatchObject({
@@ -42,7 +42,7 @@ describe('登録', () => {
 		});
 	});
 
-	test('作成日時はepoch msの数値', async () => {
+	test('作成日時はepoch ms数値', async () => {
 		const before = Temporal.Now.instant().epochMilliseconds;
 		await insertInstanceIfAbsent(db, 'a.example');
 		const row = await findInstance(db, 'a.example');
@@ -53,23 +53,23 @@ describe('登録', () => {
 		expect(row?.created_at).toBeLessThanOrEqual(Temporal.Now.instant().epochMilliseconds);
 	});
 
-	test('D1のバインド上限を超える件数を分割して登録し, 重複は無視', async () => {
+	test('bindings上限を超える件数を分割登録, 重複無視', async () => {
 		await insertInstanceIds(db, ids(250));
 		await insertInstanceIds(db, [...ids(10), 'extra.example']);
 		expect(await countInstances(db)).toBe(251);
 	});
 
-	test('D1のバインド上限を超える件数を分割して削除', async () => {
+	test('bindings上限を超える件数を分割削除', async () => {
 		await insertInstanceIds(db, ids(250));
 		await deleteInstances(db, ids(249));
 		expect(await countInstances(db)).toBe(1);
 	});
 });
 
-describe('取得結果の反映', () => {
+describe('取得結果反映', () => {
 	const now = Temporal.Instant.from('2026-11-14T00:00:00Z');
 
-	test('稼働中として各値と確認時刻を保存', async () => {
+	test('稼働中として各値/確認時刻保存, 停止状態解除', async () => {
 		await db.insert(instances).values({ id: 'a.example', suspension_state: 'suspended' });
 		const updatedAfter = Temporal.Now.instant().epochMilliseconds;
 		await markInstanceAlive(db, 'a.example', now, {
@@ -101,7 +101,7 @@ describe('取得結果の反映', () => {
 		expect(row?.last_updated).toBeGreaterThanOrEqual(updatedAfter);
 	});
 
-	test('停止状態と確認時刻のみ更新し, 既存の値は保持', async () => {
+	test('停止状態/確認時刻のみ更新, 既存値保持', async () => {
 		await insertAlive([{ id: 'a.example', node_name: 'A', users_count: 10 }]);
 		await markInstanceDown(db, 'a.example', now, 'gone');
 
@@ -114,7 +114,7 @@ describe('取得結果の反映', () => {
 		});
 	});
 
-	test('CHECK制約で不正なIPスタックを拒否', async () => {
+	test('CHECK制約で不正IPスタック拒否', async () => {
 		await expect(db.insert(instances).values({ id: 'a.example', ip_stack: 'v5' as never })).rejects.toMatchObject({
 			cause: expect.objectContaining({ message: expect.stringContaining('CHECK constraint failed') }),
 		});
@@ -134,7 +134,7 @@ describe('同期対象', () => {
 		await insertExclusion(db, { domain: 'excluded.example', source: 'manual' });
 	});
 
-	test('未確認, 確認の古い順, gone・除外ホストは対象外', async () => {
+	test('未確認先頭に確認日時昇順, 除外ホスト/goneは対象外', async () => {
 		expect(await listStaleSyncTargetIds(db, 10)).toEqual([
 			'never.example',
 			'checked-old.example',
@@ -144,11 +144,11 @@ describe('同期対象', () => {
 		expect(await listStaleSyncTargetIds(db, 2)).toEqual(['never.example', 'checked-old.example']);
 	});
 
-	test('全件はID順', async () => {
+	test('全件取得時gone/除外ホスト除外, ID順', async () => {
 		expect(await listAllSyncTargetIds(db)).toEqual(['checked-new.example', 'checked-old.example', 'never.example', 'suspended.example']);
 	});
 
-	test('連合先探索の起点は稼働中のみ', async () => {
+	test('連合先探索起点は稼働中から件数上限内で抽出', async () => {
 		await insertAlive([{ id: 'alive-1.example' }, { id: 'alive-2.example' }]);
 		expect((await sampleAliveInstanceIds(db, 10)).sort()).toEqual(['alive-1.example', 'alive-2.example']);
 		expect(await sampleAliveInstanceIds(db, 1)).toHaveLength(1);
@@ -156,7 +156,7 @@ describe('同期対象', () => {
 });
 
 describe('おすすめスコア', () => {
-	test('稼働中をIDのキーセットで走査し一括更新', async () => {
+	test('稼働中をID keysetで走査, スコア一括更新', async () => {
 		await insertAlive(ids(5).map(id => ({ id, users_count: 1 })));
 		await db.insert(instances).values({ id: 'dead.example' });
 
@@ -174,7 +174,7 @@ describe('おすすめスコア', () => {
 		await updateRecommendationScores(db, []);
 	});
 
-	test('リポジトリごとの稼働中バージョン', async () => {
+	test('指定レポジトリの稼働中バージョンを重複無しで取得', async () => {
 		await upsertSoftwareRepository(db, { url: OFFICIAL, name: 'misskey-dev/misskey', description: null });
 		await insertAlive([
 			{ id: 'a.example', version: '2026.11.0', repository_url: OFFICIAL },
@@ -235,12 +235,12 @@ describe('検索', () => {
 		return { total, ids: rows.map(r => r.id) };
 	};
 
-	test('稼働中で除外されていないものだけ, 同値はID順', async () => {
+	test('稼働中かつ未除外のみ, 同値はID順', async () => {
 		expect(await search({})).toEqual({ total: 3, ids: ['alpha.example', 'beta.example', 'gamma.example'] });
 		expect(await search({ order: 'asc' })).toEqual({ total: 3, ids: ['beta.example', 'gamma.example', 'alpha.example'] });
 	});
 
-	test('NULLは昇順でも降順でも末尾', async () => {
+	test('NULLは昇順/降順に関わらず末尾', async () => {
 		expect((await search({ sort: 'recommended', order: 'desc' })).ids).toEqual(['gamma.example', 'alpha.example', 'beta.example']);
 		expect((await search({ sort: 'recommended', order: 'asc' })).ids).toEqual(['alpha.example', 'gamma.example', 'beta.example']);
 		expect((await search({ sort: 'notes', order: 'asc' })).ids).toEqual(['alpha.example', 'beta.example', 'gamma.example']);
@@ -258,16 +258,16 @@ describe('検索', () => {
 		[{ search: 'ガン' }, ['gamma.example']],
 		[{ search: 'beta.ex' }, ['beta.example']],
 		[{ search: 'ALPHA' }, ['alpha.example']],
-	] as [Partial<InstanceSearch>, string[]][])('%jに一致する行のみ', async (query, expected) => {
+	] as [Partial<InstanceSearch>, string[]][])('%j一致行のみ', async (query, expected) => {
 		expect((await search(query)).ids).toEqual(expected);
 	});
 
-	test('件数は条件一致の総数, 行はページ分', async () => {
+	test('totalは条件一致総数, 行はlimit/offset範囲', async () => {
 		expect(await search({ limit: 1, offset: 1 })).toEqual({ total: 3, ids: ['beta.example'] });
 		expect(await search({ limit: 10, offset: 3 })).toEqual({ total: 3, ids: [] });
 	});
 
-	test('リポジトリURLの一致', async () => {
+	test('レポジトリURL一致のみ', async () => {
 		await upsertSoftwareRepository(db, { url: OFFICIAL, name: null, description: null });
 		await db.update(instances).set({ repository_url: OFFICIAL }).where(eq(instances.id, 'alpha.example'));
 		expect((await search({ repository: OFFICIAL })).ids).toEqual(['alpha.example']);

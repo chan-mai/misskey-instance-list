@@ -37,7 +37,7 @@ test.each([
 });
 
 describe('formatDateTime', () => {
-	test('epoch msを現在のロケールとタイムゾーンで表示', () => {
+	test('epoch msを現在ロケール/タイムゾーンで表示', () => {
 		const epochMs = Temporal.Instant.from('2026-11-13T12:34:56Z').epochMilliseconds;
 		expect(formatDateTime(epochMs)).toBe(
 			new Intl.DateTimeFormat(undefined, {

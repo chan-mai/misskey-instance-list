@@ -9,7 +9,7 @@ const json = (body: unknown, status = 200) => Response.json(body, { status });
 
 const handle = async (request: Request, env: Env): Promise<Response | null> => {
 	const { pathname } = new URL(request.url);
-	// ジョブID, runIDは'/'を含むためエンコード済みで受け取る
+	// '/'を含むジョブID/runIDはエンコード済みで受取
 	const segments = pathname.split('/').filter(Boolean).map(decodeURIComponent);
 	if (segments[0] !== '__e2e') return null;
 

@@ -4,16 +4,16 @@ import { ADMIN_ROLE, ZITADEL_ROLES_CLAIM, getSessionRoles, hasRole } from '../sh
 describe('getSessionRoles', () => {
 	test.each([
 		['オブジェクトマップ', { Admin: { orgId: 'example.com' }, Viewer: {} }, ['Admin', 'Viewer']],
-		['1要素配列に包まれた形', [{ Admin: { orgId: 'example.com' } }], ['Admin']],
+		['1要素配列', [{ Admin: { orgId: 'example.com' } }], ['Admin']],
 		['文字列配列', ['Admin', 'Viewer'], ['Admin', 'Viewer']],
 		['文字列', 'Admin', ['Admin']],
 		['空', undefined, []],
 		['数値', 1, []],
-	])('%s', (_label, claim, roles) => {
+	])('%s形式のclaim', (_label, claim, roles) => {
 		expect(getSessionRoles({ claims: { [ZITADEL_ROLES_CLAIM]: claim } })).toEqual(roles);
 	});
 
-	test('claimsとuserInfoを重複なく併合', () => {
+	test('claims/userInfoを重複なく併合', () => {
 		expect(
 			getSessionRoles({
 				claims: { [ZITADEL_ROLES_CLAIM]: { Admin: {} } },

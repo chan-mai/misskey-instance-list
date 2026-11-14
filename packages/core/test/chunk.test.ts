@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { D1_MAX_BOUND_PARAMS, chunkForD1, clampLikeTerm } from '../src/db/chunk.js';
 
 describe('chunkForD1', () => {
-	test('1行あたりの列数からバインド上限内の行数で分割', () => {
+	test('列数からbindings上限内の行数で分割', () => {
 		const rows = Array.from({ length: 250 }, (_, i) => i);
 		const chunks = chunkForD1(rows, 5);
 
@@ -15,7 +15,7 @@ describe('chunkForD1', () => {
 		expect(chunkForD1([], 3)).toEqual([]);
 	});
 
-	test('列数が上限超過でも1行ずつ', () => {
+	test('列数上限超過時1行ずつ', () => {
 		expect(chunkForD1([1, 2], 500)).toEqual([[1], [2]]);
 	});
 

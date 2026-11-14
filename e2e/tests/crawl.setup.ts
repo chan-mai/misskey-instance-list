@@ -1,4 +1,4 @@
-// 管理画面からの登録とagentの各ジョブを実行し, 以降のテストが参照するデータを作る
+// 後続テスト用データを管理画面/agentジョブで作成
 import { mkdirSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import {
@@ -15,7 +15,7 @@ import {
 
 test.describe.configure({ mode: 'serial' });
 
-test('管理者がZITADELでログインする', async ({ page }) => {
+test('ZITADELで管理者ログイン, 認証状態保存', async ({ page }) => {
 	await page.goto('/admin');
 	await expect(page).toHaveURL(/zitadel\.mil-e2e\.test\/ui\/v2\/login/);
 
@@ -28,10 +28,10 @@ test('管理者がZITADELでログインする', async ({ page }) => {
 	await page.context().storageState({ path: ADMIN_STATE });
 });
 
-test.describe('管理画面からの指名クロール', () => {
+test.describe('管理画面から指名クロール', () => {
 	test.use({ storageState: ADMIN_STATE });
 
-	test('Misskeyサーバーを登録し取得結果を表示する', async ({ page }) => {
+	test('Misskeyサーバを新規登録, 取得結果表示', async ({ page }) => {
 		await page.goto('/admin/crawl');
 		await page.getByPlaceholder('misskey.io').fill(HOSTS.alpha);
 		await page.getByRole('button', { name: 'クロール' }).click();
@@ -46,7 +46,7 @@ test.describe('管理画面からの指名クロール', () => {
 		await expect(rows.filter({ hasText: '最終チェック' })).not.toContainText('-');
 	});
 
-	test('Misskey以外のソフトウェアは除外リストへ登録される', async ({ page }) => {
+	test('Misskey以外はsystem除外として登録', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.gts } });
 		expect(res.status()).toBe(200);
 		expect(await res.json()).toMatchObject({ domain: HOSTS.gts, ok: false, error: 'UNKNOWN', created: true, instance: null });
@@ -57,7 +57,7 @@ test.describe('管理画面からの指名クロール', () => {
 		]);
 	});
 
-	test('User-Agentで応答を変えるサーバーは偽装として除外される', async ({ page }) => {
+	test('User-Agentで応答を変えるサーバは偽装として除外', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.spoof } });
 		expect(await res.json()).toMatchObject({ ok: false, instance: null });
 
@@ -67,7 +67,7 @@ test.describe('管理画面からの指名クロール', () => {
 		]);
 	});
 
-	test('410を返すサーバーはgoneとして記録される', async ({ page }) => {
+	test('410応答はgoneとして記録', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.gone } });
 		expect(await res.json()).toMatchObject({
 			ok: false,
@@ -76,7 +76,7 @@ test.describe('管理画面からの指名クロール', () => {
 		});
 	});
 
-	test('接続できないサーバーはsuspendedとして記録される', async ({ page }) => {
+	test('接続不可はsuspendedとして記録', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.down } });
 		expect(await res.json()).toMatchObject({
 			ok: false,
@@ -85,26 +85,26 @@ test.describe('管理画面からの指名クロール', () => {
 		});
 	});
 
-	test('プライベートアドレスへ解決されるドメインは接続前に拒否される', async ({ page }) => {
+	test('プライベートアドレス解決ドメインは接続前に拒否', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.private } });
 		expect(res.status()).toBe(400);
 		expect((await res.json()).statusMessage).toBe('Domain does not resolve to a public address');
 	});
 
-	test('名前解決できないドメインは拒否される', async ({ page }) => {
+	test('名前解決不可ドメインは400', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.missing } });
 		expect(res.status()).toBe(400);
 	});
 
-	test('除外済みのドメインは409を返す', async ({ page }) => {
+	test('除外済みドメインは409', async ({ page }) => {
 		const res = await page.request.post('/api/admin/crawl', { data: { domain: HOSTS.gts } });
 		expect(res.status()).toBe(409);
 		expect((await res.json()).statusMessage).toBe('Host is excluded (source: system)');
 	});
 });
 
-test.describe('agentの定期ジョブ', () => {
-	test('稼働中サーバーの連合先から候補を発見する', async ({ request }) => {
+test.describe('agent定期ジョブ', () => {
+	test('稼働中サーバの連合先から候補3台発見', async ({ request }) => {
 		const { kind, id } = await triggerSchedule(request, 'discover-instances');
 		expect(kind).toBe('job');
 
@@ -114,7 +114,7 @@ test.describe('agentの定期ジョブ', () => {
 		expect(resultOf(job)).toEqual({ sources: [HOSTS.alpha], discovered: 3 });
 	});
 
-	test('更新Flowが全対象を再取得し除外対象のフォークを除外する', async ({ request }) => {
+	test('更新Flowでgone以外を再取得, 除外対象フォークのCherryPickを除外', async ({ request }) => {
 		const { kind, id } = await triggerSchedule(request, 'update-instances');
 		expect(kind).toBe('flow');
 
@@ -131,11 +131,10 @@ test.describe('agentの定期ジョブ', () => {
 				{ host: HOSTS.down, alive: false, language: null },
 			]),
 		);
-		// goneは再取得対象外
 		expect(syncs.map(s => s.host)).not.toContain(HOSTS.gone);
 	});
 
-	test('統計同期がバッチ単位で全対象の言語を判定する', async ({ request }) => {
+	test('統計同期は対象サーバ4台を1バッチで同期', async ({ request }) => {
 		const { id } = await triggerSchedule(request, 'plan-stats-sync');
 		const plan = await waitForJob(request, id);
 		expect(plan.state).toBe('COMPLETED');
@@ -150,7 +149,7 @@ test.describe('agentの定期ジョブ', () => {
 		expect(batch && resultOf(batch)).toEqual({ synced: 4, retried: [] });
 	});
 
-	test('おすすめスコアをGitHubの最新リリースを基準に計算する', async ({ request }) => {
+	test('おすすめスコアを稼働中3台へ設定, 基準はGitHub最新リリース', async ({ request }) => {
 		const { id } = await triggerSchedule(request, 'sync-recommendation-scores');
 		const job = await waitForJob(request, id);
 		expect(job.state).toBe('COMPLETED');
@@ -160,7 +159,7 @@ test.describe('agentの定期ジョブ', () => {
 		expect(result.latestVersion).toMatch(/^\d{4}\.\d{1,2}\.\d+$/);
 	});
 
-	test('JoinMisskeyのignorehostsを除外リストへ取り込む', async ({ request }) => {
+	test('JoinMisskey ignorehostsを除外リストへ取り込み', async ({ request }) => {
 		const { id } = await triggerSchedule(request, 'sync-exclusions');
 		const job = await waitForJob(request, id);
 		expect(job.state).toBe('COMPLETED');

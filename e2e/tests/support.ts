@@ -3,7 +3,6 @@ import { expect } from '@playwright/test';
 
 import type { APIRequestContext, Page } from '@playwright/test';
 
-// agentのwrangler dev, E2E用エンドポイント
 export const AGENT = 'http://app:8788';
 
 export const ADMIN_STATE = '.auth/admin.json';
@@ -84,7 +83,7 @@ export const resultOf = <T>(job: JobRow): T => JSON.parse(job.result ?? 'null') 
 export const loginWithZitadel = async (page: Page, username: string) => {
 	await page.locator('input[name="loginName"]').fill(username);
 	await page.getByRole('button', { name: '続行', exact: true }).click();
-	// ハイドレーション前の入力はReactの状態へ未反映, 空パスワード送信で検証失敗
+	// hydration前の入力はReactの状態へ未反映, 空パスワード送信で検証失敗
 	await page.waitForURL(/\/ui\/v2\/login\/password/);
 	await page.waitForFunction(() => {
 		const input = document.querySelector('input[name="password"]');

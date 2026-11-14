@@ -12,7 +12,6 @@ export const resetDb = async () => {
 
 export const OFFICIAL = 'https://github.com/misskey-dev/misskey';
 
-// 稼働中インスタンスの既定値
 export const insertAlive = async (rows: (Partial<InstanceInsert> & { id: string })[]) => {
 	await db.insert(instances).values(rows.map(row => ({ is_alive: true, ...row })));
 };

@@ -15,11 +15,11 @@ const DEFAULTS = {
 };
 
 describe('parseFilterQuery', () => {
-	test('空のクエリは既定値', () => {
+	test('空クエリは既定値', () => {
 		expect(parseFilterQuery({})).toEqual(DEFAULTS);
 	});
 
-	test('URLクエリを型変換', () => {
+	test('URLクエリ型変換', () => {
 		expect(
 			parseFilterQuery({
 				q: 'misskey',
@@ -46,7 +46,7 @@ describe('parseFilterQuery', () => {
 		});
 	});
 
-	test('不正値は項目単位で既定値へ戻す', () => {
+	test('不正値は項目単位で既定値へ', () => {
 		expect(
 			parseFilterQuery({
 				orderBy: 'name',
@@ -60,21 +60,21 @@ describe('parseFilterQuery', () => {
 		).toEqual({ ...DEFAULTS, language: 'ja' });
 	});
 
-	test('配列は先頭の値', () => {
+	test('配列は先頭値採用', () => {
 		expect(parseFilterQuery({ language: ['en', 'ja'] }).language).toBe('en');
 	});
 
-	test('空文字の件数は未指定', () => {
+	test('minUsers空文字は未指定', () => {
 		expect(parseFilterQuery({ minUsers: '' }).minUsers).toBeNull();
 	});
 });
 
 describe('toFilterQuery', () => {
-	test('既定値は省略', () => {
+	test('既定値はクエリから省略', () => {
 		expect(toFilterQuery(parseFilterQuery({}))).toEqual({});
 	});
 
-	test('parseFilterQueryと往復しても同じ条件', () => {
+	test('parseFilterQuery往復で同一クエリ', () => {
 		const query = {
 			q: 'a',
 			repository: 'official',
