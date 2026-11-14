@@ -41,3 +41,53 @@ jobs:
 
       - name: Typecheck
         run: pnpm -r typecheck
+
+      - name: Unit test
+        run: pnpm test
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: 'pnpm'
+
+      # Playwrightコンテナがリポジトリのnode_modulesを参照
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Start services
+        working-directory: e2e
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: docker compose up -d --build --wait app
+
+      - name: Run E2E
+        working-directory: e2e
+        run: docker compose run --rm playwright
+
+      - name: Dump service logs
+        if: failure()
+        working-directory: e2e
+        run: docker compose logs --no-color > compose.log
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+            e2e/compose.log
+          retention-days: 7
