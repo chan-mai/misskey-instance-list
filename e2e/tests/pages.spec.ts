@@ -38,7 +38,7 @@ test.describe('サーバー一覧', () => {
 		await expect(alpha.getByTitle('Language')).toHaveText('日本語 (ja)');
 		await expect(alpha.getByTitle('Online')).toBeVisible();
 		// 説明文はブラウザからMisskeyのapi/metaを直接取得
-		await expect(alpha).toContainText('E2Eテスト用のMisskeyサーバーです。日本語で運営しています。');
+		await expect(alpha).toContainText('E2Eテスト用のMisskeyサーバです。日本語で運営しています。');
 
 		const beta = card(page, 'Beta E2E');
 		await expect(beta.getByTitle('Language')).toHaveText('英語 (en)');
@@ -46,7 +46,7 @@ test.describe('サーバー一覧', () => {
 
 		const tempura = card(page, 'Tempura E2E');
 		await expect(tempura).toContainText('(v2026.11.0-tempura-2.0.24)');
-		await expect(tempura).toContainText('misskey-tempuraで動いているサーバーです。');
+		await expect(tempura).toContainText('misskey-tempuraで動いているサーバです。');
 
 		await expect(page.getByRole('heading', { name: 'CherryPick E2E' })).toHaveCount(0);
 	});
