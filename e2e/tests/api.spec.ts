@@ -1,6 +1,6 @@
 // クロール済みデータでの公開API応答
 import { expect, test } from '@playwright/test';
-import { HOSTS, OFFICIAL_REPOSITORY_URL } from './support';
+import { ADMIN_STATE, HOSTS, OFFICIAL_REPOSITORY_URL } from './support';
 
 import type { APIRequestContext, APIResponse } from '@playwright/test';
 
@@ -199,15 +199,25 @@ test.describe('GET /api/v1/check', () => {
 		});
 	});
 
-	test('非稼働/未登録サーバは都度取得, DB登録無し', async ({ request }) => {
-		const down = await request.get('/api/v1/check', { params: { domain: HOSTS.down } });
-		expect(await down.json()).toMatchObject({ is_misskey: false, source: 'fetch', reason: 'TIMEOUT' });
+	test.describe(() => {
+		test.use({ storageState: ADMIN_STATE });
 
-		const priv = await request.get('/api/v1/check', { params: { domain: HOSTS.private } });
-		expect(await priv.json()).toMatchObject({ is_misskey: false, source: 'fetch', reason: 'UNKNOWN' });
+		test('非稼働/未登録サーバは都度取得, DB登録無し', async ({ page }) => {
+			const adminStats = async () => (await page.request.get('/api/admin/stats')).json();
+			const before = await adminStats();
 
-		const admin = await request.get(`/api/v1/instances`, { params: { search: HOSTS.private } });
-		expect((await admin.json()).total).toBe(0);
+			const down = await page.request.get('/api/v1/check', { params: { domain: HOSTS.down } });
+			expect(await down.json()).toMatchObject({ is_misskey: false, source: 'fetch', reason: 'TIMEOUT' });
+
+			const priv = await page.request.get('/api/v1/check', { params: { domain: HOSTS.private } });
+			expect(await priv.json()).toMatchObject({ is_misskey: false, source: 'fetch', reason: 'UNKNOWN' });
+
+			expect(await adminStats()).toEqual(before);
+			for (const host of [HOSTS.down, HOSTS.private]) {
+				const res = await page.request.get('/api/admin/exclusions', { params: { search: host } });
+				expect((await res.json()).total, host).toBe(0);
+			}
+		});
 	});
 
 	test('不正ドメイン指定は400', async ({ request }) => {
