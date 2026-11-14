@@ -35,11 +35,13 @@ export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceR
 
 	if (info) {
 		const repoInfo = info.repositoryUrl ? await resolveRepositoryInfo(info.repositoryUrl, ctx.githubToken) : null;
+		// owner/repo形式に解析できたURLのみ保存
+		const repositoryUrl = repoInfo?.repositoryName ? info.repositoryUrl : null;
 
 		// リポジトリのリレーションを更新
-		if (info.repositoryUrl && repoInfo) {
+		if (repositoryUrl && repoInfo) {
 			await upsertSoftwareRepository(db, {
-				url: info.repositoryUrl,
+				url: repositoryUrl,
 				name: repoInfo.repositoryName,
 				description: repoInfo.repository?.description ?? null,
 			});
@@ -53,7 +55,7 @@ export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceR
 			banner_url: info.banner,
 			icon_url: info.icon,
 			language: language,
-			repository_url: info.repositoryUrl && repoInfo ? info.repositoryUrl : null,
+			repository_url: repositoryUrl,
 			open_registrations: info.openRegistrations,
 			email_required: info.emailRequired,
 			ip_stack: info.ipStack ?? null,

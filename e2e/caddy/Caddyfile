@@ -1,0 +1,69 @@
+{
+	auto_https disable_redirects
+	admin off
+}
+
+(tls_test_ca) {
+	tls /certs/server.crt /certs/server.key
+}
+
+alpha.mil-e2e.test, private.mil-e2e.test {
+	import tls_test_ca
+	reverse_proxy misskey-alpha:3000 {
+		header_up Host alpha.mil-e2e.test
+	}
+}
+
+beta.mil-e2e.test {
+	import tls_test_ca
+	reverse_proxy misskey-beta:3000
+}
+
+cherrypick.mil-e2e.test {
+	import tls_test_ca
+	reverse_proxy cherrypick:3000
+}
+
+tempura.mil-e2e.test {
+	import tls_test_ca
+	reverse_proxy tempura:3000
+}
+
+gts.mil-e2e.test {
+	import tls_test_ca
+	reverse_proxy gotosocial:8080
+}
+
+# User-Agentで応答ソフトウェアを切り替えるホスト
+spoof.mil-e2e.test {
+	import tls_test_ca
+	@bot header User-Agent JoinMisskey
+	reverse_proxy @bot misskey-beta:3000 {
+		header_up Host beta.mil-e2e.test
+	}
+	reverse_proxy gotosocial:8080 {
+		header_up Host gts.mil-e2e.test
+	}
+}
+
+gone.mil-e2e.test {
+	import tls_test_ca
+	respond 410
+}
+
+zitadel.mil-e2e.test {
+	import tls_test_ca
+	@login path / /ui/v2/login /ui/v2/login/*
+	handle @login {
+		rewrite / /ui/v2/login/
+		reverse_proxy zitadel-login:3000
+	}
+	handle {
+		reverse_proxy h2c://zitadel:8080
+	}
+}
+
+web.mil-e2e.test {
+	import tls_test_ca
+	reverse_proxy app:8787
+}

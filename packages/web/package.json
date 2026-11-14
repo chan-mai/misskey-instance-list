@@ -8,7 +8,8 @@
 		"generate": "nuxt generate",
 		"preview": "wrangler dev",
 		"deploy": "wrangler deploy",
-		"typecheck": "nuxi typecheck",
+		"typecheck": "nuxi typecheck && tsc6 --noEmit -p test",
+		"test": "vitest run",
 		"postinstall": "nuxt prepare"
 	},
 	"dependencies": {
@@ -29,9 +30,10 @@
 		"vue-router": "^5.4.0"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^5.20261102.1",
+		"@cloudflare/workers-types": "^5.20261114.1",
 		"nitro-cloudflare-dev": "^0.2.2",
 		"typescript": "npm:@typescript/typescript6@^6.0.2",
+		"vitest": "5.1.0",
 		"vue-tsc": "3.3.14",
 		"wrangler": "^4.156.1"
 	}

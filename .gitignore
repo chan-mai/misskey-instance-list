@@ -29,3 +29,8 @@ dist/
 
 # wranglerのローカル状態 (ローカルD1の実体等)
 .wrangler
+
+# E2E成果物
+e2e/test-results
+e2e/playwright-report
+e2e/.auth

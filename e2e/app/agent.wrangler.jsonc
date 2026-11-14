@@ -1,0 +1,31 @@
+// agent本体のwrangler.jsonc既定環境と一致(binding, mainのみE2E用)
+{
+	"$schema": "../../packages/agent/node_modules/wrangler/config-schema.json",
+	"name": "misskey-instance-list-agent",
+	"main": "agent-entry.ts",
+	"compatibility_date": "2026-07-15",
+	"compatibility_flags": ["nodejs_compat", "temporal"],
+	"migrations": [
+		{ "tag": "v1", "new_sqlite_classes": ["TsumugiJobShard", "TsumugiScheduler"] },
+		{ "tag": "v2", "new_sqlite_classes": ["TsumugiRun"] },
+	],
+	"d1_databases": [
+		{ "binding": "DB", "database_name": "misskey-instance-list" },
+		{
+			"binding": "TSUMUGI_DB",
+			"database_name": "misskey-instance-list-jobs",
+			"migrations_dir": "../../packages/agent/node_modules/tsumugi/migrations",
+		},
+	],
+	"durable_objects": {
+		"bindings": [
+			{ "name": "JOB_SHARD", "class_name": "TsumugiJobShard" },
+			{ "name": "RUN", "class_name": "TsumugiRun" },
+			{ "name": "SCHEDULER", "class_name": "TsumugiScheduler" },
+		],
+	},
+	"queues": {
+		"producers": [{ "binding": "TSUMUGI_QUEUE", "queue": "misskey-instance-list-jobs" }],
+		"consumers": [{ "queue": "misskey-instance-list-jobs", "max_batch_size": 5, "max_batch_timeout": 5, "max_retries": 5 }],
+	},
+}

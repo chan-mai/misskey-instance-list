@@ -1,0 +1,274 @@
+name: mil-e2e
+
+# SSRF検査通過用のグローバルアドレス帯
+networks:
+  dual:
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: 11.42.1.0/24
+        - subnet: 2a10:ffff:42:1::/64
+  v4:
+    ipam:
+      config:
+        - subnet: 11.42.2.0/24
+  private:
+    ipam:
+      config:
+        - subnet: 10.242.42.0/24
+
+volumes:
+  certs:
+  shared:
+  zitadel-bootstrap:
+  app-state:
+
+x-misskey: &misskey
+  image: misskey/misskey:2026.11.0
+  environment:
+    NODE_EXTRA_CA_CERTS: /certs/ca.crt
+  volumes:
+    - certs:/certs:ro
+  networks: [dual, v4]
+  depends_on:
+    certgen:
+      condition: service_completed_successfully
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  certgen:
+    image: alpine:3.24
+    volumes:
+      - certs:/certs
+      - ./certs/gen.sh:/gen.sh:ro
+    command: sh /gen.sh
+
+  doh:
+    image: node:26-alpine
+    volumes:
+      - certs:/certs:ro
+      - ./doh/server.mjs:/server.mjs:ro
+    command: node /server.mjs
+    depends_on:
+      certgen:
+        condition: service_completed_successfully
+    networks:
+      dual:
+        aliases: [cloudflare-dns.com]
+      v4:
+        aliases: [cloudflare-dns.com]
+      private:
+
+  caddy:
+    image: caddy:2.11-alpine
+    volumes:
+      - certs:/certs:ro
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      certgen:
+        condition: service_completed_successfully
+    networks:
+      dual:
+        aliases: [alpha.mil-e2e.test, gone.mil-e2e.test, zitadel.mil-e2e.test, web.mil-e2e.test]
+      v4:
+        aliases: [beta.mil-e2e.test, cherrypick.mil-e2e.test, tempura.mil-e2e.test, gts.mil-e2e.test, spoof.mil-e2e.test]
+      private:
+        aliases: [private.mil-e2e.test]
+
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: mil
+      POSTGRES_PASSWORD: mil
+      POSTGRES_DB: mil
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: pg_isready -U mil -d mil
+      interval: 2s
+      retries: 30
+    networks:
+      v4:
+        # 443未待受, 接続拒否されるホスト
+        aliases: [down.mil-e2e.test]
+
+  redis:
+    image: redis:8.8-alpine
+    healthcheck:
+      test: redis-cli ping
+      interval: 2s
+      retries: 30
+    networks: [v4]
+
+  misskey-alpha:
+    <<: *misskey
+    volumes:
+      - certs:/certs:ro
+      - ./misskey/alpha.yml:/misskey/.config/default.yml:ro
+
+  misskey-beta:
+    <<: *misskey
+    image: misskey/misskey:2026.11.0-beta.1
+    volumes:
+      - certs:/certs:ro
+      - ./misskey/beta.yml:/misskey/.config/default.yml:ro
+
+  # 除外対象のフォーク
+  cherrypick:
+    <<: *misskey
+    image: noridev/cherrypick:4.17.0
+    volumes:
+      - certs:/certs:ro
+      - ./misskey/cherrypick.yml:/cherrypick/.config/default.yml:ro
+
+  # 掲載対象のフォーク
+  tempura:
+    <<: *misskey
+    image: ghcr.io/lqvp/misskey-tempura:2.0.24
+    volumes:
+      - certs:/certs:ro
+      - ./misskey/tempura.yml:/misskey/.config/default.yml:ro
+
+  gotosocial:
+    image: superseriousbusiness/gotosocial:0.22.3
+    environment:
+      GTS_HOST: gts.mil-e2e.test
+      GTS_PROTOCOL: https
+      GTS_DB_TYPE: sqlite
+      GTS_DB_ADDRESS: /tmp/gts.sqlite
+      GTS_LETSENCRYPT_ENABLED: 'false'
+      GTS_TRUSTED_PROXIES: 0.0.0.0/0
+    networks: [v4]
+
+  zitadel:
+    image: ghcr.io/zitadel/zitadel:v4.20.3
+    user: '0'
+    command: start-from-init --masterkey MasterkeyNeedsToHave32Characters
+    environment:
+      ZITADEL_PORT: 8080
+      ZITADEL_EXTERNALDOMAIN: zitadel.mil-e2e.test
+      ZITADEL_EXTERNALPORT: 443
+      ZITADEL_EXTERNALSECURE: 'true'
+      ZITADEL_TLS_ENABLED: 'false'
+      # グローバルアドレス帯のみ, ID生成のマシン識別はホスト名
+      ZITADEL_MACHINE_IDENTIFICATION_PRIVATEIP_ENABLED: 'false'
+      ZITADEL_MACHINE_IDENTIFICATION_HOSTNAME_ENABLED: 'true'
+      ZITADEL_DATABASE_POSTGRES_DSN: postgresql://mil:mil@postgres:5432/zitadel?sslmode=disable
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED: 'false'
+      ZITADEL_FIRSTINSTANCE_LOGINCLIENTPATPATH: /zitadel/bootstrap/login-client.pat
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_USERNAME: login-client
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_MACHINE_NAME: Login Client
+      ZITADEL_FIRSTINSTANCE_ORG_LOGINCLIENT_PAT_EXPIRATIONDATE: '2099-01-01T00:00:00Z'
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_MACHINE_USERNAME: e2e-admin-sa
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_MACHINE_NAME: E2E Admin SA
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_PAT_EXPIRATIONDATE: '2099-01-01T00:00:00Z'
+      ZITADEL_FIRSTINSTANCE_PATPATH: /zitadel/bootstrap/admin.pat
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_REQUIRED: 'true'
+      ZITADEL_DEFAULTINSTANCE_FEATURES_LOGINV2_BASEURI: https://zitadel.mil-e2e.test/ui/v2/login/
+      ZITADEL_OIDC_DEFAULTLOGINURLV2: https://zitadel.mil-e2e.test/ui/v2/login/login?authRequest=
+      ZITADEL_OIDC_DEFAULTLOGOUTURLV2: https://zitadel.mil-e2e.test/ui/v2/login/logout?post_logout_redirect=
+    healthcheck:
+      test: [CMD, /app/zitadel, ready]
+      interval: 5s
+      retries: 60
+    volumes:
+      - zitadel-bootstrap:/zitadel/bootstrap
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [v4]
+
+  zitadel-login:
+    image: ghcr.io/zitadel/zitadel-login:v4.20.3
+    user: '0'
+    environment:
+      ZITADEL_API_URL: http://zitadel:8080
+      NEXT_PUBLIC_BASE_PATH: /ui/v2/login
+      ZITADEL_SERVICE_USER_TOKEN_FILE: /zitadel/bootstrap/login-client.pat
+      ZITADEL_SESSION_COOKIE_SECRET: SessionCookieSecretNeedsAtLeast32Chars
+      CUSTOM_REQUEST_HEADERS: Host:zitadel.mil-e2e.test,X-Forwarded-Proto:https
+    volumes:
+      - zitadel-bootstrap:/zitadel/bootstrap:ro
+    depends_on:
+      zitadel:
+        condition: service_healthy
+    networks: [v4]
+
+  provision:
+    image: node:26-alpine
+    environment:
+      NODE_EXTRA_CA_CERTS: /certs/ca.crt
+    volumes:
+      - certs:/certs:ro
+      - shared:/shared
+      - zitadel-bootstrap:/zitadel-bootstrap:ro
+      - ./provision/index.mjs:/provision.mjs:ro
+    command: node /provision.mjs
+    depends_on:
+      caddy:
+        condition: service_started
+      doh:
+        condition: service_started
+      misskey-alpha:
+        condition: service_healthy
+      misskey-beta:
+        condition: service_healthy
+      cherrypick:
+        condition: service_healthy
+      tempura:
+        condition: service_healthy
+      zitadel-login:
+        condition: service_started
+      gotosocial:
+        condition: service_started
+    networks: [dual, v4]
+
+  app:
+    build:
+      context: ..
+      dockerfile: e2e/app/Dockerfile
+    environment:
+      NODE_EXTRA_CA_CERTS: /certs/ca.crt
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    volumes:
+      - certs:/certs:ro
+      - shared:/shared:ro
+      - app-state:/state
+      - ./app:/repo/e2e/app
+    depends_on:
+      provision:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "Promise.all([fetch('http://localhost:8787/api/health'),fetch('http://localhost:8788/__e2e/jobs?binding=none')]).then(r=>process.exit(r.every(x=>x.ok)?0:1),()=>process.exit(1))",
+        ]
+      interval: 3s
+      retries: 100
+    networks: [dual, v4]
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.65.0-noble
+    profiles: [test]
+    working_dir: /repo/e2e
+    environment:
+      CI: ${CI:-}
+      NODE_EXTRA_CA_CERTS: /certs/ca.crt
+    volumes:
+      - ..:/repo
+      - certs:/certs:ro
+      - shared:/shared:ro
+    command: npx playwright test
+    # IPv6アドレス確定時のERR_NETWORK_CHANGED回避
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: 1
+    depends_on:
+      app:
+        condition: service_healthy
+    networks: [dual, v4]

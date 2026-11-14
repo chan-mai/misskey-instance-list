@@ -1,0 +1,17 @@
+{
+	"name": "@mil/e2e",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"up": "docker compose up -d --build --wait app",
+		"e2e": "docker compose run --rm playwright",
+		"down": "docker compose down -v --remove-orphans",
+		"typecheck": "tsc6 --noEmit && tsc6 --noEmit -p app"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20261114.1",
+		"@playwright/test": "1.65.0",
+		"@types/node": "^26.6.6",
+		"typescript": "npm:@typescript/typescript6@^6.0.2"
+	}
+}

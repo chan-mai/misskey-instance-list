@@ -3,7 +3,8 @@ import { defineOxlintConfig } from '@chan-mai/oxc-config';
 export default defineOxlintConfig({
 	features: {
 		nuxt: true,
-		workers: true,
+		vitest: true,
+		workers: { entry: ['**/src/index.{ts,js}', 'e2e/app/agent-entry.ts'] },
 	},
 	overrides: {
 		ignorePatterns: ['**/dist/**', '**/.nuxt/**', '**/.output/**', '**/.wrangler/**', '**/generated/**'],

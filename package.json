@@ -10,6 +10,8 @@
 		"build": "pnpm -r build",
 		"lint": "oxlint",
 		"typecheck": "pnpm -r typecheck",
+		"test": "pnpm --filter @mil/core --filter @mil/web test",
+		"test:e2e": "pnpm --filter @mil/e2e e2e",
 		"db:generate": "pnpm --filter @mil/core db:generate",
 		"db:migrate": "pnpm --filter @mil/core db:migrate:deploy",
 		"db:migrate:stg": "pnpm --filter @mil/core db:migrate:stg",
