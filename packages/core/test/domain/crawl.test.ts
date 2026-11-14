@@ -65,6 +65,16 @@ describe('saveInstance', () => {
 		expect(await db.select().from(repositories)).toEqual([expect.objectContaining({ url, name: 'owner/repo', description: null })]);
 	});
 
+	test.each(['not a url', 'https://codeberg.example/', 'https://codeberg.example/owner'])(
+		'owner/repo形式に解析できないURL(%s)は保存しない',
+		async url => {
+			await saveInstance(ctx, 'a.example', { info: info({ repositoryUrl: url }) }, now);
+
+			expect((await findInstance(db, 'a.example'))?.repository_url).toBeNull();
+			expect(await db.select().from(repositories)).toEqual([]);
+		},
+	);
+
 	test.each([
 		['GONE', 'gone'],
 		['TIMEOUT', 'suspended'],
