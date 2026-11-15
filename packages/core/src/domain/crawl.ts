@@ -8,6 +8,12 @@ import { excludeRejectedHost } from './exclusion.js';
 import type { InstanceResult } from '../client/misskey.js';
 import type { CrawlContext } from './context.js';
 
+export const DESCRIPTION_MAX_LENGTH = 1000;
+
+// コードポイント単位で切り詰め
+const truncateDescription = (description: string | undefined): string | null =>
+	description ? Array.from(description).slice(0, DESCRIPTION_MAX_LENGTH).join('') : null;
+
 /**
  * インスタンスを検査し, 不合格なら除外リストへの登録とインスタンス削除まで行う
  *
@@ -49,6 +55,7 @@ export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceR
 
 		await markInstanceAlive(db, id, now, {
 			node_name: info.name,
+			description: truncateDescription(info.description),
 			users_count: info.users,
 			notes_count: info.notes,
 			version: info.version,

@@ -4,6 +4,7 @@ import { suspensionStateSchema, ipStackSchema } from './primitives.js';
 export const apiInstanceSchema = v.object({
 	host: v.string(),
 	name: v.nullable(v.string()),
+	description: v.nullable(v.string()),
 	users_count: v.nullable(v.number()),
 	notes_count: v.nullable(v.number()),
 	version: v.nullable(v.string()),

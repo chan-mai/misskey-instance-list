@@ -152,6 +152,9 @@ importers:
       '@nuxtjs/tailwindcss':
         specifier: ^6.14.0
         version: 6.14.0(magicast@0.5.5)(tsx@4.23.15)(yaml@2.9.0)
+      entities:
+        specifier: ^7.0.1
+        version: 7.0.1
       h3:
         specifier: ^2.0.2
         version: 2.0.2(crossws@0.4.17(srvx@1.0.8))

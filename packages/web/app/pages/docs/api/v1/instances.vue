@@ -140,6 +140,7 @@
     {
       "host": "example.com",
       "name": "Example Instance",
+      "description": "Example instance description",
       "users_count": 100,
       "notes_count": 10000,
       "created_at": 1704067200000,

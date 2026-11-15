@@ -20,7 +20,7 @@ export default defineEventHandler(async (event): Promise<CheckResponse> => {
 				icon: existingInstance.icon_url,
 				banner: existingInstance.banner_url,
 				softwareName: 'misskey',
-				description: null,
+				description: existingInstance.description,
 				ipStack: existingInstance.ip_stack ?? null,
 			},
 			is_embeddable: await checkEmbeddable(domain),

@@ -42,6 +42,7 @@ export default defineCachedEventHandler(
 		const items = rows.map(i => ({
 			host: i.id,
 			name: i.node_name ?? i.id,
+			description: i.description,
 			users_count: i.users_count ?? 0,
 			notes_count: i.notes_count ?? 0,
 			created_at: i.created_at,

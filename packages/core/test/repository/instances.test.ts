@@ -74,6 +74,7 @@ describe('取得結果反映', () => {
 		const updatedAfter = Temporal.Now.instant().epochMilliseconds;
 		await markInstanceAlive(db, 'a.example', now, {
 			node_name: 'A',
+			description: 'about A',
 			users_count: 10,
 			notes_count: 100,
 			version: '2026.11.0',
@@ -89,6 +90,7 @@ describe('取得結果反映', () => {
 		const row = await findInstance(db, 'a.example');
 		expect(row).toMatchObject({
 			node_name: 'A',
+			description: 'about A',
 			users_count: 10,
 			is_alive: true,
 			suspension_state: 'none',
