@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { saveInstance } from '../../src/domain/crawl.js';
+import { DESCRIPTION_MAX_LENGTH, saveInstance } from '../../src/domain/crawl.js';
 import { addExclusion, excludeRejectedHost } from '../../src/domain/exclusion.js';
 import { repositories } from '../../src/entity/schema.js';
 import { findExclusion } from '../../src/repository/excluded-hosts.js';
@@ -55,6 +55,12 @@ describe('saveInstance', () => {
 	test('空の説明文はnullで保存', async () => {
 		await saveInstance(ctx, 'a.example', { info: info({ description: '' }) }, now);
 		expect((await findInstance(db, 'a.example'))?.description).toBeNull();
+	});
+
+	test('上限超過の説明文はコードポイント単位で切り詰め', async () => {
+		const description = '😀'.repeat(DESCRIPTION_MAX_LENGTH + 1);
+		await saveInstance(ctx, 'a.example', { info: info({ description }) }, now);
+		expect((await findInstance(db, 'a.example'))?.description).toBe('😀'.repeat(DESCRIPTION_MAX_LENGTH));
 	});
 
 	test('言語判定結果nullは未判定として上書き', async () => {
