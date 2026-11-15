@@ -49,6 +49,7 @@ export async function saveInstance(ctx: CrawlContext, id: string, res: InstanceR
 
 		await markInstanceAlive(db, id, now, {
 			node_name: info.name,
+			description: info.description === '' ? null : (info.description ?? null),
 			users_count: info.users,
 			notes_count: info.notes,
 			version: info.version,

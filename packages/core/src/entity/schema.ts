@@ -59,6 +59,7 @@ export const instances = sqliteTable(
 	{
 		id: text('id').primaryKey(),
 		node_name: text('node_name'),
+		description: text('description'),
 		users_count: integer('users_count').default(0),
 		notes_count: integer('notes_count').default(0),
 		version: text('version'),

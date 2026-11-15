@@ -37,8 +37,9 @@ test.describe('サーバ一覧', () => {
 		await expect(alpha.getByTitle('Notes')).toHaveText(String(api.items[0].notes_count));
 		await expect(alpha.getByTitle('Language')).toHaveText('日本語 (ja)');
 		await expect(alpha.getByTitle('Online')).toBeVisible();
-		// 説明文はブラウザからMisskeyのapi/metaを直接取得
 		await expect(alpha).toContainText('E2Eテスト用のMisskeyサーバです。日本語で運営しています。');
+		// 説明文はSSRのHTMLに出力
+		expect(await (await page.request.get('/servers')).text()).toContain('E2Eテスト用のMisskeyサーバです。日本語で運営しています。');
 
 		const beta = card(page, 'Beta E2E');
 		await expect(beta.getByTitle('Language')).toHaveText('英語 (en)');

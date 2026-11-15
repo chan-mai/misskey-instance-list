@@ -95,6 +95,7 @@ export const listAllSyncTargetIds = async (db: Database): Promise<string[]> => {
 export type InstanceMetadataUpdate = Pick<
 	InstanceInsert,
 	| 'node_name'
+	| 'description'
 	| 'users_count'
 	| 'notes_count'
 	| 'version'

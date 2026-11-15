@@ -41,6 +41,7 @@ describe('saveInstance', () => {
 
 		expect(await findInstance(db, 'b.example')).toMatchObject({
 			node_name: 'Example',
+			description: 'desc',
 			users_count: 42,
 			notes_count: 1000,
 			is_alive: true,
@@ -49,6 +50,11 @@ describe('saveInstance', () => {
 			repository_url: null,
 			last_check_at: now.epochMilliseconds,
 		});
+	});
+
+	test('空の説明文はnullで保存', async () => {
+		await saveInstance(ctx, 'a.example', { info: info({ description: '' }) }, now);
+		expect((await findInstance(db, 'a.example'))?.description).toBeNull();
 	});
 
 	test('言語判定結果nullは未判定として上書き', async () => {
