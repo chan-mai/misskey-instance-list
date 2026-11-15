@@ -27,7 +27,8 @@
 [![Tsumugi](https://img.shields.io/badge/Tsumugi-f7a1b2?style=flat-square)](https://tsumugi.mq1.dev)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 
-MisskeyHubのサーバーリストがメンテナンス中のまま復旧しないため、非公式のサーバーリストを作成しました。
+非公式のMisskeyサーバーリストです。
+MisskeyHubのサーバーリストがメンテナンス中のまま復旧しないため作成しました。
 
 </div>
 
@@ -48,32 +49,23 @@ MisskeyHubのサーバーリストがメンテナンス中のまま復旧しな�
 
 ## 📖 API Documentation
 
-APIドキュメントは https://servers.misskey.ink/docs/api/v1 で確認できます。
+APIドキュメントは https://servers.misskey.ink/docs/api/v1 から確認可能です。
 
-### Endpoints
-
-| Method | Endpoint                   | Description                         |
-| ------ | -------------------------- | ----------------------------------- |
-| GET    | `/api/v1/instances`        | インスタンス一覧を取得              |
-| GET    | `/api/v1/deny_instances`   | 拒否リストを取得                    |
-| GET    | `/api/v1/ignore_instances` | 無視リストを取得                    |
-| GET    | `/api/v1/stats`            | 統計情報を取得 (リポジトリ統計含む) |
-| GET    | `/api/health`              | ヘルスチェック                      |
 
 ## 🛠️ Development
 
 ### Prerequisites
 
-- Node.js 24+
-- pnpm
+- Node.js 26+
+- pnpm, docker
 - Cloudflareアカウント(Workers Paid)
-- Cloudflare Zero Trust(ジョブ管理画面の認証に使う)
+- Cloudflare Zero Trust
 
 ### Setup
 
 ```bash
 # 依存関係のインストール
-pnpm install
+pnpm i
 
 # 環境変数の設定
 cp .env.example .env
@@ -85,23 +77,7 @@ pnpm db:migrate:local
 pnpm jobs:migrate:local
 ```
 
-### Development Server
-
-```bash
-pnpm dev
-```
-
-http://localhost:3000 で開発サーバーが起動します。
-
-### Production Build
-
-```bash
-pnpm build
-pnpm --filter @mil/web exec wrangler deploy
-pnpm --filter @mil/agent exec wrangler deploy
-```
-
-## 🤝 Contributing
+## 🤝🏻 Contributing
 
 リポジトリへの貢献を歓迎します！詳細は [CONTRIBUTING.md](CONTRIBUTING.md) をご確認ください。
 
@@ -109,7 +85,7 @@ pnpm --filter @mil/agent exec wrangler deploy
 
 This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Disclaimer
+## 🙏🏻 Disclaimer
 
 このリストは非公式のプロジェクトであり、Misskey開発チームとは関係ありません。
 掲載されているインスタンスの運営状況やセキュリティについて、当プロジェクトは一切の責任を負いません。
