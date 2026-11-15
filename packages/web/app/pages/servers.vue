@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { STORAGE_KEY } from '~/utils/constants';
 import { loadViewMode, parseFilterQuery, toFilterQuery } from '~/utils/filter-settings';
+import { htmlToText } from '~~/shared/utils/text';
 
 const { formatNumber } = useFormat();
 
@@ -303,23 +304,18 @@ function handleOrderByChange(val: SortField) {
 function handleOrderChange(val: SortOrder) {
 	f_order.value = val;
 }
-// ローカルでの拡張型定義
-type InstanceWithDescription = Instance & {
-	description?: string;
-};
-
 useJsonld(() => ({
 	'@context': 'https://schema.org',
 	'@type': 'ItemList',
 	numberOfItems: instances.value.length,
-	itemListElement: instances.value.map((instance: InstanceWithDescription, index) => ({
+	itemListElement: instances.value.map((instance, index) => ({
 		'@type': 'ListItem',
 		position: index + 1,
 		item: {
 			'@type': 'Thing',
 			name: instance.name || instance.host,
 			url: `https://${instance.host}`,
-			...(instance.description && { description: instance.description }),
+			...(instance.description && { description: htmlToText(instance.description) }),
 		},
 	})),
 }));

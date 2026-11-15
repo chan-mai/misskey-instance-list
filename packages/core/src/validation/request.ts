@@ -95,7 +95,3 @@ export const imageQuerySchema = v.object({
 	url: v.pipe(v.string('URL is required'), v.nonEmpty('URL is required'), v.check(isHttpUrl, 'Invalid URL')),
 });
 export type ImageQuery = v.InferOutput<typeof imageQuerySchema>;
-
-// ホスト名正当性含め確認
-export const metaQuerySchema = v.object({ host: domainSchema });
-export type MetaQuery = v.InferOutput<typeof metaQuerySchema>;

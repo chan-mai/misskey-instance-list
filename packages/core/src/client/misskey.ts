@@ -235,6 +235,7 @@ export async function getInstanceInfo(host: string, userAgent = 'MisskeyInstance
 						clearTimeout(metaTimeoutId); // 成功したらタイマー解除
 
 						if (meta.bannerUrl) banner = meta.bannerUrl;
+						else if (!banner && meta.backgroundImageUrl) banner = meta.backgroundImageUrl;
 						if (meta.iconUrl) icon = meta.iconUrl;
 						if (meta.name) name = meta.name;
 						if (meta.description) description = meta.description;

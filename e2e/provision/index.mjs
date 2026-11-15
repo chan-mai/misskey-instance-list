@@ -34,6 +34,8 @@ const MISSKEY = {
 		meta: {
 			name: 'Alpha E2E',
 			description: 'E2Eテスト用のMisskeyサーバです。日本語で運営しています。',
+			bannerUrl: 'https://alpha.mil-e2e.test/banner.png',
+			backgroundImageUrl: 'https://alpha.mil-e2e.test/background.png',
 			disableRegistration: false,
 			emailRequiredForSignup: false,
 		},
@@ -50,6 +52,7 @@ const MISSKEY = {
 		meta: {
 			name: 'Beta E2E',
 			description: 'An English speaking Misskey server for end to end tests.',
+			backgroundImageUrl: 'https://beta.mil-e2e.test/background.png',
 			disableRegistration: true,
 			emailRequiredForSignup: true,
 		},

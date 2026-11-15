@@ -37,7 +37,6 @@ test.describe('サーバ一覧', () => {
 		await expect(alpha.getByTitle('Notes')).toHaveText(String(api.items[0].notes_count));
 		await expect(alpha.getByTitle('Language')).toHaveText('日本語 (ja)');
 		await expect(alpha.getByTitle('Online')).toBeVisible();
-		// 説明文はブラウザからMisskeyのapi/metaを直接取得
 		await expect(alpha).toContainText('E2Eテスト用のMisskeyサーバです。日本語で運営しています。');
 
 		const beta = card(page, 'Beta E2E');
@@ -49,6 +48,15 @@ test.describe('サーバ一覧', () => {
 		await expect(tempura).toContainText('misskey-tempuraで動いているサーバです。');
 
 		await expect(page.getByRole('heading', { name: 'CherryPick E2E' })).toHaveCount(0);
+	});
+
+	test.describe('JavaScript無効時', () => {
+		test.use({ javaScriptEnabled: false });
+
+		test('SSRのカードに説明文表示', async ({ page }) => {
+			await page.goto('/servers');
+			await expect(card(page, 'Alpha E2E')).toContainText('E2Eテスト用のMisskeyサーバです。日本語で運営しています。');
+		});
 	});
 
 	test('URLクエリの条件で一覧抽出', async ({ page }) => {

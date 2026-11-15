@@ -36,6 +36,8 @@ test.describe('GET /api/v1/instances', () => {
 
 		expect(items[HOSTS.alpha]).toMatchObject({
 			name: 'Alpha E2E',
+			description: 'E2Eテスト用のMisskeyサーバです。日本語で運営しています。',
+			banner_url: 'https://alpha.mil-e2e.test/banner.png',
 			version: '2026.11.0',
 			is_alive: true,
 			suspension_state: 'none',
@@ -47,6 +49,8 @@ test.describe('GET /api/v1/instances', () => {
 		});
 		expect(items[HOSTS.beta]).toMatchObject({
 			name: 'Beta E2E',
+			description: 'An English speaking Misskey server for end to end tests.',
+			banner_url: 'https://beta.mil-e2e.test/background.png',
 			version: '2026.11.0-beta.1',
 			open_registrations: false,
 			email_required: true,
@@ -57,6 +61,7 @@ test.describe('GET /api/v1/instances', () => {
 		// 除外パターンに該当しないフォーク
 		expect(items[HOSTS.tempura]).toMatchObject({
 			name: 'Tempura E2E',
+			description: 'misskey-tempuraで動いているサーバです。',
 			version: '2026.11.0-tempura-2.0.24',
 			open_registrations: true,
 			repository_url: TEMPURA_REPOSITORY_URL,
@@ -184,7 +189,13 @@ test.describe('GET /api/v1/check', () => {
 		expect(await res.json()).toMatchObject({
 			is_misskey: true,
 			source: 'database',
-			data: { name: 'Alpha E2E', version: '2026.11.0', softwareName: 'misskey', ipStack: 'dual' },
+			data: {
+				name: 'Alpha E2E',
+				version: '2026.11.0',
+				softwareName: 'misskey',
+				description: 'E2Eテスト用のMisskeyサーバです。日本語で運営しています。',
+				ipStack: 'dual',
+			},
 		});
 	});
 
@@ -232,15 +243,6 @@ test.describe('GET /api/v1/check', () => {
 			expect((await res.json()).statusMessage).toContain(message);
 		}
 	});
-});
-
-test('GET /api/metaはapi/meta中継, 不正hostは400', async ({ request }) => {
-	const res = await request.get('/api/meta', { params: { host: HOSTS.beta } });
-	expect(res.status()).toBe(200);
-	expect(await res.json()).toMatchObject({ name: 'Beta E2E', disableRegistration: true });
-
-	const invalid = await request.get('/api/meta', { params: { host: 'not a host' } });
-	expect(invalid.status()).toBe(400);
 });
 
 test('GET /api/healthはstatusとISO時刻返却', async ({ request }) => {

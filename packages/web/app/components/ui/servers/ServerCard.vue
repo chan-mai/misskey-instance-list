@@ -11,12 +11,13 @@
 			:class="view === 'list' ? 'absolute inset-0 w-full h-full' : 'aspect-[10/12] lg:aspect-[4/3] w-full'"
 		>
 			<img
-				v-if="fetchedBanner"
+				v-if="bannerSrc"
+				ref="bannerImg"
 				loading="lazy"
-				:src="fetchedBanner"
+				:src="bannerSrc"
 				:alt="instance.name || instance.host || 'Server banner'"
 				class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-				@error="fetchedBanner = null"
+				@error="bannerSrc = fallbackSrc(bannerSrc, instance.banner_url)"
 			/>
 			<div v-else class="absolute inset-0 bg-neutral-800 flex items-center justify-center">
 				<div class="text-neutral-600 text-center">
@@ -36,11 +37,12 @@
 			<div>
 				<div class="flex flex-col items-start gap-2 mb-0">
 					<img
-						v-if="fetchedIcon"
-						:src="fetchedIcon"
+						v-if="iconSrc"
+						ref="iconImg"
+						:src="iconSrc"
 						class="w-8 h-8 bg-white/10 backdrop-blur-sm shadow-sm"
 						alt=""
-						@error="fetchedIcon = null"
+						@error="iconSrc = fallbackSrc(iconSrc, instance.icon_url)"
 					/>
 					<div v-else class="w-8 h-8 bg-primary flex items-center justify-center text-white text-sm font-bold shadow-sm">
 						{{ (instance.name || instance.host).charAt(0).toUpperCase() }}
@@ -59,8 +61,7 @@
 
 			<div>
 				<p class="text-xs line-clamp-2 mb-3 text-white/80">
-					<span v-if="loadingDescription" class="opacity-50">Loading...</span>
-					<span v-else>{{ description || instance.host }}</span>
+					{{ description || instance.host }}
 				</p>
 
 				<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium text-white/60">
@@ -96,9 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { firstNonEmpty } from '~~/shared/utils/text';
-
-type InstanceMeta = { description?: unknown; iconUrl?: unknown; bannerUrl?: unknown; backgroundImageUrl?: unknown };
+import { htmlToText } from '~~/shared/utils/text';
 
 const { formatNumber, getLanguageName } = useFormat();
 
@@ -110,163 +109,33 @@ const props = defineProps<{
 // 属性値内の//はvue-tsc誤変換(vuejs/language-tools#6322)
 const instanceUrl = computed(() => `https://${props.instance.host}`);
 
-const fetchedIcon = ref<string | null>(null);
-const fetchedBanner = ref<string | null>(null);
+const description = computed(() => (props.instance.description ? htmlToText(props.instance.description) : ''));
 
-function getProxiedUrl(url: string): string {
-	return `/api/image?url=${encodeURIComponent(url)}`;
-}
-
-// 画像URLの解決キャッシュ (key: originalUrl, value: resolvedUrl)
-const resolvedUrls = new Map<string, string>();
-// Meta情報のキャッシュ (key: host, value: Meta)
-const metaCache = new Map<string, InstanceMeta>();
-
-async function resolveUrl(url: string | null | undefined): Promise<string | null> {
-	if (!url) return null;
-
-	// キャッシュにあれば返す
-	const cached = resolvedUrls.get(url);
-	if (cached !== undefined) {
-		return cached;
-	}
-
-	// 直接アクセスを試行
-	try {
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-		const res = await fetch(url, {
-			method: 'GET',
-			signal: controller.signal,
-			// CORS制限などのため、モードはno-corsにしないと検証できない場合があるが、画像自体が取得可能か確認するため通常のリクエストを行う
-		});
-
-		clearTimeout(timeoutId);
-
-		if (res.ok) {
-			resolvedUrls.set(url, url);
-			return url;
-		}
-	} catch {
-		// 失敗時はプロキシへフォールバック
-	}
-
-	// プロキシURLを生成して返す
-	const proxied = getProxiedUrl(url);
-	resolvedUrls.set(url, proxied);
-	return proxied;
-}
-
-async function updateImages() {
-	const icon = await resolveUrl(props.instance.icon_url);
-	fetchedIcon.value = icon;
-
-	const banner = await resolveUrl(props.instance.banner_url);
-	fetchedBanner.value = banner;
-}
-
-const description = ref<string>('');
-const loadingDescription = ref(true);
-
-function stripTags(str: string): string {
-	if (!import.meta.client) {
-		return str;
-	}
-	const doc = new DOMParser().parseFromString(str, 'text/html');
-	return doc.body.textContent || '';
-}
-
-async function updateDescription() {
-	if (!props.instance) {
-		description.value = '';
-		loadingDescription.value = false;
-		return;
-	}
-
-	// キャッシュ確認
-	const cachedMeta = metaCache.get(props.instance.host);
-	if (cachedMeta !== undefined) {
-		applyMeta(cachedMeta);
-		loadingDescription.value = false;
-		return;
-	}
-
-	// クライアントサイドから直接取得を試みる
-	try {
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-		const res = await fetch(`https://${props.instance.host}/api/meta`, {
-			method: 'POST', // MisskeyのAPIはPOST
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ detail: true }), // 詳細情報を要求
-			signal: controller.signal,
-		});
-
-		clearTimeout(timeoutId);
-
-		if (res.ok) {
-			const meta = await res.json();
-			metaCache.set(props.instance.host, meta);
-			await applyMeta(meta);
-			loadingDescription.value = false;
-			return;
-		}
-	} catch {
-		// 失敗時はサーバープロキシへフォールバック
-	}
-
-	// プロキシ経由で取得
-	try {
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-		const res = await fetch(`/api/meta?host=${props.instance.host}`, {
-			method: 'GET',
-			headers: { 'Content-Type': 'application/json' },
-			signal: controller.signal,
-		});
-
-		clearTimeout(timeoutId);
-
-		if (res.ok) {
-			const meta = await res.json();
-			// プロキシ経由の結果もキャッシュする
-			metaCache.set(props.instance.host, meta);
-			await applyMeta(meta);
-		}
-	} catch {
-		// 取得失敗
-	} finally {
-		loadingDescription.value = false;
-	}
-}
-
-async function applyMeta(meta: InstanceMeta) {
-	const metaDescription = firstNonEmpty(meta.description);
-	if (metaDescription) description.value = stripTags(metaDescription);
-
-	const iconUrl = firstNonEmpty(meta.iconUrl);
-	if (iconUrl) {
-		const resolved = await resolveUrl(iconUrl);
-		fetchedIcon.value = resolved;
-	}
-	const bannerUrl = firstNonEmpty(meta.bannerUrl, meta.backgroundImageUrl);
-	if (bannerUrl) {
-		const resolved = await resolveUrl(bannerUrl);
-		fetchedBanner.value = resolved;
-	}
-}
+const iconSrc = ref<string | null>(props.instance.icon_url);
+const bannerSrc = ref<string | null>(props.instance.banner_url);
 
 watch(
 	() => props.instance,
-	() => {
-		if (import.meta.client) {
-			updateImages();
-			updateDescription();
-		}
+	instance => {
+		iconSrc.value = instance.icon_url;
+		bannerSrc.value = instance.banner_url;
 	},
-	{ immediate: true },
 );
+
+// 直接取得失敗時プロキシ, プロキシ失敗時非表示
+function fallbackSrc(current: string | null, original: string | null): string | null {
+	if (!original || current !== original) return null;
+	return `/api/image?url=${encodeURIComponent(original)}`;
+}
+
+const iconImg = ref<HTMLImageElement | null>(null);
+const bannerImg = ref<HTMLImageElement | null>(null);
+
+// ハイドレーション前に失敗した画像の検出
+onMounted(() => {
+	if (iconImg.value?.complete && iconImg.value.naturalWidth === 0) iconSrc.value = fallbackSrc(iconSrc.value, props.instance.icon_url);
+	if (bannerImg.value?.complete && bannerImg.value.naturalWidth === 0) {
+		bannerSrc.value = fallbackSrc(bannerSrc.value, props.instance.banner_url);
+	}
+});
 </script>

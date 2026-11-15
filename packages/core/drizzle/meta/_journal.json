@@ -15,6 +15,13 @@
 			"when": 1788966305597,
 			"tag": "0001_steady_eternity",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1794684866132,
+			"tag": "0002_wakeful_karen_page",
+			"breakpoints": true
 		}
 	]
 }
