@@ -51,7 +51,6 @@ MisskeyHubのサーバーリストがメンテナンス中のまま復旧しな�
 
 APIドキュメントは https://servers.misskey.ink/docs/api/v1 から確認可能です。
 
-
 ## 🛠️ Development
 
 ### Prerequisites
